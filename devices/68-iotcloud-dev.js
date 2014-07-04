@@ -19,8 +19,6 @@ var util = require("util");
 var connectionPool = require(process.env.NODE_RED_HOME
 		+ "/nodes/core/io/lib/mqttConnectionPool");
 
-var APPLICATION_PUB_TOPIC_REGEX = /^iot-2\/type\/[^#+\/]+\/id\/[^#+\/]+\/(?:evt|cmd)\/[^#+\/]+\/fmt\/[^#+\/]+$/g;
-
 var macAddress;
 
 require('getmac').getMac(function(err, mac) {
@@ -29,9 +27,11 @@ require('getmac').getMac(function(err, mac) {
 		throw err;
 	}
 	macAddress = mac.toLowerCase().replace(/-/g, "").replace(/:/g, "");
-});
+
 
 var DEVICE_PUBLISH_TOPIC = "iot-2/evt/status/fmt/json";
+var QUICKSTART_HOST = "quickstart.messaging.internetofthings.ibmcloud.com";
+var REGIS_HOST = "messaging.internetofthings.ibmcloud.com";
 
 function setupConnection(node, config) {
 
@@ -40,7 +40,7 @@ function setupConnection(node, config) {
 	util.log("[iot-dev] The connect mode is "+config.connectmode);
 	if(config.connectmode == "qsmode") {
 		// Quickstart Mode
-		node.brokerHost = "46.16.189.243"; // Staging
+		node.brokerHost = QUICKSTART_HOST;
 		node.brokerPort = "1883";
 	
 		node.organization = "quickstart";	// Hardcoding to Quickstart
@@ -57,7 +57,7 @@ function setupConnection(node, config) {
 		
 	} else {
 		//Registered Mode
-		node.brokerHost = "46.16.189.242"; // Staging
+		node.brokerHost = config.orgId +"."+REGIS_HOST;
 		node.brokerPort = "1883";
 	
 		node.organization = config.orgId;
@@ -162,3 +162,5 @@ function IotDevOutNode(n) {
 }
 
 RED.nodes.registerType("iot-dev-out", IotDevOutNode);
+
+});
