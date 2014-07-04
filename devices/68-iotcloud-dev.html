@@ -1,0 +1,175 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="iot-dev-in">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-orgId"><i class="icon-tasks"></i> Org ID</label>
+        <input type="text" id="node-input-orgId">
+    </div>
+
+	<div class="form-row">
+        <label for="node-input-deviceType"><i class="icon-tasks"></i> DeviceType</label>
+        <input type="text" id="node-input-deviceType" placeholder="iotsample-nodered">
+    </div>
+
+	<div class="form-row">
+        <label for="node-input-deviceId"><i class="icon-tasks"></i> DeviceID</label>
+        <input type="text" id="node-input-deviceId">
+    </div>
+
+	<div class="form-row">
+        <label for="node-input-authToken"><i class="icon-tasks"></i> AuthToken</label>
+        <input type="password" id="node-input-authToken">
+    </div>
+
+	<div class="form-row">
+        <label for="node-input-command"><i class="icon-tasks"></i> Command</label>
+        <input type="text" id="node-input-command" placeholder="Command the device listens to">
+    </div>
+
+	<div class="form-row">
+        <label for="node-input-format"><i class="icon-tasks"></i> Format</label>
+        <input type="text" id="node-input-format" placeholder="Format of the payload">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="iot-dev-in">
+   <p> Works only with <i>Registered Mode</i>. When you onboard your device to the Internet of Things Cloud, you will get the following</p>
+	<pre>org=yourOrganizationCode
+type=sample-device-id
+id=sample-device-id
+auth-method=token
+auth-token=yourAuthToken
+		</pre>
+
+	<p> <b>Org ID</b> The organization ID. </p>
+	<p> <b>DeviceID</b> Unique ID of device. If empty, will be filled with MAC address</p>
+	<p> <b>AuthToken</b> Authetication Token </p>
+	<p> <b>Command</b> The command that device listens to. For any command, input <b>+</b></p>
+	<p> <b>Format</b> The format of the payload. Default is <b>json</b>. For any format, input <b>+</b></p>
+	
+</script>
+
+<script type="text/x-red" data-template-name="iot-dev-out">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <br/>
+    <div class="form-row">
+		<label for="node-input-connectmode"><i class="icon-tasks"></i> Connection</label>
+		<select id="node-input-connectmode" style="margin-right:3px;">
+            <option value="qsmode">Quickstart Mode</option>
+            <option value="regismode">Registered Mode</option>
+        </select>
+        
+    </div>
+	<div class="form-row">
+        <label for="node-input-orgId"><i class="icon-tasks"></i> Org ID</label>
+        <input type="text" id="node-input-orgId">
+    </div>
+
+	<div class="form-row">
+        <label for="node-input-deviceType"><i class="icon-tasks"></i> DeviceType</label>
+        <input type="text" id="node-input-deviceType">
+    </div>
+
+	<div class="form-row">
+        <label for="node-input-deviceId"><i class="icon-tasks"></i> DeviceID</label>
+        <input type="text" id="node-input-deviceId">
+    </div>
+
+	<div class="form-row">
+        <label for="node-input-authToken"><i class="icon-tasks"></i> AuthToken</label>
+        <input type="password" id="node-input-authToken" placeholder="Required only for Registered mode">
+    </div>
+
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="iot-dev-out">
+	<p><b>Connection</b> There are two modes of operation in Internet of Things Cloud. </p>
+	<p> 1. Quickstart Mode: To try out a device to the open Quickstart service. </p> 
+	<p> 2. Registered Mode - When you onboard your device to the Internet of Things Cloud, you will get the following</p>
+	<pre>org=yourOrganizationCode
+type=sample-device-id
+id=sample-device-id
+auth-method=token
+auth-token=yourAuthToken
+		</pre>
+
+	<p> <b>Org ID</b> The organization ID. For quickstart, the value must be <i>Quickstart</i> </p>
+	<p> <b>DeviceID</b> Unique ID of device. If empty, will be filled with MAC address</p>
+	<p> <b>AuthToken</b> Required only for <i>Registered Mode</i> </p>
+</script>
+
+
+<script type="text/javascript">
+    (function(){
+        RED.nodes.registerType('iot-dev-in',{
+            category: 'input',
+            color:"rgb(115, 185, 221)",
+            defaults: {
+                name: { value:"IoT device In" },
+                orgId : {required : true},
+                deviceType : {required : true},
+                deviceId : {value : ""},
+                authToken : {value: "", required : true},
+                command : {value: "", required: true},
+                format : {value: "json", required: true}
+            },
+            inputs:0,
+            outputs:1,
+            icon: "iotcloud-icon.png",
+            label: function() {
+                return this.name || this.deviceId || "IoT Device";
+            },
+            labelStyle: function() {
+                return this.name ? "node_label_italic" : "";
+            }
+        });
+
+        RED.nodes.registerType('iot-dev-out',{
+            category: 'output',
+            color:"rgb(115, 185, 221)",
+            defaults: {
+                name: { value:"IoT device Out" },
+                connectmode : {},
+                orgId : {value: "Quickstart" , required : true},
+                deviceType : {value: "iotsample-nodered", required : true},
+                deviceId : {value : ""},
+                authToken : {value: ""}
+                
+            },
+            inputs:1,
+            outputs:0,
+            icon: "iotcloud-icon.png",
+            align: "right",
+            label: function() {
+                return this.name || this.deviceId || "IoT Device";
+            },
+            labelStyle: function() {
+                return this.name ? "node_label_italic" : "";
+            }
+        });
+    }());
+</script>
+
