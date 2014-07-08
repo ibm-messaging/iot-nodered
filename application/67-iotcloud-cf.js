@@ -38,31 +38,44 @@ if (userServices) {
     }
 }
 
+
 function setUpNode(node, nodeCfg){
     // Create a random appId
-    var appId = util.guid();
-    var clientId;
-
-    // Set the default connection configuration and get the topic from the node configuration
-    node.brokerHost = "quickstart.messaging.internetofthings.ibmcloud.com"; // Production
-    node.brokerPort = "1883";
-    node.organization = "quickstart";
+    var appId = util.guid();    
     node.topic = nodeCfg.topic || "";
-
-    // If credentials were found in the VCAP we ignore the defaults and connect to the broker using the configuation sepcified
-    if(credentials){
-        console.log("Using credentials:");
-        console.log(credentials);
-        clientId = "a:" + credentials.organization + ":" + appId;
-        var username = credentials.organization + ":" + credentials.apiKey;
-        var broker = credentials.organization + ".messaging.internetofthings.ibmcloud.com"; // Production
-        node.client = connectionPool.get(broker, credentials.endpoint_port, clientId, username, credentials.apiToken);
+    
+    if(credentials){       
+    	
+    	// REGSITERED MODE (IoT Service bound to this instance)
+        node.organization = credentials.apiKey.split(':')[1];        
+        node.clientId = "a:" + node.organization + ":" + appId;
+        node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
+        node.brokerPort = credentials.endpoint_port;
+        node.apiKey = credentials.apiKey;
+        node.apiToken = credentials.apiToken;
+        
+    } else {
+    	
+    	// QUICKSTART MODE (IoT Service NOT bound to this instance)
+    	node.organization = "quickstart";
+    	node.clientId = "a:" + node.organization + ":" + appId;
+        node.brokerHost = "quickstart.messaging.internetofthings.ibmcloud.com";
+        node.brokerPort = "1883";       
+        node.apiKey = null;
+        node.apiToken = null;   
     }
-    else {
-        clientId = "a:" + node.organization + ":" + appId;
-        node.client = connectionPool.get(node.brokerHost, node.brokerPort, clientId, null, null);
-    }
-
+    
+    
+    console.log("Using credentials:");
+    console.log('	Organization: '	+ node.organization);
+    console.log('	Client ID: '	+ node.clientId); 
+    console.log('	Broker Host: '	+ node.brokerHost); 
+    console.log('	Broker Port: '	+ node.brokerPort);    
+    console.log('	API Key: '		+ node.apiKey); 
+    console.log('	API Token: ' 	+ node.apiToken); 
+    console.log('	Topic: ' 		+ node.topic); 
+    
+    node.client = connectionPool.get(node.brokerHost, node.brokerPort, node.clientId, node.apiKey, node.apiToken);
     node.client.connect();
 
     node.on("close", function() {
@@ -78,6 +91,7 @@ function IotAppInNode(n) {
 
     var that = this;
     if(this.topic){
+    	console.log("Subscribing to topic: '"+this.topic+"'");
         this.client.subscribe(this.topic, 0, function(topic, payload, qos, retain) {
             console.log("[App-In] Received MQTT message: " + payload);
             // if topic string ends in "json" attempt to parse. If fails, just pass through as string.
