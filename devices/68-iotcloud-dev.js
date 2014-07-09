@@ -148,14 +148,6 @@ function IotDevOutNode(n) {
 
 		msg.topic = DEVICE_PUBLISH_TOPIC;
 		
-		try {
-			JSON.parse(msg.payload);
-		} catch (err) {
-			//do not send the message as its not in json
-			this.error("The payload : "+ msg.payload +" is not in JSON format" );
-			return null;
-		}
-		
 		this.client.publish(msg);
 
 	});
