@@ -19,6 +19,7 @@ Connect
 4. cd to the node red directory
 5. Note down the MAC address of your raspberry pi which is needed for the [quickstart site](http://quickstart.internetofthings.ibmcloud.com).
 6. Start Node-RED with sudo node red.js -f raspi_registered_event.json. (This file is present in the samples directory of the same folder, from where you downloaded this README.md)
+7. Provide MAC Address in the "Ready To View" textbox and click on Go
 
 
 Troubleshooting and Development
