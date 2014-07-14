@@ -122,7 +122,8 @@ function IotAppOutNode(n) {
     setUpNode(this, n);
 
     this.on("input", function(msg) {
-        console.log("[App-Out] Message arrived at input.");
+        console.log("[App-Out] The following message arrived at input:");
+        console.log(msg);
         if (msg !== null) {
             msg.topic = this.topic || msg.topic;
             if (msg.topic && APPLICATION_PUB_TOPIC_REGEX.test(msg.topic)){
