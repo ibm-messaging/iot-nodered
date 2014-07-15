@@ -18,7 +18,7 @@ var RED = require(process.env.NODE_RED_HOME + "/red/red");
 var connectionPool = require(process.env.NODE_RED_HOME + "/nodes/core/io/lib/mqttConnectionPool");
 var util = require("./lib/util.js");
 var cfEnv = require("cf-env");
-var APPLICATION_PUB_TOPIC_REGEX = /^iot-2\/type\/[^#+\/]+\/id\/[^#+\/]+\/(?:evt|cmd)\/[^#+\/]+\/fmt\/[^#+\/]+$/g;
+var APPLICATION_PUB_TOPIC_REGEX = /^iot-2\/type\/[^#+\/]+\/id\/[^#+\/]+\/(?:evt|cmd)\/[^#+\/]+\/fmt\/[^#+\/]+$/;
 
 // Load the services VCAP from the CloudFoundry environment
 var services = cfEnv.getCore().services || {};
