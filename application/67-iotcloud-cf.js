@@ -18,7 +18,7 @@ var RED = require(process.env.NODE_RED_HOME + "/red/red");
 var connectionPool = require(process.env.NODE_RED_HOME + "/nodes/core/io/lib/mqttConnectionPool");
 var util = require("./lib/util.js");
 var cfEnv = require("cf-env");
-var fs = require("fs");
+//var fs = require("fs");
 var APPLICATION_PUB_TOPIC_REGEX = /^iot-2\/type\/[^#+\/]+\/id\/[^#+\/]+\/(?:evt|cmd)\/[^#+\/]+\/fmt\/[^#+\/]+$/;
 
 // Load the services VCAP from the CloudFoundry environment
@@ -50,6 +50,7 @@ function setUpNode(node, nodeCfg){
     	// REGISTERED MODE (IoT Service bound to this instance)
         node.organization = credentials.apiKey.split(':')[1];        
         node.clientId = "a:" + node.organization + ":" + appId;
+/*
 	fs.readFile("app/iot-overrides.js", function (err, data) {
 		if(err) {
 			console.log("No broker host passed, so reverting to the default one");
@@ -59,7 +60,8 @@ function setUpNode(node, nodeCfg){
 			node.brokerHost = data;
 			}
 	});
-//      node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
+*/
+        node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
         node.brokerPort = credentials.endpoint_port;
         node.apiKey = credentials.apiKey;
         node.apiToken = credentials.apiToken;
