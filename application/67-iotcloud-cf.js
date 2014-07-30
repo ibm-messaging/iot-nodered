@@ -50,15 +50,15 @@ function setUpNode(node, nodeCfg){
     	// REGISTERED MODE (IoT Service bound to this instance)
         node.organization = credentials.apiKey.split(':')[1];        
         node.clientId = "a:" + node.organization + ":" + appId;
-		fs.readFile("app/iot-overrides.js", function (err, data) {
-			if(err) {
-				console.log("No broker host passed, so reverting to the default one");
+	fs.readFile("app/iot-overrides.js", function (err, data) {
+		if(err) {
+			console.log("No broker host passed, so reverting to the default one");
 		        node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
-			} else {
-				console.log("Broker host PASSED = " + data);
-				node.brokerHost = data;
+		} else {
+			console.log("Broker host PASSED = " + data);
+			node.brokerHost = data;
 			}
-		});
+	});
 //      node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
         node.brokerPort = credentials.endpoint_port;
         node.apiKey = credentials.apiKey;
