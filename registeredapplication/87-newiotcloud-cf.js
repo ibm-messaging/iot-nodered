@@ -117,9 +117,7 @@ function setUpNode(node, nodeCfg, inOrOut){
     console.log('	MAC: ' 			+ node.mac); 
     console.log('	Name: ' 		+ node.name); 
     console.log('	Format: ' 		+ node.format); 
-    console.log('	API Key: ' 		+ node.apiKey); 
-    console.log('	API Token: ' 	+ node.apiToken);
-	console.log('	Event: '		+ node.event);
+    console.log('	Event: '		+ node.event);
 
     node.client = new IoTAppClient(appId, node.apiKey, node.apiToken);
     node.client.connectBroker();
@@ -137,38 +135,10 @@ function IotAppInNode(n) {
 
     var that = this;
     if(this.topic){
-//    	console.log("Subscribing to topic: '"+this.topic+"'");
-
-/*		this.client.subscribe(this.topic, 0, function(topic, payload, qos, retain) {
-            console.log("[App-In] Received MQTT message: " + payload);
-            // if topic string ends in "json" attempt to parse. If fails, just pass through as string.
-            // if topic string ends in anything other than "json" just pass through as string.
-            var parsedPayload = "";
-            if ( /json$/.test(topic) ){
-                try{
-                    parsedPayload = JSON.parse(payload);
-                }catch(err){
-                    parsedPayload = payload;
-                }
-            } else{
-                parsedPayload = payload;
-            }
-
-            var msg = {"topic":topic, "payload":parsedPayload};
-            console.log("[App-In] Forwarding message to output.");
-            that.send(msg);
-        });
-  
-*/
-//		console.log("\n\n\nType = " + that.type1);
 		if(that.type1 == "evt" ) {
 			this.client.subscribeToDeviceEvents(this.type2, this.mac, this.event, this.format);
 
 			this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload) {
-//				console.log("\nPayload = " + payload + "\ndeviceType = " + deviceType + "\tdeviceId = " + deviceId + "\teventType = " + eventType + "\tformatType = " + formatType);
-
-//				console.log("\nTopic defined previously = " + that.topic);
-
 				var parsedPayload = "";
 				if ( /json$/.test(that.topic) ){
 					try{
@@ -189,10 +159,6 @@ function IotAppInNode(n) {
 			this.client.subscribeToDeviceStatus(that.type2, this.mac);
 
 			this.client.on("deviceStatus", function(deviceType, deviceId, payload) {
-//				console.log("\nPayload = " + payload + "\ndeviceType = " + deviceType + "\tdeviceId = " + deviceId );
-
-//				console.log("\nTopic defined previously = " + that.topic);
-
 				var parsedPayload = "";
 				if ( /json$/.test(that.topic) ){
 					try{
@@ -213,10 +179,6 @@ function IotAppInNode(n) {
 			this.client.subscribeToAppStatus(this.mac);
 
 			this.client.on("appStatus", function(deviceId, payload) {
-//				console.log("\nPayload = " + payload + "\tdeviceId = " + deviceId );
-
-//				console.log("\nTopic defined previously = " + that.topic);
-
 				var parsedPayload = "";
 				if ( /json$/.test(that.topic) ){
 					try{
@@ -238,10 +200,6 @@ function IotAppInNode(n) {
 			this.client.subscribeToDeviceCommands(that.type2, that.mac, that.event, that.format);
 
 			this.client.on("deviceCommand", function(deviceType, deviceId, commandType, formatType, payload) {
-//				console.log("\nPayload = " + payload + "\ndeviceType = " + deviceType + "\tdeviceId = " + deviceId + "\tcommandType = " + commandType + "\tformatType = " + formatType);
-
-//				console.log("\nTopic defined previously = " + that.topic);
-
 				var parsedPayload = "";
 				if ( /json$/.test(that.topic) ){
 					try{
@@ -285,9 +243,6 @@ function IotAppOutNode(n) {
 			that.topic = "iot-2/app/" + (msg.id || n.mac) + "/mon";
 		}
 
-//      console.log("[App-Out] The following message arrived at input:" + payload);
-
-//		console.log("Topic: " + topic);
         if (msg !== null) {
             msg.topic = that.topic || msg.topic;
             console.log("[App-Out] Trying to publish MQTT message on topic: " + topic);
