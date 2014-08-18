@@ -70,17 +70,17 @@
 -->
 	<div class="form-row">
         <label for="node-input-mac" style="width:130px;"><i class="icon-tasks"></i> MAC address</label>
-        <input type="text" id="node-input-mac" placeholder="MAC Address e.g. ab12cd231a21" style="width:300px;border-color:red;">
+        <input type="text" id="node-input-mac" placeholder="MAC Address e.g. ab12cd231a21" style="width:300px;">
     </div>
 
 	<div class="form-row">
         <label for="node-input-event" style="width:130px;"><i class="icon-tasks"></i> Event</label>
-        <input type="text" id="node-input-event" placeholder="event format e.g. blink" style="width:300px;border-color:red;">
+        <input type="text" id="node-input-event" placeholder="event format e.g. blink" style="width:300px;">
     </div>
 
 	<div class="form-row">
         <label for="node-input-name" style="width:130px;"><i class="icon-envelope"></i> Data</label>
-        <input type="text" id="node-input-data" placeholder="payload information e.g. data points" style="width:300px;border-color:red;">
+        <input type="text" id="node-input-data" placeholder="payload information e.g. data points" style="width:300px;">
     </div>
 
 	<div class="form-row">
@@ -130,9 +130,9 @@
             color:"rgb(255, 165, 0)",
             defaults: {
                 name: { value:"IoT Client QS App Out" },
-				data: {value:""},
-				mac: {value:""},
-				event: {value:""}
+				data: {value:"", required:true},
+				mac: {value:"", required:true},
+				event: {value:"", required:true}
             },
             inputs:1,
             outputs:0,

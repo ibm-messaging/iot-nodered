@@ -48,16 +48,7 @@
 		<label for="node-input-formatcheckedlabel" id="node-input-formatcheckedlabel" style="width:40px;">All or </label>
         <input type="text" id="node-input-format" placeholder="format e.g. JSON" style="width:240px;">
     </div>
-<!--
-	<div class="form-row">
-        <label for="node-input-apikey" style="width:130px;"><i class="icon-envelope"></i> API Key</label>
-        <input type="text" id="node-input-apikey" placeholder="API Key" style="width:300px;">
-    </div>
-    <div class="form-row">
-        <label for="node-input-apitoken" style="width:130px;"><i class="icon-envelope"></i> API Token</label>
-        <input type="text" id="node-input-apitoken" placeholder="API Token" style="width:300px;">
-    </div>
--->
+
 	<div class="form-row">
         <label for="node-input-name" style="width:130px;"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="iot-new-in" style="width:300px;">
@@ -154,43 +145,30 @@
 		<select id="node-input-type1"  style="width:300px;">
 			<option value="evt">Device Event</option>
 			<option value="cmd">Device Command</option>
-<!--
-			<option value="status">Device Status</option>
-			<option value="mon">Application Status</option>
--->
 		</select>
     </div>
 
 	<div class="form-row">
         <label for="node-input-mac" style="width:130px;"><i class="icon-tasks"></i> ID</label>
-        <input type="text" id="node-input-mac" placeholder="deviceid e.g. AB12CD231A21" style="width:300px;border-color:red;">
+        <input type="text" id="node-input-mac" placeholder="deviceid e.g. AB12CD231A21" style="width:300px;">
     </div>
     <div class="form-row">
         <label for="node-input-type2" style="width:130px;"><i class="icon-tag"></i> Type</label>
-        <input type="text" id="node-input-type2" placeholder="devicetype e.g. armmbed" style="width:300px;border-color:red;">
+        <input type="text" id="node-input-type2" placeholder="devicetype e.g. armmbed" style="width:300px;">
     </div>
     <div class="form-row">
         <label for="node-input-event" style="width:130px;"><i class="icon-tasks"></i> Event</label>
-        <input type="text" id="node-input-event" placeholder="command/event format e.g blink" style="width:300px;border-color:red;">
+        <input type="text" id="node-input-event" placeholder="command/event format e.g blink" style="width:300px;">
     </div>
     <div class="form-row">
         <label for="node-input-format" style="width:130px;"><i class="icon-file"></i> Format</label>
-        <input type="text" id="node-input-format" placeholder="format e.g. json" style="width:300px;border-color:red;">
+        <input type="text" id="node-input-format" placeholder="format e.g. json" style="width:300px;">
     </div>
     <div class="form-row">
         <label for="node-input-data" style="width:130px;"><i class="icon-envelope"></i> Data</label>
-        <input type="text" id="node-input-data" placeholder="payload information i.e. data points" style="width:300px;border-color:red;">
+        <input type="text" id="node-input-data" placeholder="payload information i.e. data points" style="width:300px;">
     </div>
-<!--
-	<div class="form-row">
-        <label for="node-input-apikey" style="width:130px;"><i class="icon-envelope"></i> API Key</label>
-        <input type="text" id="node-input-apikey" placeholder="API Key" style="width:300px;">
-    </div>
-    <div class="form-row">
-        <label for="node-input-apitoken" style="width:130px;"><i class="icon-envelope"></i> API Token</label>
-        <input type="text" id="node-input-apitoken" placeholder="API Token" style="width:300px;">
-    </div>
--->
+
 	<div class="form-row">
         <label for="node-input-name" style="width:130px;"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="iot-new-out" style="width:300px;">
@@ -227,8 +205,6 @@
 				type2: {value:""},
 				event: {value:""},
 				format: {value:""},
-//				apikey: {value: ""},
-//				apitoken: {value: ""},
 				macchecked: {value: ""},
 				type2checked: {value: ""},
 				event1checked: {value: ""},
@@ -250,14 +226,12 @@
             color:"rgb(0, 155, 255)",
             defaults: {
                 name: { value:"IoT Registered App Out" },
-				mac: {value:""},
+				mac: {value:"", required:true},
 				type1: {value:""},
-				type2: {value:""},
-				event: {value:""},
-				format: {value:""},
-//				apikey: {value: ""},
-//				apitoken: {value: ""},
-				data: {value:""}
+				type2: {value:"", required:true},
+				event: {value:"", required:true},
+				format: {value:"", required:true},
+				data: {value:"", required:true}
             },
             inputs:1,
             outputs:0,
