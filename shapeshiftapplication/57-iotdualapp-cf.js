@@ -68,7 +68,7 @@ function setUpNode(node, nodeCfg, inOrOut){
 	node.formatChecked = nodeCfg.formatChecked;
 
 	node.inputType = nodeCfg.inputType;
-	node.deviceType = ( node.deviceTypechecked ) ? '+' : nodeCfg.deviceType;
+	node.deviceType = ( node.deviceTypeChecked ) ? '+' : nodeCfg.deviceType;
 	node.apikey = null;
 	node.apitoken = null;
 	node.mac = ( node.macChecked ) ? '+' : nodeCfg.mac;
@@ -118,11 +118,12 @@ function setUpNode(node, nodeCfg, inOrOut){
     console.log('	Broker Host: '	+ node.brokerHost); 
     console.log('	Broker Port: '	+ node.brokerPort);    
     console.log('	Topic: ' 		+ node.topic); 
-    console.log('	Type: ' 		+ node.inputType); 
+    console.log('	InputType: ' 		+ node.inputType); 
     console.log('	MAC: ' 			+ node.mac); 
     console.log('	Name: ' 		+ node.name); 
     console.log('	Format: ' 		+ node.format); 
-	console.log('	Event: '		+ node.eventCommandType);
+	console.log('	Event/Command Type: '		+ node.eventCommandType);
+	console.log('	DeviceType: '		+ node.deviceType);
 	console.log('	Service: '		+ node.service);
 
     node.client = new IoTAppClient(appId, node.apikey, node.apitoken);
@@ -185,7 +186,7 @@ function IotAppInNode(n) {
 			});
 		} else if (that.inputType == "devsts") {
 		
-			this.client.subscribeToDeviceStatus(that.deviceType, this.mac);
+			this.client.subscribeToDeviceStatus(this.deviceType, this.mac);
 
 			this.client.on("deviceStatus", function(deviceType, deviceId, payload) {
 
@@ -228,7 +229,7 @@ function IotAppInNode(n) {
 
 		} else if (that.inputType == "cmd") {
 
-			this.client.subscribeToDeviceCommands(that.deviceType, that.mac, that.eventCommandType, that.format);
+			this.client.subscribeToDeviceCommands(this.deviceType, this.mac, this.eventCommandType, this.format);
 
 			this.client.on("deviceCommand", function(deviceType, deviceId, commandType, formatType, payload) {
 

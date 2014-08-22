@@ -87,7 +87,7 @@
         <label for="node-input-inputType" id="node-input-inputTypeLabel" style="width:130px;"><i class="icon-tag"></i> Input Type</label>
 		<select id="node-input-inputType"  style="width:300px;">
 			<option value="evt">Device Event</option>
-			<option value="cmd">Device Command</option>
+			<option value="cmd" id="node-input-inputTypeCmd">Device Command</option>
 			<option value="devsts">Device Status</option>
 			<option value="appsts">Application Status</option>
 		</select>
@@ -213,13 +213,12 @@
 			eventCommandType: {value:""},
 			format: {value:""},
 			name: { value:"IoT Dual App In" },
-			service: {value:""}
-/*
+			service: {value:""},
 			macChecked: {value: ""},
 			deviceTypeChecked: {value: ""},
 			eventChecked: {value: ""},
 			formatChecked: {value: ""}
-*/
+
 		},
 		inputs:0,
 		outputs:1,
@@ -240,20 +239,22 @@
 					403: function() {
 						result = "quickstart";
 						$('#node-input-service').val(result);
-						document.getElementById('node-input-inputType').innerHTML = '<option value="evt">Device Event</option>'
-																					+ '<option value="devsts">Device Status</option>'
-																					+ '<option value="appsts">Application Status</option>';
+
+						$("#node-input-inputTypeCmd").hide();
 						$("#node-input-macCheckedLabel").hide();
+						$("#node-input-macChecked").prop("checked", false);
 						$("#node-input-macChecked").hide();
 						$("#node-input-deviceTypeLabel").hide();
 						$("#node-input-deviceType").val("+");
 						$("#node-input-deviceType").hide();
 						$("#node-input-deviceTypeCheckedLabel").hide();
+						$("#node-input-deviceTypeChecked").prop("checked", true);
 						$("#node-input-deviceTypeChecked").hide();
 						$("#node-input-eventLabel").hide();
 						$("#node-input-eventCommandType").val("+");
 						$("#node-input-eventCommandType").hide();
 						$("#node-input-eventCheckedLabel").hide();
+						$("#node-input-eventChecked").prop("checked", true);
 						$("#node-input-eventChecked").hide();
 						$("#node-input-formatLabel").hide();
 						$("#node-input-format").val("json");
@@ -265,12 +266,7 @@
 					200: function() {
 						result = "registered";
 						$('#node-input-service').val(result);
-
-						document.getElementById('node-input-inputType').innerHTML = '<option value="evt">Device Event</option>'
-																					+ '<option value="cmd">Device Command</option>'
-																					+ '<option value="devsts">Device Status</option>'
-																					+ '<option value="appsts">Application Status</option>';
-
+						$("#node-input-inputTypeCmd").show();
 						$("#node-input-inputType").show();
 						$("#node-input-macCheckedLabel").show();
 						$("#node-input-macChecked").show();
@@ -287,11 +283,78 @@
 						$("#node-input-formatCheckedLabel").show();
 						$("#node-input-formatChecked").show();					
 
+						var id = $("#node-input-inputType").val();
+						alert("ID = " + id);
+						if (id == "evt") {
+							document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
+							$("#node-input-eventLabel").show();
+							$("#node-input-eventChecked").show();
+							$("#node-input-eventCheckedLabel").show();
+							$("#node-input-eventCommandType").show();
+					
+							$("#node-input-formatLabel").show();
+							$("#node-input-format").show();
+							$("#node-input-formatChecked").show();
+							$("#node-input-formatCheckedLabel").show();
+							$("#node-input-deviceTypeLabel").show();
+							$("#node-input-deviceType").show();
+							$("#node-input-deviceTypeChecked").show();
+							$("#node-input-deviceTypeCheckedLabel").show();
+
+					
+						} else if (id == "devsts"){
+							$("#node-input-eventLabel").hide();
+							$("#node-input-eventChecked").hide();
+							$("#node-input-eventCheckedLabel").hide();
+							$("#node-input-eventCommandType").hide();
+					
+							$("#node-input-formatLabel").hide();
+							$("#node-input-format").hide();
+							$("#node-input-formatChecked").hide();
+							$("#node-input-formatCheckedLabel").hide();
+							$("#node-input-deviceTypeLabel").show();
+							$("#node-input-deviceType").show();
+							$("#node-input-deviceTypeChecked").show();
+							$("#node-input-deviceTypeCheckedLabel").show();
+					
+						} else if (id == "cmd"){
+							document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
+							$("#node-input-eventLabel").show();
+							$("#node-input-eventChecked").show();
+							$("#node-input-eventCheckedLabel").show();
+							$("#node-input-eventCommandType").show();
+					
+							$("#node-input-formatLabel").show();
+							$("#node-input-format").show();
+							$("#node-input-formatChecked").show();
+							$("#node-input-formatCheckedLabel").show();
+							$("#node-input-deviceTypeLabel").show();
+							$("#node-input-deviceType").show();
+							$("#node-input-deviceTypeChecked").show();
+							$("#node-input-deviceTypeCheckedLabel").show();
+						} else if (id == "appsts") {
+							$("#node-input-eventLabel").hide();
+							$("#node-input-eventChecked").hide();
+							$("#node-input-eventCheckedLabel").hide();
+							$("#node-input-eventCommandType").hide();
+					
+							$("#node-input-formatLabel").hide();
+							$("#node-input-format").hide();
+							$("#node-input-formatChecked").hide();
+							$("#node-input-formatCheckedLabel").hide();
+							$("#node-input-deviceTypeLabel").hide();
+							$("#node-input-deviceType").hide();
+							$("#node-input-deviceTypeChecked").hide();
+							$("#node-input-deviceTypeCheckedLabel").hide();
+
+						} else {
+//								alert("CAME HERE........" + id);
+
+						}
 
 						$("#node-input-inputType").change(function() {
 							var id = $("#node-input-inputType option:selected").val();
 							if (id == "evt") {
-								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> ID</label>';
 								document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
 								$("#node-input-eventLabel").show();
 								$("#node-input-eventChecked").show();
@@ -309,7 +372,6 @@
 
 						
 							} else if (id == "devsts"){
-								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> ID</label>';
 								$("#node-input-eventLabel").hide();
 								$("#node-input-eventChecked").hide();
 								$("#node-input-eventCheckedLabel").hide();
@@ -325,7 +387,6 @@
 								$("#node-input-deviceTypeCheckedLabel").show();
 						
 							} else if (id == "cmd"){
-								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> ID</label>';
 								document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
 								$("#node-input-eventLabel").show();
 								$("#node-input-eventChecked").show();
@@ -341,7 +402,6 @@
 								$("#node-input-deviceTypeChecked").show();
 								$("#node-input-deviceTypeCheckedLabel").show();
 							} else if (id == "appsts") {
-								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> App ID</label>';
 								$("#node-input-eventLabel").hide();
 								$("#node-input-eventChecked").hide();
 								$("#node-input-eventCheckedLabel").hide();
