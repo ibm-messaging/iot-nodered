@@ -137,7 +137,8 @@
 
 
 <script type="text/x-red" data-help-name="iotdualapp in">
-   <p>IoT input node to receive events sent from devices, receive commands sent to devices (only in case of Registered flow), receive status updates of devices or receive status updates of applications.</p>
+	<p>IoT input node to receive events sent from devices, receive commands sent to devices (only in case of Registered flow), receive status updates of devices or receive status updates of applications.</p>
+	<p><b>Note:</b>The values of "macChecked", "deviceTypeChecked", "eventChecked", and "formatChecked" are irrelevant in <b>Quickstart</b> Mode.</p>
 </script>
 
 
@@ -261,7 +262,32 @@
 						$("#node-input-format").hide();
 						$("#node-input-formatCheckedLabel").hide();
 						$("#node-input-formatChecked").hide();		
+
+						var macCheckedValue = $("#node-input-macChecked").is(":checked");
+						if( macCheckedValue) {
+							$("#node-input-mac").prop("disabled", false);
+						}
+
+						var deviceTypeCheckedValue = $("#node-input-deviceTypeChecked").is(":checked");
+						if( deviceTypeCheckedValue) {
+							$("#node-input-deviceType").prop("disabled", false);
+						}
 						
+						var eventCheckedValue = $("#node-input-eventChecked").is(":checked");
+						if( eventCheckedValue) {
+							$("#node-input-eventCommandType").prop("disabled", false);
+						}
+
+						var formatCheckedValue = $("#node-input-formatChecked").is(":checked");
+						if( formatCheckedValue) {
+							$("#node-input-format").prop("disabled", false);
+						}
+
+						var inputTypeSelected = $("#node-input-inputType").val();
+						if( inputTypeSelected == "cmd") {
+							$("#node-input-inputType").val("evt");
+						}
+
 					},
 					200: function() {
 						result = "registered";
@@ -283,8 +309,63 @@
 						$("#node-input-formatCheckedLabel").show();
 						$("#node-input-formatChecked").show();					
 
+						var macCheckedValue = $("#node-input-macChecked").is(":checked");
+						if( macCheckedValue) {
+							$("#node-input-mac").prop("disabled", true);
+						} else {
+							$("#node-input-mac").prop("disabled", false);
+						}
+						$("#node-input-macChecked").change(function() {
+							if($("#node-input-macChecked").is(":checked")) {
+								$("#node-input-mac").prop("disabled", true);
+							} else {
+								$("#node-input-mac").prop("disabled", false);
+							}
+						});
+
+						var deviceTypeCheckedValue = $("#node-input-deviceTypeChecked").is(":checked");
+						if( deviceTypeCheckedValue) {
+							$("#node-input-deviceType").prop("disabled", true);
+						} else {
+							$("#node-input-deviceType").prop("disabled", false);
+						}
+						$("#node-input-deviceTypeChecked").change(function() {
+							if($("#node-input-deviceTypeChecked").is(":checked")) {
+								$("#node-input-deviceType").prop("disabled", true);
+							} else {
+								$("#node-input-deviceType").prop("disabled", false);
+							}
+						});
+
+						var eventCheckedValue = $("#node-input-eventChecked").is(":checked");
+						if( eventCheckedValue) {
+							$("#node-input-eventCommandType").prop("disabled", true);
+						} else {
+							$("#node-input-eventCommandType").prop("disabled", false);
+						}
+						$("#node-input-eventChecked").change(function() {
+							if($("#node-input-eventChecked").is(":checked")) {
+								$("#node-input-eventCommandType").prop("disabled", true);
+							} else {
+								$("#node-input-eventCommandType").prop("disabled", false);
+							}
+						});
+
+						var formatCheckedValue = $("#node-input-formatChecked").is(":checked");
+						if( formatCheckedValue) {
+							$("#node-input-format").prop("disabled", true);
+						} else {
+							$("#node-input-format").prop("disabled", false);
+						}
+						$("#node-input-formatChecked").change(function() {
+							if($("#node-input-formatChecked").is(":checked")) {
+								$("#node-input-format").prop("disabled", true);
+							} else {
+								$("#node-input-format").prop("disabled", false);
+							}
+						});
+
 						var id = $("#node-input-inputType").val();
-						alert("ID = " + id);
 						if (id == "evt") {
 							document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
 							$("#node-input-eventLabel").show();
