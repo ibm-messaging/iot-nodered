@@ -21,7 +21,7 @@ Connect
 -------
 1. Log in to Raspberry Pi. (Default login Username: pi Password: raspberry)
 2. Install node red from npm registry by running sudo npm install node-red
-3. Install iotcloudDev from npm registry by running sudo npm install node-red-iotclouddev
+3. Install iotcloudDev from npm registry by running sudo npm install node-red-contrib-iotclouddev
 4. cd to the node red directory
 5. Note down the MAC address of your raspberry pi which is needed for the [quickstart site](http://quickstart.internetofthings.ibmcloud.com).
 6. Start Node-RED with sudo node red.js -f raspi_quickstart_event.json. (This file is present in the samples directory of the same folder, from where you downloaded this README.md)
@@ -58,7 +58,7 @@ Connect
 
 1. Log in to Raspberry Pi. (Default login Username: pi Password: raspberry)
 2. Install node red from npm registry by running sudo npm install node-red (No need to do this step, if its done previously)
-3. Install iotcloudDev from npm registry by running sudo npm install node-red-iotclouddev (No need to do this step, if its done previously) 
+3. Install iotcloudDev from npm registry by running sudo npm install node-red-contrib-iotclouddev (No need to do this step, if its done previously) 
 4. cd to the node red directory
 5. Note down the MAC address of your raspberry pi which is needed for the registered flow
 6. Register organization, device id, authorization tokens as these are needed for registered flow
@@ -85,7 +85,7 @@ Connect
 
 1. Log in to Raspberry Pi. (Default login Username: pi Password: raspberry)
 2. Install node red from npm registry by running sudo npm install node-red (No need to do this step, if its done previously)
-3. Install iotcloudDev from npm registry by running sudo npm install node-red-iotclouddev (No need to do this step, if its done previously) 
+3. Install iotcloudDev from npm registry by running sudo npm install node-red-contrib-iotclouddev (No need to do this step, if its done previously) 
 4. cd to the node red directory
 5. Note down the MAC address of your raspberry pi which is needed for the registered flow
 6. Register organization, device id, authorization tokens as these are needed for registered flow
