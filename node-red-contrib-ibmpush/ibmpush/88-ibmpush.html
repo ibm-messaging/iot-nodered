@@ -1,0 +1,182 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+ 
+<script type="text/x-red" data-template-name="ibmpush">
+   
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+	<br>
+	<b>MBaaS Application Properties</b><br/>
+    <div class="form-row">
+        <label id="node-input-ApplicationIDLabel" for="node-input-ApplicationID"><i class="icon-bookmark"></i> ID</label>
+        <input type="text" id="node-input-ApplicationID" placeholder="e.g: 57341182-3f39-46eb-916c-2f0172e0b5cd">
+    </div>
+    <div class="form-row">
+        <label id="node-input-ApplicationRouteLabel" for="node-input-ApplicationRoute"><i class="icon-tasks"></i> Route</label>
+        <input type="text" id="node-input-ApplicationRoute" placeholder="e.g: notif.mybluemix.net">
+    </div>
+	<div class="form-row">
+        <label for="node-input-ApplicationSecret"><i class="icon-lock"></i> Secret</label>
+        <input type="password" id="node-input-ApplicationSecret" placeholder="">
+    </div>
+
+    <br/>
+	<b>Notification</b>
+	
+	<div class="form-row">
+		<label for="node-input-notification"><i class="icon-tasks"></i> Type</label>
+		<select id="node-input-notification" style="margin-right:3px;">
+            <option value="broadcast">Broadcast</option>
+            <option value="tags">By Tags</option>
+			<option value="deviceid">By DeviceIds</option>
+			<option value="consumerid">By ConsumerIds</option>
+        </select>
+        
+    </div>
+	
+	<div class="form-row">
+        <label id="node-input-identifiersLabel" for="node-input-identifiers"><i class="icon-tag"></i> Identifiers</label>
+        <input type="text" id="node-input-identifiers" placeholder="e.g: Killers,Robots">
+    </div>
+	
+</script>
+
+
+
+<script type="text/x-red" data-help-name="ibmpush">
+	<p>Sends push notifications to mobile devices using IBM Push for Bluemix</p>
+	<p><code>msg.payload</code> is used as the alert in the Notification. Optionally, <code>msg.url</code> can be used as the URL in the notification</p>
+	<p><b>MBaaS Application Properties</b></p> 
+	<p> <b>Application ID and Route</b> mandatory only when used in <i>non-Bluemix environment</i> and must be copied from the IBM MBaaS service in Bluemix. 
+	If used in <i>Bluemix</i>, these properties will be automatically read.</p> 
+	<p> <b>Application Secret</b> Bluemix application secret key. </p>
+
+	<p><b>Notification Type</b> Type of notification to be pushed.
+		<ul>
+			<li><i>Broadcast</i> - Send notifications to all the registered devices</li>
+			<li><i>By Tags</i> - Send notifications to devices subscribed to that tag. Can take multiple values</li>
+			<li><i>By DeviceIds</i> - Send notifications to devices by their device ID. Can take multiple values</li>
+			<li><i>By ConsumerIds</i> - Send notifications to devices by their consumer ID. Can take multiple values</li>
+
+		</ul>
+	</p>
+
+	<p><b>Notification Identifiers</b> Used when notifications are sent <i>By Tags, By DeviceIds and By ConsumerIds</i>. This can take multiple values seperated by comma(,). Example: Killers,Robots</p>
+
+	<p> Visit this <a target="_blank" href="https://www.ng.bluemix.net/docs/#services/push/index.html#gettingstarted">link</a> for more information on IBM Push for Bluemix
+
+</script>
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('ibmpush',{
+        category: 'output',
+        color:"rgb(115, 185, 221)", 	
+        defaults: {   
+            name: {},
+            ApplicationID: {value:"", required:false},
+            ApplicationRoute: {value:"", required:false},
+            //ApplicationSecret: {value:"", required:true},
+            identifiers: {value:""},
+            notification: {}
+        },
+        inputs:1,               
+        outputs:0,
+        icon: "ibmpush-icon.png", 
+		align: "right",
+        label: function() {
+            return this.name ||"IBM Push";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function () {
+
+        $.getJSON('ibmpush/vcap/',function(data) {
+            
+            if(data) {
+            	
+           		$("#node-input-ApplicationIDLabel").hide();
+				$("#node-input-ApplicationID").hide();
+				$("#node-input-ApplicationRouteLabel").hide();
+				$("#node-input-ApplicationRoute").hide();
+            } else {
+				$("#node-input-ApplicationIDLabel").show();
+				$("#node-input-ApplicationID").show();
+				$("#node-input-ApplicationRouteLabel").show();
+				$("#node-input-ApplicationRoute").show();
+            }
+            
+        });
+        
+        $.getJSON("ibmpush/"+this.id, function(data) {
+                
+                if (data.hasPassword) {
+                	$('#node-input-ApplicationSecret').data("v",'__PWRD__');
+                    $("#node-input-ApplicationSecret").val("__PWRD__");
+                } else {
+               		$('#node-input-ApplicationSecret').data("v",'');
+                    $("#node-input-ApplicationSecret").val("");
+                }
+            });
+
+		var notificationSelect = $('#node-input-notification');
+        notificationSelect.change(function() {
+            var service = notificationSelect.val();
+            if (service == "broadcast") {
+                $("#node-input-identifiersLabel").hide();
+                $("#node-input-identifiers").hide();
+            } else {
+                $("#node-input-identifiersLabel").show();
+                $("#node-input-identifiers").show();
+            }
+        });
+
+    },
+        
+        oneditsave: function() {
+            
+            var oldPass = $('#node-input-ApplicationSecret').data("v");
+            var newPass = $("#node-input-ApplicationSecret").val();
+            
+            if(oldPass != newPass) {
+	            if (newPass == "") {
+	                    $.ajax({
+	                        url: 'ibmpush/'+this.id,
+	                        type: 'DELETE',
+	                        success: function(result) {}
+	                    });
+	            } else {
+	            	var credentials = {};
+		            if (newPass != "__PWRD__") {
+		                credentials.password = newPass;
+		            }
+		            $.ajax({
+		                url: "ibmpush/"+this.id,
+		                type: "POST",
+		                data: credentials,
+		                success: function(result) {}
+		            });
+		        }
+		        return true;
+			}
+        }
+    });
+
+    
+</script>

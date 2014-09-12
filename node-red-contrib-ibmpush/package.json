@@ -1,0 +1,22 @@
+{
+  "name": "node-red-contrib-ibmpush",
+  "version": "0.1.11",
+  "license": "Apache",
+  "repository" : {
+	"type":"git",
+	"url":"https://github.com/ibm-messaging/iot-nodered/tree/master/node-red-contrib-ibmpush"
+	},
+  "description": "This node can be used to push notifications to mobiles from the Node-RED flow. It uses the IBM Push service in Bluemix",
+  "dependencies": {
+	"ibmbluemix": "~1.0.0",
+    "ibmpush": "~1.0.0"
+  },
+  "keywords": [
+    "node-red"
+  ],
+  "node-red": {
+    "nodes": {
+      "ibmpush": "ibmpush/88-ibmpush.js"
+    }
+  }
+}
