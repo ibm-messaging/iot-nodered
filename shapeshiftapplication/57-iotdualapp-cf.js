@@ -41,6 +41,22 @@ if (userServices) {
             }
         }
     }
+} else {
+	var data = fs.readFileSync("credentials.cfg"), fileContents;
+	try {
+		fileContents = JSON.parse(data);
+		console.log("\n\n\nFileContents = " + fileContents);
+		credentials = {};
+		credentials.apiKey = fileContents.apiKey;
+		credentials.apiToken = fileContents.apiToken;
+
+		console.log("API Key " + credentials.apiKey);
+		console.log("API Token " + credentials.apiToken);
+	}
+	catch (ex){
+		console.log("credentials.cfg doesn't exist or is not well formed, reverting to quickstart");
+		credentials = null;
+	}
 }
 
 RED.httpAdmin.get('/iotFoundation/credential', function(req,res) {
@@ -113,18 +129,18 @@ function setUpNode(node, nodeCfg, inOrOut){
 	node.name = nodeCfg.name;
 	
     
-    console.log('	Organization: '	+ node.organization);
-    console.log('	Client ID: '	+ node.clientId); 
-    console.log('	Broker Host: '	+ node.brokerHost); 
-    console.log('	Broker Port: '	+ node.brokerPort);    
-    console.log('	Topic: ' 		+ node.topic); 
-    console.log('	InputType: ' 		+ node.inputType); 
-    console.log('	MAC: ' 			+ node.mac); 
-    console.log('	Name: ' 		+ node.name); 
-    console.log('	Format: ' 		+ node.format); 
-	console.log('	Event/Command Type: '		+ node.eventCommandType);
-	console.log('	DeviceType: '		+ node.deviceType);
-	console.log('	Service: '		+ node.service);
+    console.log('	Organization: '			+ node.organization);
+    console.log('	Client ID: '			+ node.clientId); 
+    console.log('	Broker Host: '			+ node.brokerHost); 
+    console.log('	Broker Port: '			+ node.brokerPort);    
+    console.log('	Topic: '				+ node.topic); 
+    console.log('	InputType: '			+ node.inputType); 
+    console.log('	MAC: ' 					+ node.mac); 
+    console.log('	Name: '					+ node.name); 
+    console.log('	Format: ' 				+ node.format); 
+	console.log('	Event/Command Type: '	+ node.eventCommandType);
+	console.log('	DeviceType: '			+ node.deviceType);
+	console.log('	Service: '				+ node.service);
 
     node.client = new IoTAppClient(appId, node.apikey, node.apitoken);
     node.client.connectBroker();
@@ -144,14 +160,34 @@ function IotAppOutNode(n) {
 	var that = this;
 
     this.on("input", function(msg) {
-
+		console.log("\n\n\nn.data = " + n.data + "\tmsg.payload = " + msg.payload);
 		var payload = msg.payload || n.data;
 		var topic = "iot-2/type/" + (msg.deviceType || n.deviceType) +"/id/" + (msg.id || n.mac) + "/" + n.inputType + "/" + (msg.eventCommandType || n.eventCommandType) +"/fmt/" + (msg.format || n.format);
 
-        if (msg !== null) {
-            console.log("[App-Out] Trying to publish MQTT message on topic: " + topic);
-            this.client.publish(topic, payload);
-        }
+        if (msg !== null && (typeof payload == "string" ) ) {
+			if(n.service == "quickstart") {
+				try {
+					if(typeof payload == "string") {
+						var parsedPayload = JSON.parse(payload);
+						console.log("[App-Out] Trying to publish MQTT message " + parsedPayload + " on topic: " + topic);
+			            this.client.publish(topic, payload);
+					}
+				}
+				catch (err) {
+					console.log("Non JSON payload is not published" + err);
+				}
+
+			} else {
+				console.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
+		        this.client.publish(topic, payload);
+			}
+        } else if(msg !== null) {
+			if(typeof payload == "number") {
+				payload = "" + payload + "";
+			}
+			console.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
+		    this.client.publish(topic, payload);
+		}
     });
 }
 

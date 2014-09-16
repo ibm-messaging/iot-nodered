@@ -17,7 +17,7 @@
 <script type="text/x-red" data-template-name="iotdualapp out">
 
     <div class="form-row">
-        <label for="node-input-inputType" id="node-input-inputTypeLabel" style="width:130px;"><i class="icon-tag"></i> Input Type</label>
+        <label for="node-input-inputType" id="node-input-inputTypeLabel" style="width:130px;"><i class="icon-tag"></i> Output Type</label>
 		<select id="node-input-inputType"  style="width:300px;">
 			<option value="evt">Device Event</option>
 			<option value="cmd">Device Command</option>
@@ -25,15 +25,15 @@
     </div>
 
 	<div class="form-row">
-        <label for="node-input-mac" id="node-input-macLabel" style="width:130px;"><i class="icon-tasks"></i> ID</label>
+        <label for="node-input-mac" id="node-input-macLabel" style="width:130px;"><i class="icon-tasks"></i> Device Id</label>
         <input type="text" id="node-input-mac" placeholder="deviceid e.g. AB12CD231A21" style="width:300px;">
     </div>
     <div class="form-row">
-        <label for="node-input-deviceType" id="node-input-deviceTypeLabel" style="width:130px;"><i class="icon-tag"></i> Type</label>
+        <label for="node-input-deviceType" id="node-input-deviceTypeLabel" style="width:130px;"><i class="icon-tag"></i> Device Type</label>
         <input type="text" id="node-input-deviceType" placeholder="devicetype e.g. armmbed" style="width:300px;">
     </div>
     <div class="form-row">
-        <label for="node-input-eventCommandType" style="width:130px;"><i class="icon-tasks"></i> Event</label>
+        <label for="node-input-eventCommandType" id="node-input-eventCommandTypeId" style="width:130px;"><i class="icon-tasks"></i> Event</label>
         <input type="text" id="node-input-eventCommandType" placeholder="command/event format e.g blink" style="width:300px;">
     </div>
     <div class="form-row">
