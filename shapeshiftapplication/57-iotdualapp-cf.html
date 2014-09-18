@@ -528,6 +528,7 @@
 
 						var id = $("#node-input-inputType").val();
 						if (id == "evt") {
+							document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
 							document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
 							$('#node-input-eventCommandType').attr("placeholder", "event format e.g. blink");
 							$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
@@ -547,6 +548,7 @@
 
 					
 						} else if (id == "devsts"){
+							document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
 							$("#node-input-eventLabel").hide();
 							$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 							$("#node-input-eventChecked").hide();
@@ -564,6 +566,7 @@
 					
 						} else if (id == "cmd"){
 							document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
+							document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "command format e.g. blink");
 							$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 							$("#node-input-eventLabel").show();
@@ -580,6 +583,7 @@
 							$("#node-input-deviceTypeChecked").show();
 							$("#node-input-deviceTypeCheckedLabel").show();
 						} else if (id == "appsts") {
+							document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
 							$('#node-input-mac').attr("placeholder", "app id e.g. myapp02");
 							$("#node-input-eventLabel").hide();
 							$("#node-input-eventChecked").hide();
@@ -604,6 +608,7 @@
 							var id = $("#node-input-inputType option:selected").val();
 							if (id == "evt") {
 								document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
+								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
 								$('#node-input-eventCommandType').attr("placeholder", "event format e.g. blink");
 								$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 								$("#node-input-eventLabel").show();
@@ -622,6 +627,7 @@
 
 						
 							} else if (id == "devsts"){
+								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
 								$("#node-input-eventLabel").hide();
 								$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 								$("#node-input-eventChecked").hide();
@@ -639,6 +645,7 @@
 						
 							} else if (id == "cmd"){
 								document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
+								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
 								$('#node-input-eventCommandType').attr("placeholder", "command format e.g. blink");
 								$("#node-input-eventLabel").show();
 								$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
@@ -655,6 +662,7 @@
 								$("#node-input-deviceTypeChecked").show();
 								$("#node-input-deviceTypeCheckedLabel").show();
 							} else if (id == "appsts") {
+								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
 								$("#node-input-eventLabel").hide();
 								$('#node-input-mac').attr("placeholder", "app id e.g. myapp02");
 								$("#node-input-eventChecked").hide();
