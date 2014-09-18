@@ -45,38 +45,50 @@ if (userServices) {
 	var data = fs.readFileSync("credentials.cfg"), fileContents;
 	try {
 		fileContents = JSON.parse(data);
-		console.log("\n\n\nFileContents = " + fileContents);
+//		console.log("\n\n\nFileContents = " + fileContents);
 		credentials = {};
 		credentials.apiKey = fileContents.apiKey;
 		credentials.apiToken = fileContents.apiToken;
 
-		console.log("API Key " + credentials.apiKey);
-		console.log("API Token " + credentials.apiToken);
+//		console.log("API Key " + credentials.apiKey);
+//		console.log("API Token " + credentials.apiToken);
 	}
 	catch (ex){
-		console.log("credentials.cfg doesn't exist or is not well formed, reverting to quickstart");
+		console.log("credentials.cfg doesn't exist or is not well formed, reverting to quickstart mode");
 		credentials = null;
 	}
 }
 
 RED.httpAdmin.get('/iotFoundation/credential', function(req,res) {
-//	console.log("Credentials asked for in Reg....");	
+	console.log("Credentials asked for by In node....");	
 	res.send("", credentials ? 200 : 403);
 });
 
+/*
 RED.httpAdmin.get('/iotFoundation/newcredential', function(req,res) {
 	console.log("Credentials asked for in Reg....");
 	if (credentials) {
-		res.send(JSON.stringify({'service':'registered'}));
+		res.send(JSON.stringify({'service':'registered', 'version': '\'' + RED.version() + '\''}), credentials ? 200 : 403);
 	} else {
-		res.send(JSON.stringify({}));
+		res.send(JSON.stringify({'service':'quickstart', 'version': '\'' + RED.version() + '\''}), credentials ? 200 : 403);
+	}
+});
+*/
+
+RED.httpAdmin.get('/iotFoundation/newcredential', function(req,res) {
+	console.log("Credentials asked for by Out node....");
+	if (credentials) {
+		res.send(JSON.stringify({service:'registered', version: RED.version() }));
+	} else {
+		res.send(JSON.stringify({service:'quickstart', version: RED.version() }));
 	}
 });
 
 function setUpNode(node, nodeCfg, inOrOut){
     // Create a random appId
     var appId = util.guid();    
-    node.topic = nodeCfg.topic || "";
+	node.service = nodeCfg.service;
+	node.topic = nodeCfg.topic || "";
     	
 	node.macChecked = nodeCfg.macChecked;
 	node.deviceTypeChecked = nodeCfg.deviceTypeChecked;
@@ -84,12 +96,18 @@ function setUpNode(node, nodeCfg, inOrOut){
 	node.formatChecked = nodeCfg.formatChecked;
 
 	node.inputType = nodeCfg.inputType;
-	node.deviceType = ( node.deviceTypeChecked ) ? '+' : nodeCfg.deviceType;
+	if(node.service !== "quickstart") {
+		node.deviceType = ( node.deviceTypeChecked ) ? '+' : nodeCfg.deviceType;
+	} else {
+		console.log("ITS A QUICKSTART FLOW");
+		node.deviceType = "nodered-version" + RED.version();
+	}
+
 	node.apikey = null;
 	node.apitoken = null;
 	node.mac = ( node.macChecked ) ? '+' : nodeCfg.mac;
 	node.format = ( node.formatChecked ) ? '+' : nodeCfg.format;
-	node.service = nodeCfg.service;
+
 	if(credentials) {
 		node.apikey = credentials.apiKey;
 		node.apitoken = credentials.apiToken;
@@ -160,28 +178,24 @@ function IotAppOutNode(n) {
 	var that = this;
 
     this.on("input", function(msg) {
-		console.log("\n\n\nn.data = " + n.data + "\tmsg.payload = " + msg.payload);
+//		console.log("\n\n\nn.data = " + n.data + "\tmsg.payload = " + msg.payload + "\tmsg.deviceType = " + msg.deviceType + "\tn.deviceType" + n.deviceType);
 		var payload = msg.payload || n.data;
-		var topic = "iot-2/type/" + (msg.deviceType || n.deviceType) +"/id/" + (msg.id || n.mac) + "/" + n.inputType + "/" + (msg.eventCommandType || n.eventCommandType) +"/fmt/" + (msg.format || n.format);
+		var deviceType = that.deviceType;
+		if(that.service == "registered") {
+			deviceType = msg.deviceType || n.deviceType;
+		}
+		var topic = "iot-2/type/" + deviceType +"/id/" + (msg.id || n.mac) + "/" + n.inputType + "/" + (msg.eventCommandType || n.eventCommandType) +"/fmt/" + (msg.format || n.format);
 
-        if (msg !== null && (typeof payload == "string" ) ) {
-			if(n.service == "quickstart") {
-				try {
-					if(typeof payload == "string") {
-						var parsedPayload = JSON.parse(payload);
-						console.log("[App-Out] Trying to publish MQTT message " + parsedPayload + " on topic: " + topic);
-			            this.client.publish(topic, payload);
-					}
-				}
-				catch (err) {
-					console.log("Non JSON payload is not published" + err);
-				}
-
-			} else {
-				console.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
-		        this.client.publish(topic, payload);
+        if (msg !== null && (n.service == "quickstart" || n.format == "json") ) {
+			try {
+				var parsedPayload = JSON.parse(payload);
+				console.log("[App-Out] Trying to publish MQTT JSON message " + parsedPayload + " on topic: " + topic);
+				this.client.publish(topic, payload);
 			}
-        } else if(msg !== null) {
+			catch (err) {
+				console.log("Non JSON payload is not published" + err);
+			}
+		} else if(msg !== null) {
 			if(typeof payload == "number") {
 				payload = "" + payload + "";
 			}
@@ -201,7 +215,7 @@ function IotAppInNode(n) {
     var that = this;
     if(this.topic){
 		if(that.inputType == "evt" ) {
-			this.client.subscribeToDeviceEvents(this.deviceType, this.mac, this.eventCommandType, this.format);
+			this.client.subscribeToDeviceEvents(that.deviceType, this.mac, this.eventCommandType, this.format);
 
 			this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload) {
 
@@ -222,7 +236,13 @@ function IotAppInNode(n) {
 			});
 		} else if (that.inputType == "devsts") {
 		
-			this.client.subscribeToDeviceStatus(this.deviceType, this.mac);
+			var deviceTypeSubscribed = this.deviceType;
+
+			if(this.service == "quickstart") {
+				deviceTypeSubscribed = "+";
+			}
+
+			this.client.subscribeToDeviceStatus(deviceTypeSubscribed, this.mac);
 
 			this.client.on("deviceStatus", function(deviceType, deviceId, payload) {
 

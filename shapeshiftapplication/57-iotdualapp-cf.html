@@ -26,14 +26,14 @@
 
 	<div class="form-row">
         <label for="node-input-mac" id="node-input-macLabel" style="width:130px;"><i class="icon-tasks"></i> Device Id</label>
-        <input type="text" id="node-input-mac" placeholder="deviceid e.g. AB12CD231A21" style="width:300px;">
+        <input type="text" id="node-input-mac" placeholder="deviceid e.g. ab12cd231a21" style="width:300px;">
     </div>
     <div class="form-row">
         <label for="node-input-deviceType" id="node-input-deviceTypeLabel" style="width:130px;"><i class="icon-tag"></i> Device Type</label>
         <input type="text" id="node-input-deviceType" placeholder="devicetype e.g. armmbed" style="width:300px;">
     </div>
     <div class="form-row">
-        <label for="node-input-eventCommandType" id="node-input-eventCommandTypeId" style="width:130px;"><i class="icon-tasks"></i> Event</label>
+        <label for="node-input-eventCommandType" id="node-input-eventCommandTypeId" style="width:130px;"><i class="icon-tasks"></i> Event Type</label>
         <input type="text" id="node-input-eventCommandType" placeholder="command/event format e.g blink" style="width:300px;">
     </div>
     <div class="form-row">
@@ -64,16 +64,22 @@
     </div>
 
     <div class="form-tips">
-		<b>Registered Flow:</b> If "Id", "Type", "Event", "Format" and "Data" are not passed from backend, the values given above would be considered.<br/>
-		<b>Quickstart Flow:</b> If "MAC address", "Event" and "Data" are not passed from backend, the values given above would be considered.<br/>
+		<div id="registeredTips">
+			<b>Registered Flow:</b> If "Output Type", "Device Id", "Event Type (or Command Type)", "Format" and "Data" are not passed from backend, the values given in the textfields, above, would be considered.<br/>
+		</div>
+
+		<div id="quickstartTips">
+			<b>Quickstart Flow:</b> If "Device Id", "Event Type", and "Data" are not passed from backend, the values given in the textfields, above, would be considered.<br/>
+		</div>
+
 		<b>Data Example:</b>{"d":{"myName":"Arduino Uno", "temperature":989}}
 	</div>
 </script>
 
 <script type="text/x-red" data-help-name="iotdualapp out">
    <p>IoT output node to send commands (only in case of Registered flow) to devices or sending an event, on the behalf of a device </p>
-   <p><b>Note:</b> If "MAC address / Id", "Type", "Event", "Format" and "Data" are not passed from backend, the values given above would be considered.</p>
-   <p>To override the default values given above, use the following properties
+   <p><b>Note:</b> If "MAC address / Id", "Type", "Event", "Format" and "Data" are not passed from backend, the values given in the textfield would be considered.</p>
+   <p>To override the default values given in the textfield, use the following properties
    <p>For <b>Id / MAC Address</b>, use msg.id, for e.g. msg.id = '00aabbccde03'</p>
    <p>For <b>Type</b>, use msg.deviceType, for e.g. msg.deviceType = 'ArduinoUno'</p>
    <p>For <b>Format</b>, use msg.format, for e.g. msg.format = 'json'</p>
@@ -96,10 +102,10 @@
         <label for="node-input-mac" id="node-input-macLabel"style="width:130px;"><i class="icon-tasks"></i> ID</label>
 		<input type="checkbox" id="node-input-macChecked" style="width:10px;">
 		<label for="node-input-macCheckedLabel" id="node-input-macCheckedLabel" style="width:40px;">All or </label>
-        <input type="text" id="node-input-mac" placeholder="device/app id e.g. AB12CD231A21" style="width:240px;">
+        <input type="text" id="node-input-mac" placeholder="device/app id e.g. ab12cd231a21" style="width:240px;">
     </div>
     <div class="form-row">
-        <label for="node-input-deviceType" id="node-input-deviceTypeLabel" style="width:130px;"><i class="icon-tag"></i> Type</label>
+        <label for="node-input-deviceType" id="node-input-deviceTypeLabel" style="width:130px;"><i class="icon-tag"></i> Device Type</label>
 		<input type="checkbox" id="node-input-deviceTypeChecked" style="width:10px;" >
 		<label for="node-input-deviceTypeCheckedLabel" id="node-input-deviceTypeCheckedLabel" style="width:40px;">All or </label>
         <input type="text" id="node-input-deviceType" placeholder="devicetype e.g. armmbed" style="width:240px;">
@@ -108,13 +114,13 @@
         <label for="node-input-event" id="node-input-eventLabel" style="width:130px;"><i class="icon-tasks"></i> Event</label>
 		<input type="checkbox" id="node-input-eventChecked" style="width:10px;" >
 		<label for="node-input-eventCheckedLabel" id="node-input-eventCheckedLabel" style="width:40px;">All or </label>
-        <input type="text" id="node-input-eventCommandType" placeholder="event/command format e.g. blink" style="width:240px;">
+        <input type="text" id="node-input-eventCommandType" placeholder="event format e.g. blink" style="width:240px;">
     </div>
     <div class="form-row">
         <label for="node-input-format" id="node-input-formatLabel"  style="width:130px;"><i class="icon-file"></i> Format</label>
 		<input type="checkbox" id="node-input-formatChecked" style="width:10px;" >
 		<label for="node-input-formatCheckedLabel" id="node-input-formatCheckedLabel" style="width:40px;">All or </label>
-        <input type="text" id="node-input-format" placeholder="format e.g. JSON" style="width:240px;">
+        <input type="text" id="node-input-format" placeholder="format e.g. json" style="width:240px;">
     </div>
 
 	<div class="form-row">
@@ -128,8 +134,14 @@
     </div>
 
     <div class="form-tips">
-		<b>Registered Flow:</b> Registered flow allows Device Commands, as well as, Device Event, to be sent to the Device or App (on the behalf of a device).<br/>
-		<b>Quickstart Flow:</b> Quickstart flow does not allow Device Commands to be sent to the Device or App.<br />
+		<div id="registeredTips">
+			<b>Registered Flow:</b> Registered flow allows Device Commands, Device Events, Device Status, as well as, App Status, to be sent to the App.<br/>
+		</div>
+
+		<div id="quickstartTips">
+			<b>Quickstart Flow:</b> Quickstart flow allows only Device Events, Device Status and App Status to be sent to the App.<br />
+		</div>
+
 		Check the info tab, to get more information about each of the fields
 	</div>
 
@@ -168,27 +180,42 @@
 		},
 		oneditprepare: function() {
 			result = "";
-            $.ajax({
-                url: 'iotFoundation/credential?ts=' + Math.random(),
-                type: 'GET',
-                success:function(result){},
-				statusCode: {
-					403: function() {
+			$.getJSON('iotFoundation/newcredential?ts=' + Math.random(), function(data) {
+					if(data.service !== 'registered') {
 						result = "quickstart";
 						$('#node-input-service').val(result);
-						document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> MAC Address</label>';
+						document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+						$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
+
 						$('#node-input-inputType').val("evt");
 						$("#node-input-inputTypeLabel").hide();
 						$("#node-input-inputType").hide();
 						$("#node-input-deviceTypeLabel").hide();
-						$("#node-input-deviceType").val("nodered-version0.8.2");
+						$("#node-input-deviceType").val(data.version);
 						$("#node-input-deviceType").hide();
 						$("#node-input-formatLabel").hide();
 						$("#node-input-format").val("json");
 						$("#node-input-format").hide();
-					},
-					200: function() {
+
+						$("#registeredTips").hide();
+						$("#quickstartTips").show();
+
+					} else {
 						result = "registered";
+
+						var id = $("#node-input-inputType").val();
+						if (id == "evt") {
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+							$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
+						}
+
+						if (id == "cmd") {
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+							$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
+						}
+
+
 						$('#node-input-service').val(result);
 						$("#node-input-inputTypeLabel").show();
 						$("#node-input-inputType").show();
@@ -196,9 +223,88 @@
 						$("#node-input-deviceType").show();
 						$("#node-input-formatLabel").show();
 						$("#node-input-format").show();
+
+						$("#registeredTips").show();
+						$("#quickstartTips").hide();
+
+						$("#node-input-inputType").change(function() {
+							var id = $("#node-input-inputType option:selected").val();
+							if (id == "evt") {
+								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+								$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
+							} else if (id == "cmd") {
+								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+								$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
+							}
+						});
+					}
+				}
+			);
+
+/*
+            $.ajax({
+                url: 'iotFoundation/newcredential?ts=' + Math.random(),
+                type: 'GET',
+                success:function(result){
+					alert("SUCCESSFUL");
+				},
+				statusCode: {
+					403: function() {
+						alert(result.service);
+						result = "quickstart";
+						$('#node-input-service').val(result);
+						document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+						$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
+
+						$('#node-input-inputType').val("evt");
+						$("#node-input-inputTypeLabel").hide();
+						$("#node-input-inputType").hide();
+						$("#node-input-deviceTypeLabel").hide();
+						$("#node-input-deviceType").val(" ");
+						$("#node-input-deviceType").hide();
+						$("#node-input-formatLabel").hide();
+						$("#node-input-format").val("json");
+						$("#node-input-format").hide();
+					},
+					200: function() {
+						alert(result.service);
+						result = "registered";
+
+						var id = $("#node-input-inputType").val();
+						if (id == "evt") {
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+							$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
+						}
+
+						if (id == "cmd") {
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+							$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
+						}
+
+
+						$('#node-input-service').val(result);
+						$("#node-input-inputTypeLabel").show();
+						$("#node-input-inputType").show();
+						$("#node-input-deviceTypeLabel").show();
+						$("#node-input-deviceType").show();
+						$("#node-input-formatLabel").show();
+						$("#node-input-format").show();
+
+						$("#node-input-inputType").change(function() {
+							var id = $("#node-input-inputType option:selected").val();
+							if (id == "evt") {
+								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+								$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
+							} else if (id == "cmd") {
+								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+								$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
+							}
+						});
 					} 
 				}
 			});
+*/
 		}
 	});
 </script>
@@ -235,10 +341,34 @@
             $.ajax({
                 url: 'iotFoundation/credential?ts=' + Math.random(),
                 type: 'GET',
-                success:function(result){},
+                success:function(result){
+				
+				},
 				statusCode: {
 					403: function() {
 						result = "quickstart";
+
+						var id = $("#node-input-inputType").val();
+						if (id == "evt") {
+							document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+							$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
+						}
+
+						if (id == "evt") {
+							document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+							$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
+						}
+
+						if (id == "devsts") {
+							document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+							$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
+						}
+
+						if (id == "appsts") {
+							document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+							$('#node-input-mac').attr("placeholder", "app id e.g. myapp02");
+						}
+
 						$('#node-input-service').val(result);
 
 						$("#node-input-inputTypeCmd").hide();
@@ -262,6 +392,9 @@
 						$("#node-input-format").hide();
 						$("#node-input-formatCheckedLabel").hide();
 						$("#node-input-formatChecked").hide();		
+						
+						$("#registeredTips").hide();
+						$("#quickstartTips").show();
 
 						var macCheckedValue = $("#node-input-macChecked").is(":checked");
 						if( macCheckedValue) {
@@ -288,6 +421,31 @@
 							$("#node-input-inputType").val("evt");
 						}
 
+
+						$("#node-input-inputType").change(function() {
+							var id = $("#node-input-inputType option:selected").val();
+
+							if (id == "evt") {
+								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+								$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
+							}
+
+							if (id == "evt") {
+								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+								$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
+							}
+
+							if (id == "devsts") {
+								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+								$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
+							}
+
+							if (id == "appsts") {
+								document.getElementById('node-input-macLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+								$('#node-input-mac').attr("placeholder", "app id e.g. myapp02");
+							}
+						});
+
 					},
 					200: function() {
 						result = "registered";
@@ -308,6 +466,9 @@
 						$("#node-input-format").show();					
 						$("#node-input-formatCheckedLabel").show();
 						$("#node-input-formatChecked").show();					
+
+						$("#registeredTips").show();
+						$("#quickstartTips").hide();
 
 						var macCheckedValue = $("#node-input-macChecked").is(":checked");
 						if( macCheckedValue) {
@@ -368,6 +529,8 @@
 						var id = $("#node-input-inputType").val();
 						if (id == "evt") {
 							document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
+							$('#node-input-eventCommandType').attr("placeholder", "event format e.g. blink");
+							$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 							$("#node-input-eventLabel").show();
 							$("#node-input-eventChecked").show();
 							$("#node-input-eventCheckedLabel").show();
@@ -385,6 +548,7 @@
 					
 						} else if (id == "devsts"){
 							$("#node-input-eventLabel").hide();
+							$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 							$("#node-input-eventChecked").hide();
 							$("#node-input-eventCheckedLabel").hide();
 							$("#node-input-eventCommandType").hide();
@@ -400,6 +564,8 @@
 					
 						} else if (id == "cmd"){
 							document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
+							$('#node-input-eventCommandType').attr("placeholder", "command format e.g. blink");
+							$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 							$("#node-input-eventLabel").show();
 							$("#node-input-eventChecked").show();
 							$("#node-input-eventCheckedLabel").show();
@@ -414,6 +580,7 @@
 							$("#node-input-deviceTypeChecked").show();
 							$("#node-input-deviceTypeCheckedLabel").show();
 						} else if (id == "appsts") {
+							$('#node-input-mac').attr("placeholder", "app id e.g. myapp02");
 							$("#node-input-eventLabel").hide();
 							$("#node-input-eventChecked").hide();
 							$("#node-input-eventCheckedLabel").hide();
@@ -437,6 +604,8 @@
 							var id = $("#node-input-inputType option:selected").val();
 							if (id == "evt") {
 								document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
+								$('#node-input-eventCommandType').attr("placeholder", "event format e.g. blink");
+								$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 								$("#node-input-eventLabel").show();
 								$("#node-input-eventChecked").show();
 								$("#node-input-eventCheckedLabel").show();
@@ -454,6 +623,7 @@
 						
 							} else if (id == "devsts"){
 								$("#node-input-eventLabel").hide();
+								$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 								$("#node-input-eventChecked").hide();
 								$("#node-input-eventCheckedLabel").hide();
 								$("#node-input-eventCommandType").hide();
@@ -469,7 +639,9 @@
 						
 							} else if (id == "cmd"){
 								document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
+								$('#node-input-eventCommandType').attr("placeholder", "command format e.g. blink");
 								$("#node-input-eventLabel").show();
+								$('#node-input-mac').attr("placeholder", "device id e.g. ab12cd231a21");
 								$("#node-input-eventChecked").show();
 								$("#node-input-eventCheckedLabel").show();
 								$("#node-input-eventCommandType").show();
@@ -484,6 +656,7 @@
 								$("#node-input-deviceTypeCheckedLabel").show();
 							} else if (id == "appsts") {
 								$("#node-input-eventLabel").hide();
+								$('#node-input-mac').attr("placeholder", "app id e.g. myapp02");
 								$("#node-input-eventChecked").hide();
 								$("#node-input-eventCheckedLabel").hide();
 								$("#node-input-eventCommandType").hide();
