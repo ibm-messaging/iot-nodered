@@ -78,13 +78,15 @@
 
 <script type="text/x-red" data-help-name="iotdualapp out">
    <p>IoT output node to send commands (only in case of Registered flow) to devices or sending an event, on the behalf of a device </p>
-   <p><b>Note:</b> If "MAC address / Id", "Type", "Event", "Format" and "Data" are not passed from backend, the values given in the textfield would be considered.</p>
+   <p>The value of "Device Id" is stored in the property <code>mac</code> and that of "Data" is stored in <code>payload</code></p>
+   <p><b>Note:</b> If "Device Id / App Id", "Device Type", "Event Type" / "Command Type", "Format" or "Data" are not passed from backend, the values given in the textfield would be considered.</p>
+   
    <p>To override the default values given in the textfield, use the following properties
-   <p>For <b>Id / MAC Address</b>, use msg.id, for e.g. msg.id = '00aabbccde03'</p>
-   <p>For <b>Type</b>, use msg.deviceType, for e.g. msg.deviceType = 'ArduinoUno'</p>
-   <p>For <b>Format</b>, use msg.format, for e.g. msg.format = 'json'</p>
-   <p>For <b>Event</b>, use msg.eventCommandType, for e.g. msg.eventCommandType = 'blink'</p>
-   <p>For <b>Data</b>, use msg.payload, for e.g. msg.payload = '{"d":{"myName":"Arduino Uno", "temperature":989}'</p>
+   <p>For <b>Device Id / App Id</b>, use <code>msg.id</code>, for e.g. msg.id = '00aabbccde03'</p>
+   <p>For <b>Type</b>, use <code>msg.deviceType</code>, for e.g. msg.deviceType = 'ArduinoUno'</p>
+   <p>For <b>Format</b>, use <code>msg.format</code>, for e.g. msg.format = 'json'</p>
+   <p>For <b>Event Type</b> or <b>Command Type</b>, use <code>msg.eventCommandType</code>, for e.g. msg.eventCommandType = 'blink'</p>
+   <p>For <b>Data</b>, use <code>msg.payload</code>, for e.g. msg.payload = '{"d":{"myName":"Arduino Uno", "temperature":989}'</p>
 </script>
 
 
@@ -150,7 +152,9 @@
 
 <script type="text/x-red" data-help-name="iotdualapp in">
 	<p>IoT input node to receive events sent from devices, receive commands sent to devices (only in case of Registered flow), receive status updates of devices or receive status updates of applications.</p>
-	<p><b>Note:</b>The values of "macChecked", "deviceTypeChecked", "eventChecked", and "formatChecked" are irrelevant in <b>Quickstart</b> Mode.</p>
+	<p>The value of "Device Id" / "App Id" is stored in the property <code>mac</code></p>
+	<p><b>Note:</b>The values of <code>macChecked</code>, <code>deviceTypeChecked</code>, <code>eventChecked</code>, and <code>formatChecked</code> are irrelevant in <b>Quickstart</b> Mode.</p>
+
 </script>
 
 
