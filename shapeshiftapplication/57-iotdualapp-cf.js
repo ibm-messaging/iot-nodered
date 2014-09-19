@@ -96,6 +96,8 @@ function setUpNode(node, nodeCfg, inOrOut){
 	node.formatChecked = nodeCfg.formatChecked;
 
 	node.inputType = nodeCfg.inputType;
+	node.outputType = nodeCfg.outputType;
+
 	if(node.service !== "quickstart") {
 		node.deviceType = ( node.deviceTypeChecked ) ? '+' : nodeCfg.deviceType;
 	} else {
@@ -136,7 +138,7 @@ function setUpNode(node, nodeCfg, inOrOut){
 	else if(inOrOut == "out") {
 		console.log("OutNode ");
 		node.clientId = "a:" + node.organization + ":" + appId;
-		node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.mac + "/" + node.inputType + "/" + node.eventCommandType +"/fmt/" + node.format;
+		node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.mac + "/" + node.outputType + "/" + node.eventCommandType +"/fmt/" + node.format;
 	}
 	else {
 		console.log("CANT COME HERE AT ALL");
@@ -153,6 +155,7 @@ function setUpNode(node, nodeCfg, inOrOut){
     console.log('	Broker Port: '			+ node.brokerPort);    
     console.log('	Topic: '				+ node.topic); 
     console.log('	InputType: '			+ node.inputType); 
+    console.log('	OutputType: '			+ node.outputType); 
     console.log('	MAC: ' 					+ node.mac); 
     console.log('	Name: '					+ node.name); 
     console.log('	Format: ' 				+ node.format); 
@@ -184,7 +187,7 @@ function IotAppOutNode(n) {
 		if(that.service == "registered") {
 			deviceType = msg.deviceType || n.deviceType;
 		}
-		var topic = "iot-2/type/" + deviceType +"/id/" + (msg.id || n.mac) + "/" + n.inputType + "/" + (msg.eventCommandType || n.eventCommandType) +"/fmt/" + (msg.format || n.format);
+		var topic = "iot-2/type/" + deviceType +"/id/" + (msg.id || n.mac) + "/" + n.outputType + "/" + (msg.eventCommandType || n.eventCommandType) +"/fmt/" + (msg.format || n.format);
 
         if (msg !== null && (n.service == "quickstart" || n.format == "json") ) {
 			try {

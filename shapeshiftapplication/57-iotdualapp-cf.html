@@ -17,8 +17,8 @@
 <script type="text/x-red" data-template-name="iotdualapp out">
 
     <div class="form-row">
-        <label for="node-input-inputType" id="node-input-inputTypeLabel" style="width:130px;"><i class="icon-tag"></i> Output Type</label>
-		<select id="node-input-inputType"  style="width:300px;">
+        <label for="node-input-outputType" id="node-input-outputTypeLabel" style="width:130px;"><i class="icon-tag"></i> Output Type</label>
+		<select id="node-input-outputType"  style="width:300px;">
 			<option value="evt">Device Event</option>
 			<option value="cmd">Device Command</option>
 		</select>
@@ -77,9 +77,9 @@
 </script>
 
 <script type="text/x-red" data-help-name="iotdualapp out">
-   <p>IoT output node to send commands (only in case of Registered flow) to devices or sending an event, on the behalf of a device </p>
+   <p>IoT output node sends commands (only in case of Registered flow) to devices or sending an event, on the behalf of a device </p>
    <p>The value of "Device Id" is stored in the property <code>mac</code> and that of "Data" is stored in <code>payload</code></p>
-   <p><b>Note:</b> If "Device Id / App Id", "Device Type", "Event Type" / "Command Type", "Format" or "Data" are not passed from backend, the values given in the textfield would be considered.</p>
+   <p><b>Note:</b> If "Device Id", "Device Type", "Event Type" / "Command Type", "Format" or "Data" are not passed from backend, the values given in the textfield would be considered.</p>
    
    <p>To override the default values given in the textfield, use the following properties
    <p>For <b>Device Id / App Id</b>, use <code>msg.id</code>, for e.g. msg.id = '00aabbccde03'</p>
@@ -163,7 +163,7 @@
 		category: 'output',
 		color:"rgb(0, 155, 255)",
 		defaults: {
-			inputType: {value:""},
+			outputType: {value:""},
 			mac: {value:"", required: true},
 			deviceType: {value:"", required: true},
 			eventCommandType: {value:"", required: true},
@@ -192,9 +192,9 @@
 						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
 						$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
 
-						$('#node-input-inputType').val("evt");
-						$("#node-input-inputTypeLabel").hide();
-						$("#node-input-inputType").hide();
+						$('#node-input-outputType').val("evt");
+						$("#node-input-outputTypeLabel").hide();
+						$("#node-input-outputType").hide();
 						$("#node-input-deviceTypeLabel").hide();
 						$("#node-input-deviceType").val(data.version);
 						$("#node-input-deviceType").hide();
@@ -208,7 +208,7 @@
 					} else {
 						result = "registered";
 
-						var id = $("#node-input-inputType").val();
+						var id = $("#node-input-outputType").val();
 						if (id == "evt") {
 							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
@@ -221,8 +221,8 @@
 
 
 						$('#node-input-service').val(result);
-						$("#node-input-inputTypeLabel").show();
-						$("#node-input-inputType").show();
+						$("#node-input-outputTypeLabel").show();
+						$("#node-input-outputType").show();
 						$("#node-input-deviceTypeLabel").show();
 						$("#node-input-deviceType").show();
 						$("#node-input-formatLabel").show();
@@ -231,8 +231,8 @@
 						$("#registeredTips").show();
 						$("#quickstartTips").hide();
 
-						$("#node-input-inputType").change(function() {
-							var id = $("#node-input-inputType option:selected").val();
+						$("#node-input-outputType").change(function() {
+							var id = $("#node-input-outputType option:selected").val();
 							if (id == "evt") {
 								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
 								$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
