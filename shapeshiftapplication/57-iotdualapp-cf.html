@@ -14,8 +14,41 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="iotdualapp out">
+<script type="text/x-red" data-template-name="ibmiot out">
 
+<!--
+    <div class="form-row">
+        <label for="node-input-serviceType" id="node-input-serviceTypeLabel" style="width:130px;"><i class="icon-tag"></i> Service Type</label>
+		<select id="node-input-serviceType"  style="width:300px;">
+			<option value="quickstart">Quickstart</option>
+			<option value="apiKey">API Key</option>
+			<option value="httpEndpoint">HTTP Endpoint</option>
+			<option value="boundService">Bluemix Registered Service</option>
+		</select>
+    </div>
+
+	<div class="form-row">
+        <label for="node-input-httpEndpoint" id="node-input-httpEndpoint" style="width:130px;"><i class="icon-globe"></i> HTTP Endpoint</label>
+        <input type="text" id="node-input-httpEndpoint" placeholder="http://mybluemix.net/vcapendpoint" style="width:300px;">
+    </div>
+
+
+	<div class="form-row">
+        <label for="node-input-apikey" style="width:130px;"><i class="icon-envelope"></i> API Key</label>
+        <input type="text" id="node-input-apikey" placeholder="API Key" style="width:300px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-apitoken" style="width:130px;"><i class="icon-envelope"></i> API Token</label>
+        <input type="text" id="node-input-apitoken" placeholder="API Token" style="width:300px;">
+    </div>
+
+
+	<div class="form-row">
+        <label for="node-input-boundService" id="node-input-boundService" style="width:130px;"><i class="icon-globe"></i> Bluemix</label>
+        <input type="text" id="node-input-boundService" placeholder="Bluemix Service Name" style="width:300px;">
+    </div>
+
+-->
     <div class="form-row">
         <label for="node-input-outputType" id="node-input-outputTypeLabel" style="width:130px;"><i class="icon-tag"></i> Output Type</label>
 		<select id="node-input-outputType"  style="width:300px;">
@@ -23,6 +56,7 @@
 			<option value="cmd">Device Command</option>
 		</select>
     </div>
+
 
 	<div class="form-row">
         <label for="node-input-mac" id="node-input-macLabel" style="width:130px;"><i class="icon-tasks"></i> Device Id</label>
@@ -43,14 +77,6 @@
     <div class="form-row">
         <label for="node-input-data" style="width:130px;"><i class="icon-envelope"></i> Data</label>
         <input type="text" id="node-input-data" placeholder="payload information i.e. data points" style="width:300px;">
-    </div>
-	<div class="form-row hidden">
-        <label for="node-input-apikey" style="width:130px;"><i class="icon-envelope"></i> API Key</label>
-        <input type="text" id="node-input-apikey" placeholder="API Key" style="width:300px;">
-    </div>
-    <div class="form-row hidden">
-        <label for="node-input-apitoken" style="width:130px;"><i class="icon-envelope"></i> API Token</label>
-        <input type="text" id="node-input-apitoken" placeholder="API Token" style="width:300px;">
     </div>
 
 	<div class="form-row">
@@ -76,21 +102,32 @@
 	</div>
 </script>
 
-<script type="text/x-red" data-help-name="iotdualapp out">
+<script type="text/x-red" data-help-name="ibmiot out">
    <p>IoT output node sends commands (only in case of Registered flow) to devices or sending an event, on the behalf of a device </p>
-   <p>The value of "Device Id" is stored in the property <code>mac</code> and that of "Data" is stored in <code>payload</code></p>
+   <p>The value of "Event Type" or "Command Type" is stored in the property <code>eventOrCommandType</code> and that of "Data" is stored in <code>payload</code></p>
    <p><b>Note:</b> If "Device Id", "Device Type", "Event Type" / "Command Type", "Format" or "Data" are not passed from backend, the values given in the textfield would be considered.</p>
    
    <p>To override the default values given in the textfield, use the following properties
-   <p>For <b>Device Id / App Id</b>, use <code>msg.id</code>, for e.g. msg.id = '00aabbccde03'</p>
+   <p>For <b>Device Id </b>, use <code>msg.deviceId</code>, for e.g. msg.deviceId = '00aabbccde03'</p>
    <p>For <b>Type</b>, use <code>msg.deviceType</code>, for e.g. msg.deviceType = 'ArduinoUno'</p>
    <p>For <b>Format</b>, use <code>msg.format</code>, for e.g. msg.format = 'json'</p>
-   <p>For <b>Event Type</b> or <b>Command Type</b>, use <code>msg.eventCommandType</code>, for e.g. msg.eventCommandType = 'blink'</p>
+   <p>For <b>Event Type</b> or <b>Command Type</b>, use <code>msg.eventOrCommandType</code>, for e.g. msg.eventOrCommandType = 'blink'</p>
    <p>For <b>Data</b>, use <code>msg.payload</code>, for e.g. msg.payload = '{"d":{"myName":"Arduino Uno", "temperature":989}'</p>
 </script>
 
 
-<script type="text/x-red" data-template-name="iotdualapp in">
+<script type="text/x-red" data-template-name="ibmiot in">
+<!--
+    <div class="form-row">
+        <label for="node-input-serviceType" id="node-input-serviceTypeLabel" style="width:130px;"><i class="icon-tag"></i> Service Type</label>
+		<select id="node-input-serviceType"  style="width:300px;">
+			<option value="quickstart">Quickstart</option>
+			<option value="apiKey">API Key</option>
+			<option value="httpEndpoint">HTTP Endpoint</option>
+			<option value="manualVcap">Manual VCAP</option>
+		</select>
+    </div>
+-->
     <div class="form-row">
         <label for="node-input-inputType" id="node-input-inputTypeLabel" style="width:130px;"><i class="icon-tag"></i> Input Type</label>
 		<select id="node-input-inputType"  style="width:300px;">
@@ -150,16 +187,21 @@
 </script>
 
 
-<script type="text/x-red" data-help-name="iotdualapp in">
+<script type="text/x-red" data-help-name="ibmiot in">
 	<p>IoT input node to receive events sent from devices, receive commands sent to devices (only in case of Registered flow), receive status updates of devices or receive status updates of applications.</p>
-	<p>The value of "Device Id" / "App Id" is stored in the property <code>mac</code></p>
+	<p>The value of "Device Id" is stored in the property <code>msg.deviceId</code></p>
+	<p>The value of "Application Id" is stored in the property <code>msg.applicationId</code></p>
+	<p>The value of "Device Type" is stored in the property <code>msg.deviceType</code></p>
+	<p>The value of "Event Type" is stored in the property <code>msg.eventType</code></p>
+	<p>The value of "Command Type" is stored in the property <code>msg.commandType</code></p>
+	<p>The value of "Format" is stored in the property <code>msg.format</code></p>
 	<p><b>Note:</b>The values of <code>macChecked</code>, <code>deviceTypeChecked</code>, <code>eventChecked</code>, and <code>formatChecked</code> are irrelevant in <b>Quickstart</b> Mode.</p>
 
 </script>
 
 
 <script type="text/javascript">
-	RED.nodes.registerType('iotdualapp out',{
+	RED.nodes.registerType('ibmiot out',{
 		category: 'output',
 		color:"rgb(0, 155, 255)",
 		defaults: {
@@ -169,7 +211,7 @@
 			eventCommandType: {value:"", required: true},
 			format: {value:"", required: true},
 			data: {value:"", required: true},
-			name: { value:"IoT Dual App Out" },
+			name: { value:"IBM IoT App Out" },
 			service: {value: ""}
 		},
 		inputs:1,
@@ -177,7 +219,7 @@
 		icon: "iotcloud-icon.png",
 		align: "right",
 		label: function() {
-			return this.name || "iotdualapp out";
+			return this.name || "ibmiot out";
 		},
 		labelStyle: function() {
 			return this.name ? "node_label_italic" : "";
@@ -314,7 +356,7 @@
 </script>
 
 <script type="text/javascript">
-	RED.nodes.registerType('iotdualapp in',{
+	RED.nodes.registerType('ibmiot in',{
 		category: 'input',
 		color:"rgb(0, 155, 255)",
 		defaults: {
@@ -323,7 +365,7 @@
 			deviceType: {value:""},
 			eventCommandType: {value:""},
 			format: {value:""},
-			name: { value:"IoT Dual App In" },
+			name: { value:"IBM IoT App In" },
 			service: {value:""},
 			macChecked: {value: ""},
 			deviceTypeChecked: {value: ""},

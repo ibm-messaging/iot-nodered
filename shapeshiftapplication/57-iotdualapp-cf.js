@@ -18,7 +18,7 @@ var RED = require(process.env.NODE_RED_HOME + "/red/red");
 var connectionPool = require(process.env.NODE_RED_HOME + "/nodes/core/io/lib/mqttConnectionPool");
 var util = require("./lib/util.js");
 var cfEnv = require("cf-env");
-var fs = require("fs");
+//var fs = require("fs");
 var IoTAppClient = require("iotclient");
 
 var APPLICATION_PUB_TOPIC_REGEX = /^iot-2\/(?:evt|cmd|mon)\/[^#+\/]+\/fmt\/[^#+\/]+$/;
@@ -41,39 +41,28 @@ if (userServices) {
             }
         }
     }
-} else {
+}
+/*
+else {
 	var data = fs.readFileSync("credentials.cfg"), fileContents;
 	try {
 		fileContents = JSON.parse(data);
-//		console.log("\n\n\nFileContents = " + fileContents);
 		credentials = {};
 		credentials.apiKey = fileContents.apiKey;
 		credentials.apiToken = fileContents.apiToken;
-
-//		console.log("API Key " + credentials.apiKey);
-//		console.log("API Token " + credentials.apiToken);
 	}
 	catch (ex){
 		console.log("credentials.cfg doesn't exist or is not well formed, reverting to quickstart mode");
 		credentials = null;
 	}
 }
+*/
 
 RED.httpAdmin.get('/iotFoundation/credential', function(req,res) {
 	console.log("Credentials asked for by In node....");	
 	res.send("", credentials ? 200 : 403);
 });
 
-/*
-RED.httpAdmin.get('/iotFoundation/newcredential', function(req,res) {
-	console.log("Credentials asked for in Reg....");
-	if (credentials) {
-		res.send(JSON.stringify({'service':'registered', 'version': '\'' + RED.version() + '\''}), credentials ? 200 : 403);
-	} else {
-		res.send(JSON.stringify({'service':'quickstart', 'version': '\'' + RED.version() + '\''}), credentials ? 200 : 403);
-	}
-});
-*/
 
 RED.httpAdmin.get('/iotFoundation/newcredential', function(req,res) {
 	console.log("Credentials asked for by Out node....");
@@ -114,6 +103,11 @@ function setUpNode(node, nodeCfg, inOrOut){
 		node.apikey = credentials.apiKey;
 		node.apitoken = credentials.apiToken;
 		node.organization = node.apikey.split(':')[1];
+		console.log("Organization = " + node.organization);
+		if(node.organization == null) {
+			node.organization = node.apikey.split('-')[1];
+			console.log("Organization parsed again and is " + node.organization);
+		}
 	} else {
 		node.organization = "quickstart";
 		node.apikey = null;
@@ -126,7 +120,11 @@ function setUpNode(node, nodeCfg, inOrOut){
 		node.clientId = "a:" + node.organization + ":" + appId;
 
 		if(node.inputType == "evt" || node.inputType == "cmd") {
-			node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.mac + "/" + node.inputType + "/" + node.eventCommandType +"/fmt/" + node.format;
+			if(node.service !== "quickstart") {
+				node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.mac + "/" + node.inputType + "/" + node.eventCommandType +"/fmt/" + node.format;
+			}else {
+				node.topic = "iot-2/type/+/id/" + node.mac + "/" + node.inputType + "/" + node.eventCommandType +"/fmt/" + node.format;
+			}
 		} else if(node.inputType == "devsts") {
 			node.topic = "iot-2/type/+/id/" + node.mac + "/mon";
 		} else if(node.inputType == "apsts") {
@@ -187,7 +185,8 @@ function IotAppOutNode(n) {
 		if(that.service == "registered") {
 			deviceType = msg.deviceType || n.deviceType;
 		}
-		var topic = "iot-2/type/" + deviceType +"/id/" + (msg.id || n.mac) + "/" + n.outputType + "/" + (msg.eventCommandType || n.eventCommandType) +"/fmt/" + (msg.format || n.format);
+		var topic = "iot-2/type/" + deviceType +"/id/" + (msg.deviceId || n.mac) + "/" + n.outputType + "/" + (msg.eventOrCommandType || n.eventCommandType) +
+			"/fmt/" + (msg.format || n.format);
 
         if (msg !== null && (n.service == "quickstart" || n.format == "json") ) {
 			try {
@@ -208,7 +207,7 @@ function IotAppOutNode(n) {
     });
 }
 
-RED.nodes.registerType("iotdualapp out", IotAppOutNode);   
+RED.nodes.registerType("ibmiot out", IotAppOutNode);   
 
 
 function IotAppInNode(n) {
@@ -218,6 +217,11 @@ function IotAppInNode(n) {
     var that = this;
     if(this.topic){
 		if(that.inputType == "evt" ) {
+
+			if(n.service == "quickstart") {
+				that.deviceType = "+";
+			}
+
 			this.client.subscribeToDeviceEvents(that.deviceType, this.mac, this.eventCommandType, this.format);
 
 			this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload) {
@@ -233,7 +237,7 @@ function IotAppInNode(n) {
 					parsedPayload = payload;
 				}
 
-				var msg = {"topic":that.topic, "payload":parsedPayload};
+				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
 			});
@@ -260,7 +264,7 @@ function IotAppInNode(n) {
 					parsedPayload = payload;
 				}
 
-				var msg = {"topic":that.topic, "payload":parsedPayload};
+				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
 			});
@@ -281,7 +285,7 @@ function IotAppInNode(n) {
 					parsedPayload = payload;
 				}
 
-				var msg = {"topic":that.topic, "payload":parsedPayload};
+				var msg = {"topic":that.topic, "payload":parsedPayload, "applicationId" : deviceId};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
 			});
@@ -303,7 +307,7 @@ function IotAppInNode(n) {
 					parsedPayload = payload;
 				}
 
-				var msg = {"topic":that.topic, "payload":parsedPayload};
+				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
 			});
@@ -311,4 +315,4 @@ function IotAppInNode(n) {
 	}
 }
 
-RED.nodes.registerType("iotdualapp in", IotAppInNode);
+RED.nodes.registerType("ibmiot in", IotAppInNode);
