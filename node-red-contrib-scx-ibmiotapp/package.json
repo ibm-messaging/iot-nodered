@@ -1,0 +1,29 @@
+{
+  "readmeFilename": "README.md",
+  "author": {
+    "name": "Amit M Mangalvedkar",
+    "email": "amitmangalvedkar@gmail.com"
+  },
+  "name": "node-red-contrib-scx-ibmiotapp",
+  "description": "IoT Application Node-RED node for the Registered, as well as, Quickstart mode, on the IBM Internet of Things Cloud Foundation",
+  "dependencies": {
+    "cf-env": "0.1.1",
+    "iotclient": "0.1.3"
+  },
+  "version": "0.0.5",
+  "keywords": [
+    "node-red",
+    "bluemix",
+    "iotcloud"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ibm-messaging/iot-nodered/tree/master/node-red-contrib-scx-ibmiotapp"
+  },
+  "license": "Apache",
+  "node-red": {
+    "nodes": {
+      "ibmiotapp": "application/97-iotnewapp-cf.js"
+    }
+  }
+}
