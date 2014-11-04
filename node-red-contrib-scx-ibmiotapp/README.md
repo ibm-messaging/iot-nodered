@@ -1,7 +1,11 @@
 ibmiotapp
 ========================
 This is a Node-RED node meant for connecting to both quickstart, as well as, registered flow on the IBM Internet of Things Foundation.
-This Node-RED node replaces the node-red-iotcloudshapeshift. This Node-RED node can also be used outside the IBM Bluemix environment.
+This Node-RED node replaces the node-red-iotcloudshapeshift. This Node-RED node can be used within, as well as, outside the IBM Bluemix environment. 
+  
+In case its used within the IBM Bluemix environment, the node is smart enough to detect whether an IoT service is bound to this application and provides the respective drop-down options. 
+In case no IoT service is bound to this application, the drop-down, for authentication, does not contain "Bluemix Service".  
+
 
 Install
 -------

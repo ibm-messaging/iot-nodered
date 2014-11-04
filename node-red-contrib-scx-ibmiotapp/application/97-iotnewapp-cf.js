@@ -202,9 +202,11 @@ function setUpNode(node, nodeCfg, inOrOut){
 
 	if(node.service !== "quickstart") {
 		node.deviceType = ( node.allDeviceTypes ) ? '+' : nodeCfg.deviceType;
+		node.format = ( node.allFormats ) ? '+' : nodeCfg.format;
 	} else {
 		console.log("ITS A QUICKSTART FLOW");
 		node.deviceType = "nodered-version" + RED.version();
+		node.format = "json";
 	}
 
 
@@ -212,7 +214,7 @@ function setUpNode(node, nodeCfg, inOrOut){
 	node.apitoken = null;
 	node.deviceId = ( node.allDevices ) ? '+' : nodeCfg.deviceId;
 	node.applicationId = ( node.allApplications ) ? '+' : nodeCfg.applicationId;	
-	node.format = ( node.allFormats ) ? '+' : nodeCfg.format;
+//	node.format = ( node.allFormats ) ? '+' : nodeCfg.format;
 
 	if(newCredentials !== 'undefined' && node.authentication === 'apiKey') {
 		node.apikey = newCredentials.user;
@@ -229,7 +231,8 @@ function setUpNode(node, nodeCfg, inOrOut){
 //		node.brokerHost = node.organization + ".messaging.staging.test.internetofthings.ibmcloud.com";
 		node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
 		node.brokerPort = 1883;	
-	} else if(credentials) {
+	} else if(credentials !== null && credentials !== 'undefined' && node.authentication === 'boundService') {
+//	} else if(credentials) {
 		node.apikey = credentials.apiKey;
 		node.apitoken = credentials.apiToken;
 		if(credentials.org) {
@@ -285,7 +288,7 @@ function setUpNode(node, nodeCfg, inOrOut){
 			}
 		} else if(node.inputType === "devsts") {
 			node.topic = "iot-2/type/+/id/" + node.deviceId + "/mon";
-		} else if(node.inputType === "apsts") {
+		} else if(node.inputType === "appsts") {
 			node.topic = "iot-2/app/" + node.applicationId + "/mon";
 		} else {
 			node.topic = "iot-2/app/" + node.deviceId + "/mon";
@@ -390,6 +393,28 @@ function IotAppInNode(n) {
 			this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload) {
 
 				var parsedPayload = "";
+				if ( that.format === "json" ){
+					try{
+						parsedPayload = JSON.parse(payload);
+						var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
+						console.log("[App-In] Forwarding message to output.");
+						that.send(msg);
+					}catch(err){
+						that.error("JSON payload expected");
+//						parsedPayload = payload;
+					}
+				} else {
+					try{
+						parsedPayload = JSON.parse(payload);
+					}catch(err){
+						parsedPayload = payload;
+					}
+					var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
+					console.log("[App-In] Forwarding message to output.");
+					that.send(msg);
+				}
+
+/*
 				if ( /json$/.test(that.topic) ){
 					try{
 						parsedPayload = JSON.parse(payload);
@@ -397,12 +422,18 @@ function IotAppInNode(n) {
 						parsedPayload = payload;
 					}
 				} else{
-					parsedPayload = payload;
+//					parsedPayload = payload;
+					try{
+						parsedPayload = JSON.parse(payload);
+					}catch(err){
+						parsedPayload = payload;
+					}
 				}
 
 				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
+*/
 			});
 		} else if (that.inputType === "devsts") {
 		
@@ -415,8 +446,17 @@ function IotAppInNode(n) {
 			this.client.subscribeToDeviceStatus(deviceTypeSubscribed, this.deviceId);
 
 			this.client.on("deviceStatus", function(deviceType, deviceId, payload) {
-
 				var parsedPayload = "";
+				try{
+					parsedPayload = JSON.parse(payload);
+				}catch(err){
+					parsedPayload = payload;
+				}
+				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
+				console.log("[App-In] Forwarding message to output.");
+				that.send(msg);
+
+/*
 				if ( /json$/.test(that.topic) ){
 					try{
 						parsedPayload = JSON.parse(payload);
@@ -430,6 +470,7 @@ function IotAppInNode(n) {
 				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
+*/
 			});
 		} else if (that.inputType === "appsts") {
 
@@ -438,6 +479,17 @@ function IotAppInNode(n) {
 			this.client.on("appStatus", function(deviceId, payload) {
 
 				var parsedPayload = "";
+
+				try{
+					parsedPayload = JSON.parse(payload);
+				}catch(err){
+					parsedPayload = payload;
+				}
+				var msg = {"topic":that.topic, "payload":parsedPayload, "applicationId" : deviceId};
+				console.log("[App-In] Forwarding message to output.");
+				that.send(msg);
+
+/*
 				if ( /json$/.test(that.topic) ){
 					try{
 						parsedPayload = JSON.parse(payload);
@@ -451,6 +503,7 @@ function IotAppInNode(n) {
 				var msg = {"topic":that.topic, "payload":parsedPayload, "applicationId" : deviceId};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
+*/
 			});
 
 		} else if (that.inputType === "cmd") {
@@ -460,6 +513,27 @@ function IotAppInNode(n) {
 			this.client.on("deviceCommand", function(deviceType, deviceId, commandType, formatType, payload) {
 
 				var parsedPayload = "";
+				if ( that.format === "json" ){
+					try{
+						parsedPayload = JSON.parse(payload);
+						var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
+						console.log("[App-In] Forwarding message to output.");
+						that.send(msg);
+					}catch(err){
+						that.error("JSON payload expected");
+//						parsedPayload = payload;
+					}
+				} else {
+					try{
+						parsedPayload = JSON.parse(payload);
+					}catch(err){
+						parsedPayload = payload;
+					}
+					var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
+					console.log("[App-In] Forwarding message to output.");
+					that.send(msg);
+				}
+/*
 				if ( /json$/.test(that.topic) ){
 					try{
 						parsedPayload = JSON.parse(payload);
@@ -473,6 +547,7 @@ function IotAppInNode(n) {
 				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
+*/
 			});
 		}
 	}

@@ -10,7 +10,7 @@
     "cf-env": "0.1.1",
     "iotclient": "0.1.3"
   },
-  "version": "0.0.5",
+  "version": "0.0.7",
   "keywords": [
     "node-red",
     "bluemix",
