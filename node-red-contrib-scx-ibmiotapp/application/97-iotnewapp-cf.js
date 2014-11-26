@@ -17,14 +17,20 @@
 var RED = require(process.env.NODE_RED_HOME + "/red/red");
 var connectionPool = require(process.env.NODE_RED_HOME + "/nodes/core/io/lib/mqttConnectionPool");
 var util = require("./lib/util.js");
-var cfEnv = require("cf-env");
+//var cfEnv = require("cf-env");
+var cfenv = require("cfenv");
 //var fs = require("fs");
 var IoTAppClient = require("iotclient");
 
 var APPLICATION_PUB_TOPIC_REGEX = /^iot-2\/(?:evt|cmd|mon)\/[^#+\/]+\/fmt\/[^#+\/]+$/;
 
 // Load the services VCAP from the CloudFoundry environment
-var services = cfEnv.getCore().services || {};
+//var services = cfEnv.getCore().services || {};
+
+// Load the services VCAP from the CloudFoundry environment
+var appenv = cfenv.getAppEnv();
+var services = appenv.services || {};
+
 var userServices = services['iotf-service-staging'];
 
 if(userServices === null || userServices === undefined) {
