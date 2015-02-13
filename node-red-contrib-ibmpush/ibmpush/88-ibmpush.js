@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright 2014, 2015 IBM Corp.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,8 +18,6 @@ var RED = require(process.env.NODE_RED_HOME + "/red/red");
 
 var ibmbluemix = require('ibmbluemix');
 var ibmpush = require('ibmpush');
-var querystring = require("querystring");
-
 
 var isVCapEnv = process.env.VCAP_APPLICATION ? true:false;
 
@@ -51,25 +49,17 @@ RED.httpAdmin.delete('/ibmpush/:id', function(req,res) {
 });
 
 RED.httpAdmin.post('/ibmpush/:id', function(req,res) {
-    var body = "";
+    var newCreds = req.body;
+    var credentials = RED.nodes.getCredentials(req.params.id) || {};
 
-    req.on('data', function(chunk) {
-        body += chunk;
-    });
+    if (newCreds.password == "") {
+        delete credentials.password;
+    } else {
+        credentials.password = newCreds.password || credentials.password;
+    }
 
-    req.on('end', function() {
-        var newCreds = querystring.parse(body);
-        var credentials = RED.nodes.getCredentials(req.params.id) || {};
-
-        if (newCreds.password == "") {
-            delete credentials.password;
-        } else {
-            credentials.password = newCreds.password || credentials.password;
-        }
-
-        RED.nodes.addCredentials(req.params.id, credentials);
-        res.send(200);
-    });
+    RED.nodes.addCredentials(req.params.id, credentials);
+    res.send(200);
 });
 
 

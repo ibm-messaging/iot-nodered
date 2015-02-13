@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright 2014, 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,8 +134,6 @@ function IotAppNode(n) {
 
 RED.nodes.registerType("ibmiot",IotAppNode);
 
-var querystring = require('querystring');
-
 RED.httpAdmin.get('/ibmiot/:id',function(req,res) {
 	var newCredentials = RED.nodes.getCredentials(req.params.id);
 	if (newCredentials) {
@@ -154,26 +152,20 @@ RED.httpAdmin.delete('/ibmiot/:id',function(req,res) {
 
 RED.httpAdmin.post('/ibmiot/:id',function(req,res) {
 //	console.log("IN POST ");
-	var body = "";
-	req.on('data', function(chunk) {
-		body += chunk;
-	});
-	req.on('end', function(){
-		var newCreds = querystring.parse(body);
-		var newCredentials = RED.nodes.getCredentials(req.params.id)||{};
-		if (newCreds.user == null || newCreds.user == "") {
-			delete newCredentials.user;
-		} else {
-			newCredentials.user = newCreds.user;
-		}
-		if (newCreds.password == "") {
-			delete newCredentials.password;
-		} else {
-			newCredentials.password = newCreds.password || newCredentials.password;
-		}
-		RED.nodes.addCredentials(req.params.id, newCredentials);
-		res.send(200);
-	});
+    var newCreds = req.body;
+    var newCredentials = RED.nodes.getCredentials(req.params.id)||{};
+    if (newCreds.user == null || newCreds.user == "") {
+        delete newCredentials.user;
+    } else {
+        newCredentials.user = newCreds.user;
+    }
+    if (newCreds.password == "") {
+        delete newCredentials.password;
+    } else {
+        newCredentials.password = newCreds.password || newCredentials.password;
+    }
+    RED.nodes.addCredentials(req.params.id, newCredentials);
+    res.send(200);
 });
 
 
