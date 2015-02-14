@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 IBM Corp.
+ * Copyright 2013, 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ var https = require("follow-redirects").https;
 var urllib = require("url");
 var getBody = require('raw-body');
 //var mustache = require("mustache");
-var querystring = require("querystring");
 //var fs = require("fs");
 
 //var cors = require('cors');
@@ -35,22 +34,6 @@ var cfenv = require("cfenv");
 var appenv = cfenv.getAppEnv();
 var services = appenv.services || {};
 var userServices = services['IBM Analytics for Hadoop'];
-
-
-function rawBodyParser(req, res, next) {
-    if (req._body) return next();
-    req.body = "";
-    req._body = true;
-    getBody(req, {
-        limit: '1mb',
-        length: req.headers['content-length'],
-        encoding: 'utf8'
-    }, function (err, buf) {
-        if (err) return next(err);
-        req.body = buf;
-        next();
-    });
-}
 
 var bigcredentials = false;
 
@@ -336,24 +319,18 @@ RED.httpAdmin.delete('/http-request/:id',function(req,res) {
 });
 
 RED.httpAdmin.post('/http-request/:id',function(req,res) {
-	var body = "";
-	req.on('data', function(chunk) {
-		body+=chunk;
-	});
-	req.on('end', function(){
-		var newCreds = querystring.parse(body);
-		var credentials = RED.nodes.getCredentials(req.params.id)||{};
-		if (newCreds.user == null || newCreds.user == "") {
-			delete credentials.user;
-		} else {
-			credentials.user = newCreds.user;
-		}
-		if (newCreds.password == "") {
-			delete credentials.password;
-		} else {
-			credentials.password = newCreds.password||credentials.password;
-		}
-		RED.nodes.addCredentials(req.params.id,credentials);
-		res.send(200);
-	});
+    var newCreds = body.req;
+    var credentials = RED.nodes.getCredentials(req.params.id)||{};
+    if (newCreds.user == null || newCreds.user == "") {
+        delete credentials.user;
+    } else {
+        credentials.user = newCreds.user;
+    }
+    if (newCreds.password == "") {
+        delete credentials.password;
+    } else {
+        credentials.password = newCreds.password||credentials.password;
+    }
+    RED.nodes.addCredentials(req.params.id,credentials);
+    res.send(200);
 });
