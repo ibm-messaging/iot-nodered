@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, 2015 IBM Corp.
+ * Copyright 2014 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,6 +134,8 @@ function IotAppNode(n) {
 
 RED.nodes.registerType("ibmiot",IotAppNode);
 
+//var querystring = require('querystring');
+//
 RED.httpAdmin.get('/ibmiot/:id',function(req,res) {
 	var newCredentials = RED.nodes.getCredentials(req.params.id);
 	if (newCredentials) {
@@ -152,20 +154,40 @@ RED.httpAdmin.delete('/ibmiot/:id',function(req,res) {
 
 RED.httpAdmin.post('/ibmiot/:id',function(req,res) {
 //	console.log("IN POST ");
-    var newCreds = req.body;
-    var newCredentials = RED.nodes.getCredentials(req.params.id)||{};
-    if (newCreds.user == null || newCreds.user == "") {
-        delete newCredentials.user;
-    } else {
-        newCredentials.user = newCreds.user;
-    }
-    if (newCreds.password == "") {
-        delete newCredentials.password;
-    } else {
-        newCredentials.password = newCreds.password || newCredentials.password;
-    }
-    RED.nodes.addCredentials(req.params.id, newCredentials);
-    res.send(200);
+//	var body = "";
+//	req.on('data', function(chunk) {
+//		body += chunk;
+//	});
+//	req.on('end', function(){
+//		var newCreds = querystring.parse(body);
+//		var newCredentials = RED.nodes.getCredentials(req.params.id)||{};
+//		if (newCreds.user == null || newCreds.user == "") {
+//			delete newCredentials.user;
+//		} else {
+//			newCredentials.user = newCreds.user;
+//		}
+//		if (newCreds.password == "") {
+//			delete newCredentials.password;
+//		} else {
+//			newCredentials.password = newCreds.password || newCredentials.password;
+//		}
+//		RED.nodes.addCredentials(req.params.id, newCredentials);
+//		res.send(200);
+//	});
+	var newCreds = req.body;
+	var newCredentials = RED.nodes.getCredentials(req.params.id)||{};
+	if (newCreds.user == null || newCreds.user == "") {
+		delete newCredentials.user;
+	} else {
+		newCredentials.user = newCreds.user;
+	}
+	if (newCreds.password == "") {
+		delete newCredentials.password;
+	} else {
+		newCredentials.password = newCreds.password || newCredentials.password;
+	}
+	RED.nodes.addCredentials(req.params.id, newCredentials);
+	res.send(200);
 });
 
 
@@ -388,13 +410,12 @@ function IotAppInNode(n) {
 
 			this.client.subscribeToDeviceEvents(that.deviceType, this.deviceId, this.eventType, this.format);
 
-			this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload) {
-
+			this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload, topic) {
 				var parsedPayload = "";
 				if ( that.format === "json" ){
 					try{
 						parsedPayload = JSON.parse(payload);
-						var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
+						var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
 						console.log("[App-In] Forwarding message to output.");
 						that.send(msg);
 					}catch(err){
@@ -407,7 +428,7 @@ function IotAppInNode(n) {
 					}catch(err){
 						parsedPayload = payload;
 					}
-					var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
+					var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
 					console.log("[App-In] Forwarding message to output.");
 					that.send(msg);
 				}
@@ -443,14 +464,14 @@ function IotAppInNode(n) {
 
 			this.client.subscribeToDeviceStatus(deviceTypeSubscribed, this.deviceId);
 
-			this.client.on("deviceStatus", function(deviceType, deviceId, payload) {
+			this.client.on("deviceStatus", function(deviceType, deviceId, payload, topic) {
 				var parsedPayload = "";
 				try{
 					parsedPayload = JSON.parse(payload);
 				}catch(err){
 					parsedPayload = payload;
 				}
-				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
+				var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
 
@@ -474,7 +495,7 @@ function IotAppInNode(n) {
 
 			this.client.subscribeToAppStatus(this.applicationId);
 
-			this.client.on("appStatus", function(deviceId, payload) {
+			this.client.on("appStatus", function(deviceId, payload, topic) {
 
 				var parsedPayload = "";
 
@@ -483,7 +504,7 @@ function IotAppInNode(n) {
 				}catch(err){
 					parsedPayload = payload;
 				}
-				var msg = {"topic":that.topic, "payload":parsedPayload, "applicationId" : deviceId};
+				var msg = {"topic":topic, "payload":parsedPayload, "applicationId" : deviceId};
 				console.log("[App-In] Forwarding message to output.");
 				that.send(msg);
 
@@ -508,13 +529,13 @@ function IotAppInNode(n) {
 
 			this.client.subscribeToDeviceCommands(this.deviceType, this.deviceId, this.commandType, this.format);
 
-			this.client.on("deviceCommand", function(deviceType, deviceId, commandType, formatType, payload) {
+			this.client.on("deviceCommand", function(deviceType, deviceId, commandType, formatType, payload, topic) {
 
 				var parsedPayload = "";
 				if ( that.format === "json" ){
 					try{
 						parsedPayload = JSON.parse(payload);
-						var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
+						var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
 						console.log("[App-In] Forwarding message to output.");
 						that.send(msg);
 					}catch(err){
@@ -527,7 +548,7 @@ function IotAppInNode(n) {
 					}catch(err){
 						parsedPayload = payload;
 					}
-					var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
+					var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
 					console.log("[App-In] Forwarding message to output.");
 					that.send(msg);
 				}
