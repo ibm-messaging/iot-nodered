@@ -16,6 +16,7 @@
     "raw-body": "1.3.0",
     "querystring": "0.2.0"
   },
+  "license": "Apache",
   "node-red": {
     "nodes": {
       "bluemixhdfs": "application/47-ibmhdfs-cf.js"
