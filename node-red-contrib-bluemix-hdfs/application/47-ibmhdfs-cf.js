@@ -116,9 +116,16 @@ function HDFSRequestInNode(n) {
 				} else {
 					msg.payload = "";
 				}
+				var begun = false;
 				res.on('data',function(chunk) {
 					node.status({fill:"green",shape:"dot",text:"connected"});
-					msg.payload = chunk;
+					if( begun )
+						msg.payload += chunk;
+					else {
+						msg.payload = chunk;
+						begun = true;
+					}
+
 					payload = msg.payload;
 
 					node.log("Payload in DATA = " + msg.payload);
