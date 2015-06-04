@@ -252,7 +252,6 @@ function setUpNode(node, nodeCfg, inOrOut){
 		node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
 		node.brokerPort = 1883;	
 	} else if(credentials !== null && credentials !== 'undefined' && node.authentication === 'boundService') {
-//	} else if(credentials) {
 		node.apikey = credentials.apiKey;
 		node.apitoken = credentials.apiToken;
 		if(credentials.org) {
@@ -344,14 +343,25 @@ function setUpNode(node, nodeCfg, inOrOut){
 	console.log('	DeviceType: '			+ node.deviceType);
 	console.log('	Service: '				+ node.service);
 
-    node.client = new IoTAppClient(appId, node.apikey, node.apitoken, node.brokerHost);
-    node.client.connectBroker(node.brokerPort);
+	try {
+		node.client = new IoTAppClient(appId, node.apikey, node.apitoken, node.brokerHost);
+		node.client.connectBroker(node.brokerPort);
+	}
+	catch(err) {
+		console.log(' IoTAppClient not has yet been initialized.... '); 
+	}
 
     node.on("close", function() {
         if (node.client) {
             node.client.disconnectBroker();
         }
     });
+
+/*
+	node.on("error", function() {
+		console.error(' IoTAppClient not yet initialized.... ');
+	});
+*/
 }
 
 
@@ -377,17 +387,26 @@ function IotAppOutNode(n) {
 				console.log("[App-Out] Trying to publish MQTT JSON message " + parsedPayload + " on topic: " + topic);
 				this.client.publish(topic, payload);
 			}
-			catch (err) {
-				that.error("JSON payload expected");
+			catch (error) {
+				if(error.name === "SyntaxError") {
+					that.error("JSON Message expected");
+				} else {
+					that.warn("MQTTClient not yet initialized for JSON for out node");
+				}
+
 			}
 		} else if(msg !== null) {
 			if(typeof payload === "number") {
 				payload = "" + payload + "";
 				console.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
-				this.client.publish(topic, payload);				
 			} else if(typeof payload === "string") {
 				console.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
-				this.client.publish(topic, payload);				
+			}
+			try {
+				this.client.publish(topic, payload);								
+			}
+			catch (err) {
+				that.warn("MQTT Client not yet initialized for out node");
 			}
 		}
     });
@@ -402,172 +421,110 @@ function IotAppInNode(n) {
 
     var that = this;
     if(this.topic){
-		if(that.inputType === "evt" ) {
+		try {
+			if(that.inputType === "evt" ) {
 
-			if(n.service === "quickstart") {
-				that.deviceType = "+";
-			}
+				if(n.service === "quickstart") {
+					that.deviceType = "+";
+				}
 
-			this.client.subscribeToDeviceEvents(that.deviceType, this.deviceId, this.eventType, this.format);
+				this.client.subscribeToDeviceEvents(that.deviceType, this.deviceId, this.eventType, this.format);
 
-			this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload, topic) {
-				var parsedPayload = "";
-				if ( that.format === "json" ){
-					try{
-						parsedPayload = JSON.parse(payload);
+				this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload, topic) {
+					var parsedPayload = "";
+					if ( that.format === "json" ){
+						try{
+							parsedPayload = JSON.parse(payload);
+							var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
+							console.log("[App-In] Forwarding message to output.");
+							that.send(msg);
+						}catch(err){
+							that.warn("JSON payload expected");
+	//						parsedPayload = payload;
+						}
+					} else {
+						try{
+							parsedPayload = JSON.parse(payload);
+						}catch(err){
+							parsedPayload = payload;
+						}
 						var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
 						console.log("[App-In] Forwarding message to output.");
 						that.send(msg);
-					}catch(err){
-						that.error("JSON payload expected");
-//						parsedPayload = payload;
 					}
-				} else {
+				});
+			} else if (that.inputType === "devsts") {
+			
+				var deviceTypeSubscribed = this.deviceType;
+
+				if(this.service === "quickstart") {
+					deviceTypeSubscribed = "+";
+				}
+
+				this.client.subscribeToDeviceStatus(deviceTypeSubscribed, this.deviceId);
+
+				this.client.on("deviceStatus", function(deviceType, deviceId, payload, topic) {
+					var parsedPayload = "";
 					try{
 						parsedPayload = JSON.parse(payload);
 					}catch(err){
 						parsedPayload = payload;
 					}
-					var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
+					var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
 					console.log("[App-In] Forwarding message to output.");
 					that.send(msg);
-				}
+				});
+			} else if (that.inputType === "appsts") {
 
-/*
-				if ( /json$/.test(that.topic) ){
+				this.client.subscribeToAppStatus(this.applicationId);
+
+				this.client.on("appStatus", function(deviceId, payload, topic) {
+
+					var parsedPayload = "";
+
 					try{
 						parsedPayload = JSON.parse(payload);
 					}catch(err){
 						parsedPayload = payload;
 					}
-				} else{
-//					parsedPayload = payload;
-					try{
-						parsedPayload = JSON.parse(payload);
-					}catch(err){
-						parsedPayload = payload;
-					}
-				}
+					var msg = {"topic":topic, "payload":parsedPayload, "applicationId" : deviceId};
+					console.log("[App-In] Forwarding message to output.");
+					that.send(msg);
 
-				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
-				console.log("[App-In] Forwarding message to output.");
-				that.send(msg);
-*/
-			});
-		} else if (that.inputType === "devsts") {
-		
-			var deviceTypeSubscribed = this.deviceType;
+				});
 
-			if(this.service === "quickstart") {
-				deviceTypeSubscribed = "+";
-			}
+			} else if (that.inputType === "cmd") {
 
-			this.client.subscribeToDeviceStatus(deviceTypeSubscribed, this.deviceId);
+				this.client.subscribeToDeviceCommands(this.deviceType, this.deviceId, this.commandType, this.format);
 
-			this.client.on("deviceStatus", function(deviceType, deviceId, payload, topic) {
-				var parsedPayload = "";
-				try{
-					parsedPayload = JSON.parse(payload);
-				}catch(err){
-					parsedPayload = payload;
-				}
-				var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
-				console.log("[App-In] Forwarding message to output.");
-				that.send(msg);
+				this.client.on("deviceCommand", function(deviceType, deviceId, commandType, formatType, payload, topic) {
 
-/*
-				if ( /json$/.test(that.topic) ){
-					try{
-						parsedPayload = JSON.parse(payload);
-					}catch(err){
-						parsedPayload = payload;
-					}
-				} else{
-					parsedPayload = payload;
-				}
-
-				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
-				console.log("[App-In] Forwarding message to output.");
-				that.send(msg);
-*/
-			});
-		} else if (that.inputType === "appsts") {
-
-			this.client.subscribeToAppStatus(this.applicationId);
-
-			this.client.on("appStatus", function(deviceId, payload, topic) {
-
-				var parsedPayload = "";
-
-				try{
-					parsedPayload = JSON.parse(payload);
-				}catch(err){
-					parsedPayload = payload;
-				}
-				var msg = {"topic":topic, "payload":parsedPayload, "applicationId" : deviceId};
-				console.log("[App-In] Forwarding message to output.");
-				that.send(msg);
-
-/*
-				if ( /json$/.test(that.topic) ){
-					try{
-						parsedPayload = JSON.parse(payload);
-					}catch(err){
-						parsedPayload = payload;
-					}
-				} else{
-					parsedPayload = payload;
-				}
-
-				var msg = {"topic":that.topic, "payload":parsedPayload, "applicationId" : deviceId};
-				console.log("[App-In] Forwarding message to output.");
-				that.send(msg);
-*/
-			});
-
-		} else if (that.inputType === "cmd") {
-
-			this.client.subscribeToDeviceCommands(this.deviceType, this.deviceId, this.commandType, this.format);
-
-			this.client.on("deviceCommand", function(deviceType, deviceId, commandType, formatType, payload, topic) {
-
-				var parsedPayload = "";
-				if ( that.format === "json" ){
-					try{
-						parsedPayload = JSON.parse(payload);
+					var parsedPayload = "";
+					if ( that.format === "json" ){
+						try{
+							parsedPayload = JSON.parse(payload);
+							var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
+							console.log("[App-In] Forwarding message to output.");
+							that.send(msg);
+						}catch(err){
+							that.warn("JSON payload expected");
+	//						parsedPayload = payload;
+						}
+					} else {
+						try{
+							parsedPayload = JSON.parse(payload);
+						}catch(err){
+							parsedPayload = payload;
+						}
 						var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
 						console.log("[App-In] Forwarding message to output.");
 						that.send(msg);
-					}catch(err){
-						that.error("JSON payload expected");
-//						parsedPayload = payload;
 					}
-				} else {
-					try{
-						parsedPayload = JSON.parse(payload);
-					}catch(err){
-						parsedPayload = payload;
-					}
-					var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
-					console.log("[App-In] Forwarding message to output.");
-					that.send(msg);
-				}
-/*
-				if ( /json$/.test(that.topic) ){
-					try{
-						parsedPayload = JSON.parse(payload);
-					}catch(err){
-						parsedPayload = payload;
-					}
-				} else{
-					parsedPayload = payload;
-				}
 
-				var msg = {"topic":that.topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
-				console.log("[App-In] Forwarding message to output.");
-				that.send(msg);
-*/
-			});
+				});
+			}
+		} catch(err) {
+			that.warn("MQTT Client not yet initialized for in node");			
 		}
 	}
 }
