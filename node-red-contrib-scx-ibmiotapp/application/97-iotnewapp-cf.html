@@ -326,6 +326,7 @@
 					$("#node-input-deviceTypeLabel").hide();
 					$("#node-input-deviceType").hide();
 					$("#node-input-deviceType").val(noderedVersion);
+					$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					$("#node-input-formatLabel").hide();
 					$("#node-input-format").val("json");
 					$("#node-input-format").hide();
@@ -354,6 +355,7 @@
 					$("#node-input-outputType").show();
 					$("#node-input-deviceTypeLabel").show();
 					$("#node-input-deviceType").show();
+					$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					$("#node-input-formatLabel").show();
 					$("#node-input-format").show();
 
@@ -369,6 +371,7 @@
 							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 						}
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					});
 				} else {
 					result = "registered";
@@ -394,6 +397,7 @@
 					$("#node-input-outputType").show();
 					$("#node-input-deviceTypeLabel").show();
 					$("#node-input-deviceType").show();
+					$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					$("#node-input-formatLabel").show();
 					$("#node-input-format").show();
 
@@ -409,6 +413,7 @@
 							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 						}
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					});
 				}
 				$("#node-input-authentication").change(function() {
@@ -431,6 +436,7 @@
 						$("#node-input-deviceTypeLabel").hide();
 						$("#node-input-deviceType").hide();
 						$("#node-input-deviceType").val(noderedVersion);
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.-]/gi, ""));
 						$("#node-input-formatLabel").hide();
 						$("#node-input-format").val("json");
 						$("#node-input-format").hide();
@@ -458,6 +464,7 @@
 						$("#node-input-outputType").show();
 						$("#node-input-deviceTypeLabel").show();
 						$("#node-input-deviceType").show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$("#node-input-formatLabel").show();
 						$("#node-input-format").show();
 
@@ -473,6 +480,7 @@
 								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
 								$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 							}
+							$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						});
 					} else {
 						result = "registered";
@@ -495,6 +503,7 @@
 						$("#node-input-outputType").show();
 						$("#node-input-deviceTypeLabel").show();
 						$("#node-input-deviceType").show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$("#node-input-formatLabel").show();
 						$("#node-input-format").show();
 
@@ -510,6 +519,7 @@
 								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
 								$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 							}
+							$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						});
 					}																																												
 				});
@@ -588,6 +598,7 @@
 
 				var id = $("#node-input-inputType").val();
 				if (id == "evt") {
+					$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					$('#node-input-deviceIdLabel').show();
 					$('#node-input-deviceId').show();
 
@@ -601,6 +612,7 @@
 
 				if (id == "devsts") {
 					$('#node-input-deviceIdLabel').show();
+					$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					$('#node-input-deviceId').show();
 
 					$('#node-input-applicationIdLabel').hide();
@@ -692,6 +704,7 @@
 					if (id == "evt") {
 						$('#node-input-deviceIdLabel').show();
 						$('#node-input-deviceId').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 
 						$('#node-input-applicationIdLabel').hide();
 						$("#node-input-applicationId").val('');									
@@ -704,6 +717,7 @@
 					if (id == "devsts") {
 						$('#node-input-deviceIdLabel').show();
 						$('#node-input-deviceId').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 
 						$('#node-input-applicationIdLabel').hide();
 						$("#node-input-applicationId").val('');									
@@ -720,7 +734,7 @@
 
 						$('#node-input-applicationIdLabel').show();
 						$('#node-input-applicationId').show();
-						
+
 						document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
 						$('#node-input-applicationId').attr("placeholder", "app id e.g. myapp02");
 						
@@ -845,6 +859,7 @@
 				var id = $("#node-input-inputType").val();
 				if (id == "evt") {
 					$('#node-input-deviceIdLabel').show();
+					$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					$('#node-input-deviceId').show();
 
 					$('#node-input-applicationIdLabel').hide();
@@ -882,6 +897,7 @@
 
 				} else if (id == "devsts"){
 					$('#node-input-deviceIdLabel').show();
+					$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					$('#node-input-deviceId').show();
 
 					$('#node-input-applicationIdLabel').hide();
@@ -916,6 +932,7 @@
 					$("#node-input-allDevicesLabel").show();								
 				} else if (id == "cmd"){
 					$('#node-input-deviceIdLabel').show();
+					$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 					$('#node-input-deviceId').show();
 
 					$('#node-input-applicationIdLabel').hide();
@@ -997,6 +1014,7 @@
 					var id = $("#node-input-inputType option:selected").val();
 					if (id == "evt") {
 						$('#node-input-deviceIdLabel').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$('#node-input-deviceId').show();
 
 						$('#node-input-applicationIdLabel').hide();
@@ -1034,6 +1052,7 @@
 				
 					} else if (id == "devsts"){
 						$('#node-input-deviceIdLabel').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$('#node-input-deviceId').show();
 
 						$('#node-input-applicationIdLabel').hide();
@@ -1068,6 +1087,7 @@
 						$("#node-input-allDevicesLabel").show();									
 					} else if (id == "cmd"){
 						$('#node-input-deviceIdLabel').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$('#node-input-deviceId').show();
 
 						$('#node-input-applicationIdLabel').hide();
@@ -1168,6 +1188,7 @@
 					var id = $("#node-input-inputType").val();
 					if (id == "evt") {
 						$('#node-input-deviceIdLabel').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$('#node-input-deviceId').show();
 
 						$('#node-input-applicationIdLabel').hide();
@@ -1180,6 +1201,7 @@
 
 					if (id == "devsts") {
 						$('#node-input-deviceIdLabel').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$('#node-input-deviceId').show();
 
 						$('#node-input-applicationIdLabel').hide();
@@ -1270,6 +1292,7 @@
 						var id = $("#node-input-inputType option:selected").val();
 						if (id == "evt") {
 							$('#node-input-deviceIdLabel').show();
+							$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 							$('#node-input-deviceId').show();
 
 							$('#node-input-applicationIdLabel').hide();
@@ -1282,6 +1305,7 @@
 
 						if (id == "devsts") {
 							$('#node-input-deviceIdLabel').show();
+							$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 							$('#node-input-deviceId').show();
 
 							$('#node-input-applicationIdLabel').hide();
@@ -1424,6 +1448,7 @@
 					var id = $("#node-input-inputType").val();
 					if (id == "evt") {
 						$('#node-input-deviceIdLabel').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$('#node-input-deviceId').show();
 
 						$('#node-input-applicationIdLabel').hide();
@@ -1461,6 +1486,7 @@
 
 					} else if (id == "devsts"){
 						$('#node-input-deviceIdLabel').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$('#node-input-deviceId').show();
 
 						$('#node-input-applicationIdLabel').hide();
@@ -1495,6 +1521,7 @@
 						$("#node-input-allDevicesLabel").show();								
 					} else if (id == "cmd"){
 						$('#node-input-deviceIdLabel').show();
+						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 						$('#node-input-deviceId').show();
 
 						$('#node-input-applicationIdLabel').hide();
@@ -1574,6 +1601,7 @@
 						var id = $("#node-input-inputType option:selected").val();
 						if (id == "evt") {
 							$('#node-input-deviceIdLabel').show();
+							$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 							$('#node-input-deviceId').show();
 
 							$('#node-input-applicationIdLabel').hide();
@@ -1611,6 +1639,7 @@
 					
 						} else if (id == "devsts"){
 							$('#node-input-deviceIdLabel').show();
+							$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 							$('#node-input-deviceId').show();
 
 							$('#node-input-applicationIdLabel').hide();
@@ -1645,6 +1674,7 @@
 							$("#node-input-allDevicesLabel").show();									
 						} else if (id == "cmd"){
 							$('#node-input-deviceIdLabel').show();
+							$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
 							$('#node-input-deviceId').show();
 
 							$('#node-input-applicationIdLabel').hide();

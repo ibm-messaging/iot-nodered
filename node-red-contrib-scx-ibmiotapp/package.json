@@ -9,7 +9,7 @@
     "cfenv": "1.0.0",
     "iotclient": "0.2.4"
   },
-  "version": "0.0.27",
+  "version": "0.0.28",
   "keywords": [
     "node-red",
     "bluemix",

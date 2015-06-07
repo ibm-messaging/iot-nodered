@@ -51,3 +51,9 @@ In case the out and in nodes need to run outside the IBM Bluemix environment, us
 
 1. On selecting the API Key, API Key and API Token options are made available
 2. The API Key and Token can be shared scross multiple nodes
+
+
+Note
+-------
+For Device Id, this node ignores any character other than alphanumeric, the period symbol, hyphen and the underscore character.
+

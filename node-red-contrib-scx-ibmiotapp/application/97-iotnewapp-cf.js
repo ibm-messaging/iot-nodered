@@ -232,6 +232,11 @@ function setUpNode(node, nodeCfg, inOrOut){
 
 	node.apikey = null;
 	node.apitoken = null;
+	console.log("Before trimming deviceId = " + nodeCfg.deviceId );
+	nodeCfg.deviceId = nodeCfg.deviceId.trim().replace(/[^a-zA-Z0-9_\.\-]/gi, "");
+	nodeCfg.deviceId = nodeCfg.deviceId.trim();
+
+	console.log("After trimming deviceId = " + nodeCfg.deviceId );
 	node.deviceId = ( node.allDevices ) ? '+' : nodeCfg.deviceId;
 	node.applicationId = ( node.allApplications ) ? '+' : nodeCfg.applicationId;	
 //	node.format = ( node.allFormats ) ? '+' : nodeCfg.format;
