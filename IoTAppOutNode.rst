@@ -1,6 +1,6 @@
 IBM IoT App Out Node
 ========================
-The IoT App Out Node is used to publish commands to specific device, of a given organization, identified by the device type and device id. 
+The IoT App Out Node is used to publish commands to specific device, of a given organization, identified by the device type and device id, on clicking the deploy button. 
 It can also publish device events, on the behalf of a device. 
 
 Usage

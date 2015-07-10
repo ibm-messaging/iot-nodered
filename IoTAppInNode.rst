@@ -1,6 +1,6 @@
 IBM IoT App In Node
 ========================
-The IoT App Out Node is used to subscribes to device, of a given organization, identified by the device type and device id. 
+The IoT App In Node is used to subscribe to device, of a given organization, identified by the device type and device id, on clicking the deploy button.
 It can also subscribe to device events, on the behalf of a device. 
 It allows the single=level wild character '+' to substitute for one topic level.
 
