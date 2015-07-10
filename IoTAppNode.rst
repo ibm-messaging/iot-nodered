@@ -58,8 +58,8 @@ Adhering to the convention of providing in-line documentation, all the fields, i
 
 Apart from that, the below links provide more detailed information about whats going under the hood for both the nodes.
 
-* `IBM IoT App In Node <http://www.ibm.com>`__
-* `IBM IoT App Out Node <http://www.ibm.com>`__
+* `IBM IoT App In Node <https://github.com/ibm-messaging/iot-nodered/blob/master/IoTAppInNode.rst>`__
+* `IBM IoT App Out Node <https://github.com/ibm-messaging/iot-nodered/blob/master/IoTAppOutNode.rst>`__
 
 ----
 
