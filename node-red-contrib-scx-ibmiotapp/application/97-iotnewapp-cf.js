@@ -103,13 +103,11 @@ else {
 */
 
 RED.httpAdmin.get('/iotFoundation/credential', function(req,res) {
-	console.log("Credentials asked for by In node....");
 	res.send("", credentials ? 200 : 403);
 });
 
 
 RED.httpAdmin.get('/iotFoundation/newcredential', function(req,res) {
-	console.log("Credentials asked for by Out node....");
 	if (credentials) {
 		res.send(JSON.stringify({service:'registered', version: RED.version() }));
 	} else {
@@ -123,7 +121,6 @@ function IotAppNode(n) {
 	var newCredentials = RED.nodes.getCredentials(n.id);
 	if (newCredentials) {
 		this.username = newCredentials.user;
-		console.log("Username = " + this.username);
 		this.password = newCredentials.password;
 	}
 }
@@ -140,7 +137,6 @@ RED.httpAdmin.get('/ibmiot/:id',function(req,res) {
 });
 
 RED.httpAdmin.delete('/ibmiot/:id',function(req,res) {
-//	console.log("IN DELETE ");
 	RED.nodes.deleteCredentials(req.params.id);
 	res.send(200);
 });
@@ -191,7 +187,7 @@ function setUpNode(node, nodeCfg, inOrOut){
 		node.deviceType = ( node.allDeviceTypes ) ? '+' : nodeCfg.deviceType;
 		node.format = ( node.allFormats ) ? '+' : nodeCfg.format;
 	} else {
-		console.log("ITS A QUICKSTART FLOW");
+		node.log("ITS A QUICKSTART FLOW");
 		node.deviceType = "nodered-version" + RED.version();
 		node.format = "json";
 	}
@@ -199,11 +195,9 @@ function setUpNode(node, nodeCfg, inOrOut){
 
 	node.apikey = null;
 	node.apitoken = null;
-	console.log("Before trimming deviceId = " + nodeCfg.deviceId );
 	nodeCfg.deviceId = nodeCfg.deviceId.trim().replace(/[^a-zA-Z0-9_\.\-]/gi, "");
 	nodeCfg.deviceId = nodeCfg.deviceId.trim();
 
-	console.log("After trimming deviceId = " + nodeCfg.deviceId );
 	node.deviceId = ( node.allDevices ) ? '+' : nodeCfg.deviceId;
 	node.applicationId = ( node.allApplications ) ? '+' : nodeCfg.applicationId;	
 
@@ -212,10 +206,8 @@ function setUpNode(node, nodeCfg, inOrOut){
 		node.apitoken = newCredentials.password;
 
 		node.organization = node.apikey.split(':')[1];
-		console.log("Organization obtained from switch = " + node.organization);
 		if(node.organization === 'undefined' || node.organization === null || typeof node.organization === 'undefined') {
 			node.organization = node.apikey.split('-')[1];
-			console.log("Organization parsed again and obtained from switch " + node.organization);
 		} else {
 			console.log("UNABLE TO SPLIT");
 		}
@@ -229,10 +221,10 @@ function setUpNode(node, nodeCfg, inOrOut){
 			node.organization = credentials.org;
 		} else {
 			node.organization = node.apikey.split(':')[1];
-			console.log("Organization = " + node.organization);
+			node.log("Organization = " + node.organization);
 			if(node.organization === null) {
 				node.organization = node.apikey.split('-')[1];
-				console.log("Organization parsed again and is " + node.organization);
+				node.log("Organization parsed again and is " + node.organization);
 			}
 		}
 		if(credentials.mqtt_u_port !== 'undefined' || credentials.mqtt_u_port !== null ) {
@@ -284,34 +276,33 @@ function setUpNode(node, nodeCfg, inOrOut){
 		}
 	}
 	else if(inOrOut === "out") {
-		console.log("OutNode ");
 		node.clientId = "a:" + node.organization + ":" + appId;
 		node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.deviceId + "/" + node.outputType + "/" + node.eventCommandType +"/fmt/" + node.format;
 	}
 	else {
-		console.log("CANT COME HERE AT ALL");
+		node.log("CANT COME HERE AT ALL");
 	}
 	
 
 	node.name = nodeCfg.name;
 	
-    console.log('	Authentication: '		+ node.authentication);
-    console.log('	Organization: '			+ node.organization);
-    console.log('	Client ID: '			+ node.clientId);
-    console.log('	Broker Host: '			+ node.brokerHost);
-    console.log('	Broker Port: '			+ node.brokerPort);
-    console.log('	Topic: '				+ node.topic);
-    console.log('	InputType: '			+ node.inputType);
-    console.log('	OutputType: '			+ node.outputType);
-    console.log('	Device Id: '			+ node.deviceId);
-    console.log('	Application Id: '		+ node.applicationId);    
-    console.log('	Name: '					+ node.name);
-    console.log('	Format: '				+ node.format);
-	console.log('	Event/Command Type: '	+ node.eventCommandType);
-	console.log('	Event Type: '			+ node.eventType);	
-	console.log('	Command Type: '			+ node.commandType);	
-	console.log('	DeviceType: '			+ node.deviceType);
-	console.log('	Service: '				+ node.service);
+    node.log('	Authentication: '		+ node.authentication);
+    node.log('	Organization: '			+ node.organization);
+    node.log('	Client ID: '			+ node.clientId);
+    node.log('	Broker Host: '			+ node.brokerHost);
+    node.log('	Broker Port: '			+ node.brokerPort);
+    node.log('	Topic: '				+ node.topic);
+    node.log('	InputType: '			+ node.inputType);
+    node.log('	OutputType: '			+ node.outputType);
+    node.log('	Device Id: '			+ node.deviceId);
+    node.log('	Application Id: '		+ node.applicationId);    
+    node.log('	Name: '					+ node.name);
+    node.log('	Format: '				+ node.format);
+	node.log('	Event/Command Type: '	+ node.eventCommandType);
+	node.log('	Event Type: '			+ node.eventType);	
+	node.log('	Command Type: '			+ node.commandType);	
+	node.log('	DeviceType: '			+ node.deviceType);
+	node.log('	Service: '				+ node.service);
 
 	try {
 		node.client = new IoTAppClient(appId, node.apikey, node.apitoken, node.brokerHost);
@@ -347,7 +338,7 @@ function IotAppOutNode(n) {
         if (msg !== null && (n.service === "quickstart" || n.format === "json") ) {
 			try {
 				var parsedPayload = JSON.parse(payload);
-				console.log("[App-Out] Trying to publish MQTT JSON message " + parsedPayload + " on topic: " + topic);
+				that.log("[App-Out] Trying to publish MQTT JSON message " + parsedPayload + " on topic: " + topic);
 				this.client.publish(topic, payload);
 			}
 			catch (error) {
@@ -361,9 +352,9 @@ function IotAppOutNode(n) {
 		} else if(msg !== null) {
 			if(typeof payload === "number") {
 				payload = "" + payload + "";
-				console.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
+				that.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
 			} else if(typeof payload === "string") {
-				console.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
+				that.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
 			}
 			try {
 				this.client.publish(topic, payload);								
@@ -399,7 +390,7 @@ function IotAppInNode(n) {
 						try{
 							parsedPayload = JSON.parse(payload);
 							var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
-							console.log("[App-In] Forwarding message to output.");
+							that.log("[App-In] Forwarding message to output.");
 							that.send(msg);
 						}catch(err){
 							that.warn("JSON payload expected");
@@ -411,7 +402,7 @@ function IotAppInNode(n) {
 							parsedPayload = payload;
 						}
 						var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
-						console.log("[App-In] Forwarding message to output.");
+						that.log("[App-In] Forwarding message to output.");
 						that.send(msg);
 					}
 				});
@@ -433,7 +424,7 @@ function IotAppInNode(n) {
 						parsedPayload = payload;
 					}
 					var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
-					console.log("[App-In] Forwarding message to output.");
+					that.log("[App-In] Forwarding message to output.");
 					that.send(msg);
 				});
 			} else if (that.inputType === "appsts") {
@@ -450,7 +441,7 @@ function IotAppInNode(n) {
 						parsedPayload = payload;
 					}
 					var msg = {"topic":topic, "payload":parsedPayload, "applicationId" : deviceId};
-					console.log("[App-In] Forwarding message to output.");
+					that.log("[App-In] Forwarding message to output.");
 					that.send(msg);
 				});
 
@@ -465,7 +456,7 @@ function IotAppInNode(n) {
 						try{
 							parsedPayload = JSON.parse(payload);
 							var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
-							console.log("[App-In] Forwarding message to output.");
+							that.log("[App-In] Forwarding message to output.");
 							that.send(msg);
 						}catch(err){
 							that.warn("JSON payload expected");
@@ -477,7 +468,7 @@ function IotAppInNode(n) {
 							parsedPayload = payload;
 						}
 						var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
-						console.log("[App-In] Forwarding message to output.");
+						that.log("[App-In] Forwarding message to output.");
 						that.send(msg);
 					}
 				});
