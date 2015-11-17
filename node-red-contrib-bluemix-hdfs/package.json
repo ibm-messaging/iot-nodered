@@ -6,7 +6,7 @@
   },
   "name": "node-red-contrib-bluemix-hdfs",
   "description": "Big Data node on IBM Bluemix. \n\nThis Node-RED node runs only in the IBM Bluemix environment",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "keywords": [
     "node-red"
   ],
