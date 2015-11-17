@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright 2014, 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,11 @@
 var RED = require(process.env.NODE_RED_HOME + "/red/red");
 var connectionPool = require(process.env.NODE_RED_HOME + "/nodes/core/io/lib/mqttConnectionPool");
 var util = require("./lib/util.js");
-//var cfEnv = require("cf-env");
 var cfenv = require("cfenv");
 //var fs = require("fs");
 var IoTAppClient = require("iotclient");
 
 var APPLICATION_PUB_TOPIC_REGEX = /^iot-2\/(?:evt|cmd|mon)\/[^#+\/]+\/fmt\/[^#+\/]+$/;
-
-// Load the services VCAP from the CloudFoundry environment
-//var services = cfEnv.getCore().services || {};
 
 // Load the services VCAP from the CloudFoundry environment
 var appenv = cfenv.getAppEnv();
@@ -134,12 +130,9 @@ function IotAppNode(n) {
 
 RED.nodes.registerType("ibmiot",IotAppNode);
 
-//var querystring = require('querystring');
-//
 RED.httpAdmin.get('/ibmiot/:id',function(req,res) {
 	var newCredentials = RED.nodes.getCredentials(req.params.id);
 	if (newCredentials) {
-//		console.log("IN GET ");
 		res.send(JSON.stringify({user:newCredentials.user,hasPassword:(newCredentials.password && newCredentials.password!="")}));
 	} else {
 		res.send(JSON.stringify({}));
@@ -153,27 +146,6 @@ RED.httpAdmin.delete('/ibmiot/:id',function(req,res) {
 });
 
 RED.httpAdmin.post('/ibmiot/:id',function(req,res) {
-//	console.log("IN POST ");
-//	var body = "";
-//	req.on('data', function(chunk) {
-//		body += chunk;
-//	});
-//	req.on('end', function(){
-//		var newCreds = querystring.parse(body);
-//		var newCredentials = RED.nodes.getCredentials(req.params.id)||{};
-//		if (newCreds.user == null || newCreds.user == "") {
-//			delete newCredentials.user;
-//		} else {
-//			newCredentials.user = newCreds.user;
-//		}
-//		if (newCreds.password == "") {
-//			delete newCredentials.password;
-//		} else {
-//			newCredentials.password = newCreds.password || newCredentials.password;
-//		}
-//		RED.nodes.addCredentials(req.params.id, newCredentials);
-//		res.send(200);
-//	});
 	var newCreds = req.body;
 	var newCredentials = RED.nodes.getCredentials(req.params.id)||{};
 	if (newCreds.user == null || newCreds.user == "") {
@@ -212,12 +184,7 @@ function setUpNode(node, nodeCfg, inOrOut){
 	var newCredentials = null;
 	if(nodeCfg.authentication === "apiKey") {
 		 var iotnode = RED.nodes.getNode(nodeCfg.apiKey);
-//		 console.log("IoTNode Name is " + iotnode.name );
-
-//		 console.log("IoTNode Id is " + iotnode.id );
 		 newCredentials = RED.nodes.getCredentials(iotnode.id);		 
-//		 console.log("IoTNode APIKey is " + newCredentials.user );
-//		 console.log("IoTNode APIToken is " + newCredentials.password );
 	}
 
 	if(node.service !== "quickstart") {
@@ -239,7 +206,6 @@ function setUpNode(node, nodeCfg, inOrOut){
 	console.log("After trimming deviceId = " + nodeCfg.deviceId );
 	node.deviceId = ( node.allDevices ) ? '+' : nodeCfg.deviceId;
 	node.applicationId = ( node.allApplications ) ? '+' : nodeCfg.applicationId;	
-//	node.format = ( node.allFormats ) ? '+' : nodeCfg.format;
 
 	if(newCredentials !== 'undefined' && node.authentication === 'apiKey') {
 		node.apikey = newCredentials.user;
@@ -261,7 +227,6 @@ function setUpNode(node, nodeCfg, inOrOut){
 		node.apitoken = credentials.apiToken;
 		if(credentials.org) {
 			node.organization = credentials.org;
-//			console.log("credentials.org exists..............");
 		} else {
 			node.organization = node.apikey.split(':')[1];
 			console.log("Organization = " + node.organization);
@@ -361,12 +326,6 @@ function setUpNode(node, nodeCfg, inOrOut){
             node.client.disconnectBroker();
         }
     });
-
-/*
-	node.on("error", function() {
-		console.error(' IoTAppClient not yet initialized.... ');
-	});
-*/
 }
 
 
@@ -377,7 +336,6 @@ function IotAppOutNode(n) {
 	var that = this;
 
     this.on("input", function(msg) {
-//		console.log("\n\n\nn.data = " + n.data + "\tmsg.payload = " + msg.payload + "\tmsg.deviceType = " + msg.deviceType + "\tn.deviceType" + n.deviceType);
 		var payload = msg.payload || n.data;
 		var deviceType = that.deviceType;
 		if(that.service === "registered") {
@@ -445,7 +403,6 @@ function IotAppInNode(n) {
 							that.send(msg);
 						}catch(err){
 							that.warn("JSON payload expected");
-	//						parsedPayload = payload;
 						}
 					} else {
 						try{
@@ -495,7 +452,6 @@ function IotAppInNode(n) {
 					var msg = {"topic":topic, "payload":parsedPayload, "applicationId" : deviceId};
 					console.log("[App-In] Forwarding message to output.");
 					that.send(msg);
-
 				});
 
 			} else if (that.inputType === "cmd") {
@@ -513,7 +469,6 @@ function IotAppInNode(n) {
 							that.send(msg);
 						}catch(err){
 							that.warn("JSON payload expected");
-	//						parsedPayload = payload;
 						}
 					} else {
 						try{
@@ -525,7 +480,6 @@ function IotAppInNode(n) {
 						console.log("[App-In] Forwarding message to output.");
 						that.send(msg);
 					}
-
 				});
 			}
 		} catch(err) {
