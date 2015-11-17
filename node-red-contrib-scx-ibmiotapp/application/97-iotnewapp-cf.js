@@ -253,7 +253,6 @@ function setUpNode(node, nodeCfg, inOrOut){
 	node.commandType = ( node.allCommands ) ? '+' : nodeCfg.commandType;
 
 	if(inOrOut === "in") {
-		console.log("InNode ");
 		node.clientId = "a:" + node.organization + ":" + appId;
 
 		if(node.inputType === "evt" || node.inputType === "cmd") {
@@ -345,7 +344,7 @@ function IotAppOutNode(n) {
 				if(error.name === "SyntaxError") {
 					that.error("JSON Message expected");
 				} else {
-					that.warn("MQTTClient not yet initialized for JSON for out node");
+					that.warn("Either MQTT Client is not fully initialized (please wait) or non-JSON message has been sent");
 				}
 
 			}
@@ -360,7 +359,7 @@ function IotAppOutNode(n) {
 				this.client.publish(topic, payload);								
 			}
 			catch (err) {
-				that.warn("MQTT Client not yet initialized for out node");
+				that.warn("MQTT Client is not fully initialized for out node - please wait");
 			}
 		}
     });
@@ -474,7 +473,7 @@ function IotAppInNode(n) {
 				});
 			}
 		} catch(err) {
-			that.warn("MQTT Client not yet initialized for in node");			
+			that.warn("MQTT Client is not fully initialized for in node - please wait");			
 		}
 	}
 }
