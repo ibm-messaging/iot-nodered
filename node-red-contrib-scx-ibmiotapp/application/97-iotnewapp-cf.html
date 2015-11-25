@@ -16,15 +16,15 @@
 
 <script type="text/x-red" data-template-name="ibmiot">
 	<div class="form-row">
-        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-config-input-user"><i class="icon-user"></i> API Key</label>
+        <label for="node-config-input-user"><i class="fa fa-user-secret"></i> API Key</label>
         <input type="text" id="node-config-input-user">
     </div>
     <div class="form-row">
-        <label for="node-config-input-pass"><i class="icon-lock"></i> API Token</label>
+        <label for="node-config-input-pass"><i class="fa fa-lock"></i> API Token</label>
         <input type="password" id="node-config-input-pass">
     </div>
 </script>
@@ -82,7 +82,7 @@
 <script type="text/x-red" data-template-name="ibmiot out">
 
     <div class="form-row">
-        <label for="node-input-authentication" id="node-input-authenticationLabel" style="width:130px;"><i class="icon-tag"></i> Authentication</label>
+        <label for="node-input-authentication" id="node-input-authenticationLabel" style="width:130px;"><i class="fa fa-umbrella"></i> Authentication</label>
 		<select id="node-input-authentication"  style="width:300px;">
 			<option value="quickstart">Quickstart</option>
 			<option value="apiKey">API Key</option>
@@ -91,12 +91,12 @@
     </div>
 
 	<div class="form-row hide" id="node-input-apiKey-div">
-        <label for="node-input-apiKey" id="node-input-apiKeyLabel" style="width:130px;"><i class="icon-envelope"></i> API Key</label>
+        <label for="node-input-apiKey" id="node-input-apiKeyLabel" style="width:130px;"><i class="fa fa-key"></i> API Key</label>
         <input type="text" id="node-input-apiKey" placeholder="API Key" style="width:300px;">
     </div>
 
 	<div class="form-row">
-        <label for="node-input-outputType" id="node-input-outputTypeLabel" style="width:130px;"><i class="icon-tag"></i> Output Type</label>
+        <label for="node-input-outputType" id="node-input-outputTypeLabel" style="width:130px;"><i class="fa fa-gears"></i> Output Type</label>
 		<select id="node-input-outputType"  style="width:300px;">
 			<option value="evt">Device Event</option>
 			<option value="cmd">Device Command</option>
@@ -104,36 +104,36 @@
     </div>
 
 	<div class="form-row">
-        <label for="node-input-deviceType" id="node-input-deviceTypeLabel" style="width:130px;"><i class="icon-tag"></i> Device Type</label>
+        <label for="node-input-deviceType" id="node-input-deviceTypeLabel" style="width:130px;"><i class="fa fa-rocket"></i> Device Type</label>
         <input type="text" id="node-input-deviceType" placeholder="device type e.g. armmbed" style="width:300px;">
     </div>
 
 
 	<div class="form-row">
-        <label for="node-input-deviceId" id="node-input-deviceIdLabel" style="width:130px;"><i class="icon-tasks"></i> Device Id</label>
+        <label for="node-input-deviceId" id="node-input-deviceIdLabel" style="width:130px;"><i class="fa fa-street-view"></i> Device Id</label>
         <input type="text" id="node-input-deviceId" placeholder="device id e.g. ab12cd231a21" style="width:300px;">
     </div>
 
     <div class="form-row">
-        <label for="node-input-eventCommandType" id="node-input-eventCommandTypeId" style="width:130px;"><i class="icon-tasks"></i> Event Type</label>
+        <label for="node-input-eventCommandType" id="node-input-eventCommandTypeId" style="width:130px;"><i class="fa fa-tachometer"></i> Event Type</label>
         <input type="text" id="node-input-eventCommandType" placeholder="command/event format e.g blink" style="width:300px;">
     </div>
     <div class="form-row">
-        <label for="node-input-format" id="node-input-formatLabel"style="width:130px;"><i class="icon-file"></i> Format</label>
+        <label for="node-input-format" id="node-input-formatLabel"style="width:130px;"><i class="fa fa-file"></i> Format</label>
         <input type="text" id="node-input-format" placeholder="format e.g. json" style="width:300px;">
     </div>
     <div class="form-row">
-        <label for="node-input-data" style="width:130px;"><i class="icon-envelope"></i> Data</label>
+        <label for="node-input-data" style="width:130px;"><i class="fa fa-database"></i> Data</label>
         <input type="text" id="node-input-data" placeholder="payload information e.g. data points" style="width:300px;">
     </div>
 
 	<div class="form-row">
-        <label for="node-input-name" style="width:130px;"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name" style="width:130px;"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="iot-new-out" style="width:300px;">
     </div>
 
 	<div class="form-row hidden">
-        <label for="node-input-service" style="width:130px;"><i class="icon-tag"></i> Service</label>
+        <label for="node-input-service" style="width:130px;"><i class="fa fa-tag"></i> Service</label>
         <input type="text" id="node-input-service" placeholder="iot-new-out" style="width:300px;">
     </div>
 
@@ -165,7 +165,7 @@
 
 <script type="text/x-red" data-template-name="ibmiot in">
     <div class="form-row">
-        <label for="node-input-authentication" id="node-input-authenticationLabel" style="width:130px;"><i class="icon-tag"></i> Authentication</label>
+        <label for="node-input-authentication" id="node-input-authenticationLabel" style="width:130px;"><i class="fa fa-umbrella"></i> Authentication</label>
 		<select id="node-input-authentication"  style="width:300px;">
 			<option value="quickstart">Quickstart</option>
 			<option value="apiKey">API Key</option>
@@ -174,12 +174,12 @@
     </div>
 
 	<div class="form-row hide" id = "node-input-apiKey-div">
-        <label for="node-input-apiKey" id="node-input-apiKeyLabel" style="width:130px;"><i class="icon-envelope"></i> API Key</label>
+        <label for="node-input-apiKey" id="node-input-apiKeyLabel" style="width:130px;"><i class="fa fa-key"></i> API Key</label>
         <input type="text" id="node-input-apiKey" placeholder="API Key" style="width:300px;">
     </div>
 
     <div class="form-row">
-        <label for="node-input-inputType" id="node-input-inputTypeLabel" style="width:130px;"><i class="icon-tag"></i> Input Type</label>
+        <label for="node-input-inputType" id="node-input-inputTypeLabel" style="width:130px;"><i class="fa fa-gears"></i> Input Type</label>
 		<select id="node-input-inputType"  style="width:300px;">
 			<option value="evt">Device Event</option>
 			<option value="cmd" id="node-input-inputTypeCmd">Device Command</option>
@@ -189,52 +189,52 @@
     </div>
 
     <div class="form-row">
-        <label for="node-input-deviceType" id="node-input-deviceTypeLabel" style="width:130px;"><i class="icon-tag"></i> Device Type</label>
+        <label for="node-input-deviceType" id="node-input-deviceTypeLabel" style="width:130px;"><i class="fa fa-rocket"></i> Device Type</label>
 		<input type="checkbox" id="node-input-allDeviceTypes" style="width:10px;" >
 		<label for="node-input-allDeviceTypesLabel" id="node-input-allDeviceTypesLabel" style="width:40px;">All or </label>
         <input type="text" id="node-input-deviceType" placeholder="device type e.g. armmbed" style="width:240px;">
     </div>
 	<div class="form-row">
-        <label for="node-input-deviceId" id="node-input-deviceIdLabel"style="width:130px;"><i class="icon-tasks"></i> Device Id</label>
+        <label for="node-input-deviceId" id="node-input-deviceIdLabel"style="width:130px;"><i class="fa fa-street-view"></i> Device Id</label>
 		<input type="checkbox" id="node-input-allDevices" style="width:10px;">
 		<label for="node-input-allDevicesLabel" id="node-input-allDevicesLabel" style="width:40px;">All or </label>
         <input type="text" id="node-input-deviceId" placeholder="device id e.g. ab12cd231a21" style="width:240px;">
     </div>
 	<div class="form-row">
-        <label for="node-input-applicationId" id="node-input-applicationIdLabel"style="width:130px;"><i class="icon-tasks"></i> Application Id</label>
+        <label for="node-input-applicationId" id="node-input-applicationIdLabel"style="width:130px;"><i class="fa fa-tasks"></i> Application Id</label>
 		<input type="checkbox" id="node-input-allApplications" style="width:10px;">
 		<label for="node-input-allApplicationsLabel" id="node-input-allApplicationsLabel" style="width:40px;">All or </label>
         <input type="text" id="node-input-applicationId" placeholder="application id e.g. ab12cd231a21" style="width:240px;">
     </div>
 
 	<div class="form-row">
-        <label for="node-input-event" id="node-input-eventLabel" style="width:130px;"><i class="icon-tasks"></i> Event</label>
+        <label for="node-input-event" id="node-input-eventLabel" style="width:130px;"><i class="fa fa-tasks"></i> Event</label>
 		<input type="checkbox" id="node-input-allEvents" style="width:10px;" >
 		<label for="node-input-allEventsLabel" id="node-input-allEventsLabel" style="width:40px;">All or </label>
         <input type="text" id="node-input-eventType" placeholder="event type e.g. status" style="width:240px;">
     </div>
 
 	<div class="form-row">
-        <label for="node-input-event" id="node-input-commandLabel" style="width:130px;"><i class="icon-tasks"></i> Command</label>
+        <label for="node-input-event" id="node-input-commandLabel" style="width:130px;"><i class="fa fa-tasks"></i> Command</label>
 		<input type="checkbox" id="node-input-allCommands" style="width:10px;" >
 		<label for="node-input-allCommandsLabel" id="node-input-allCommandsLabel" style="width:40px;">All or </label>
         <input type="text" id="node-input-commandType" placeholder="comand type e.g. blink" style="width:240px;">
     </div>
 
     <div class="form-row">
-        <label for="node-input-format" id="node-input-formatLabel"  style="width:130px;"><i class="icon-file"></i> Format</label>
+        <label for="node-input-format" id="node-input-formatLabel"  style="width:130px;"><i class="fa fa-file"></i> Format</label>
 		<input type="checkbox" id="node-input-allFormats" style="width:10px;" >
 		<label for="node-input-allFormatsLabel" id="node-input-allFormatsLabel" style="width:40px;">All or </label>
         <input type="text" id="node-input-format" placeholder="format e.g. json" style="width:240px;">
     </div>
 
 	<div class="form-row">
-        <label for="node-input-name" style="width:130px;"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name" style="width:130px;"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="iot-new-in" style="width:300px;">
     </div>
 
 	<div class="form-row hidden">
-        <label for="node-input-service" style="width:130px;"><i class="icon-tag"></i> Service</label>
+        <label for="node-input-service" style="width:130px;"><i class="fa fa-tag"></i> Service</label>
         <input type="text" id="node-input-service" placeholder="iot-new-out" style="width:300px;">
     </div>
 
@@ -315,8 +315,8 @@
 
 					$('#node-input-service').val(result);
 
-					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
-					document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
+					document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 					$('#node-input-eventCommandType').attr("placeholder", "event type e.g. status");
 
 					$("#node-input-apiKey-div").hide();
@@ -341,12 +341,12 @@
 
 					var id = $("#node-input-outputType").val();
 					if (id == "evt") {
-						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 						$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
 					}
 
 					if (id == "cmd") {
-						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-legal"></i> Command Type</label>';
 						$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 					}
 
@@ -366,10 +366,10 @@
 					$("#node-input-outputType").change(function() {
 						var id = $("#node-input-outputType option:selected").val();
 						if (id == "evt") {
-							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
 						} else if (id == "cmd") {
-							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-legal"></i> Command Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 						}
 						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
@@ -384,12 +384,12 @@
 
 					var id = $("#node-input-outputType").val();
 					if (id == "evt") {
-						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 						$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
 					}
 
 					if (id == "cmd") {
-						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-legal"></i> Command Type</label>';
 						$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 					}
 
@@ -408,10 +408,10 @@
 					$("#node-input-outputType").change(function() {
 						var id = $("#node-input-outputType option:selected").val();
 						if (id == "evt") {
-							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
 						} else if (id == "cmd") {
-							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-legal"></i> Command Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 						}
 						$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
@@ -425,8 +425,8 @@
 
 						$('#node-input-service').val(result);
 
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
-						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
+						document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 						$('#node-input-eventCommandType').attr("placeholder", "event type e.g. status");
 
 						$("#node-input-apiKey-div").hide();
@@ -450,12 +450,12 @@
 
 						var id = $("#node-input-outputType").val();
 						if (id == "evt") {
-							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
 						}
 
 						if (id == "cmd") {
-							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-legal"></i> Command Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 						}
 
@@ -475,10 +475,10 @@
 						$("#node-input-outputType").change(function() {
 							var id = $("#node-input-outputType option:selected").val();
 							if (id == "evt") {
-								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 								$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
 							} else if (id == "cmd") {
-								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-legal"></i> Command Type</label>';
 								$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 							}
 							$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
@@ -490,12 +490,12 @@
 
 						var id = $("#node-input-outputType").val();
 						if (id == "evt") {
-							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
 						}
 
 						if (id == "cmd") {
-							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+							document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-legal"></i> Command Type</label>';
 							$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 						}
 
@@ -514,10 +514,10 @@
 						$("#node-input-outputType").change(function() {
 							var id = $("#node-input-outputType option:selected").val();
 							if (id == "evt") {
-								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Event Type</label>';
+								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-tachometer"></i> Event Type</label>';
 								$('#node-input-eventCommandType').attr("placeholder", "event type e.g. blink");
 							} else if (id == "cmd") {
-								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="icon-tasks"></i> Command Type</label>';
+								document.getElementById('node-input-eventCommandTypeId').innerHTML='<i class="fa fa-legal"></i> Command Type</label>';
 								$('#node-input-eventCommandType').attr("placeholder", "command type e.g. blink");
 							}
 							$("#node-input-deviceId").val($("#node-input-deviceId").val().trim().replace(/[^a-zA-Z0-9_\.\-]/gi, ""));
@@ -607,7 +607,7 @@
 					$("#node-input-applicationId").val('');								
 					$('#node-input-applicationId').hide();
 
-					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 					$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 				}
 
@@ -620,7 +620,7 @@
 					$("#node-input-applicationId").val('');								
 					$('#node-input-applicationId').hide();
 
-					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 					$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 				}
 
@@ -632,7 +632,7 @@
 					$('#node-input-applicationIdLabel').show();
 					$('#node-input-applicationId').show();
 					
-					document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+					document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="fa fa-tasks"></i> App Id</label>';
 					$('#node-input-applicationId').attr("placeholder", "app id e.g. myapp02");
 					
 				}
@@ -711,7 +711,7 @@
 						$("#node-input-applicationId").val('');									
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 					}
 
@@ -724,7 +724,7 @@
 						$("#node-input-applicationId").val('');									
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 					}
 
@@ -736,7 +736,7 @@
 						$('#node-input-applicationIdLabel').show();
 						$('#node-input-applicationId').show();
 
-						document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+						document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="fa fa-tasks"></i> App Id</label>';
 						$('#node-input-applicationId').attr("placeholder", "app id e.g. myapp02");
 						
 					}
@@ -869,8 +869,8 @@
 					$("#node-input-applicationId").val('');
 					$('#node-input-applicationId').hide();
 
-					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
-					document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
+					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
+					document.getElementById('node-input-eventLabel').innerHTML='<i class="fa fa-tasks"></i> Event';
 					$('#node-input-eventType').attr("placeholder", "event type e.g. status");
 					$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 
@@ -907,7 +907,7 @@
 					$("#node-input-applicationId").val('');							
 					$('#node-input-applicationId').hide();
 
-					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 					$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 
 					$("#node-input-eventLabel").hide();							
@@ -942,8 +942,8 @@
 					$("#node-input-applicationId").val('');							
 					$('#node-input-applicationId').hide();
 
-					document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
-					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+					document.getElementById('node-input-eventLabel').innerHTML='<i class="fa fa-tasks"></i> Command';
+					document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 					$('#node-input-eventType').attr("placeholder", "command type e.g. blink");
 					$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 					
@@ -985,7 +985,7 @@
 					$("#node-input-allCommandsLabel").hide();
 					$("#node-input-commandType").hide();							
 					
-					document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+					document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="fa fa-tasks"></i> App Id</label>';
 					$('#node-input-applicationId').attr("placeholder", "app id e.g. myapp02");
 					
 					$("#node-input-eventLabel").hide();
@@ -1022,8 +1022,8 @@
 						$("#node-input-applicationId").val('');								
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-eventLabel').innerHTML='<i class="fa fa-tasks"></i> Event';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 						$('#node-input-eventType').attr("placeholder", "event type e.g. status");
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 						
@@ -1060,7 +1060,7 @@
 						$("#node-input-applicationId").val('');								
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 
 						$("#node-input-eventLabel").hide();								
@@ -1095,8 +1095,8 @@
 						$("#node-input-applicationId").val('');								
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-eventLabel').innerHTML='<i class="fa fa-tasks"></i> Command';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 						$('#node-input-eventType').attr("placeholder", "command type e.g. blink");
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 
@@ -1133,7 +1133,7 @@
 						$('#node-input-allApplications').show();
 						$('#node-input-applicationId').show();
 						
-						document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+						document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="fa fa-tasks"></i> App Id</label>';
 						$('#node-input-applicationId').attr("placeholder", "app id e.g. myapp02");
 						
 						$('#node-input-deviceId').attr("placeholder", "app id e.g. myapp02");
@@ -1193,7 +1193,7 @@
 						$("#node-input-applicationId").val('');								
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 					}
 
@@ -1206,7 +1206,7 @@
 						$("#node-input-applicationId").val('');								
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 					}
 
@@ -1218,7 +1218,7 @@
 						$('#node-input-applicationIdLabel').show();
 						$('#node-input-applicationId').show();
 						
-						document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+						document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="fa fa-tasks"></i> App Id</label>';
 						$('#node-input-applicationId').attr("placeholder", "app id e.g. myapp02");
 						
 					}
@@ -1297,7 +1297,7 @@
 							$("#node-input-applicationId").val('');									
 							$('#node-input-applicationId').hide();
 
-							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 							$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 						}
 
@@ -1310,7 +1310,7 @@
 							$("#node-input-applicationId").val('');									
 							$('#node-input-applicationId').hide();
 
-							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 							$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 						}
 
@@ -1322,7 +1322,7 @@
 							$('#node-input-applicationIdLabel').show();
 							$('#node-input-applicationId').show();
 							
-							document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+							document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="fa fa-tasks"></i> App Id</label>';
 							$('#node-input-applicationId').attr("placeholder", "app id e.g. myapp02");
 						}
 					});
@@ -1453,8 +1453,8 @@
 						$("#node-input-applicationId").val('');
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
-						document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
+						document.getElementById('node-input-eventLabel').innerHTML='<i class="fa fa-tasks"></i> Event';
 						$('#node-input-eventType').attr("placeholder", "event type e.g. status");
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 
@@ -1491,7 +1491,7 @@
 						$("#node-input-applicationId").val('');							
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 
 						$("#node-input-eventLabel").hide();							
@@ -1526,8 +1526,8 @@
 						$("#node-input-applicationId").val('');							
 						$('#node-input-applicationId').hide();
 
-						document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
-						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+						document.getElementById('node-input-eventLabel').innerHTML='<i class="fa fa-tasks"></i> Command';
+						document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 						$('#node-input-eventType').attr("placeholder", "command type e.g. blink");
 						$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 						
@@ -1569,7 +1569,7 @@
 						$("#node-input-allCommandsLabel").hide();
 						$("#node-input-commandType").hide();							
 						
-						document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+						document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="fa fa-tasks"></i> App Id</label>';
 						$('#node-input-applicationId').attr("placeholder", "app id e.g. myapp02");
 						
 						$("#node-input-eventLabel").hide();
@@ -1606,8 +1606,8 @@
 							$("#node-input-applicationId").val('');								
 							$('#node-input-applicationId').hide();
 
-							document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Event';
-							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+							document.getElementById('node-input-eventLabel').innerHTML='<i class="fa fa-tasks"></i> Event';
+							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 							$('#node-input-eventType').attr("placeholder", "event type e.g. status");
 							$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 							
@@ -1644,7 +1644,7 @@
 							$("#node-input-applicationId").val('');								
 							$('#node-input-applicationId').hide();
 
-							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 							$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 
 							$("#node-input-eventLabel").hide();								
@@ -1679,8 +1679,8 @@
 							$("#node-input-applicationId").val('');								
 							$('#node-input-applicationId').hide();
 
-							document.getElementById('node-input-eventLabel').innerHTML='<i class="icon-tasks"></i> Command';
-							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="icon-tasks"></i> Device Id</label>';
+							document.getElementById('node-input-eventLabel').innerHTML='<i class="fa fa-tasks"></i> Command';
+							document.getElementById('node-input-deviceIdLabel').innerHTML='<i class="fa fa-street-view"></i> Device Id</label>';
 							$('#node-input-eventType').attr("placeholder", "command type e.g. blink");
 							$('#node-input-deviceId').attr("placeholder", "device id e.g. ab12cd231a21");
 
@@ -1715,7 +1715,7 @@
 							$('#node-input-allApplications').show();
 							$('#node-input-applicationId').show();
 							
-							document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="icon-tasks"></i> App Id</label>';
+							document.getElementById('node-input-applicationIdLabel').innerHTML='<i class="fa fa-tasks"></i> App Id</label>';
 							$('#node-input-applicationId').attr("placeholder", "app id e.g. myapp02");
 							
 							$('#node-input-deviceId').attr("placeholder", "app id e.g. myapp02");
