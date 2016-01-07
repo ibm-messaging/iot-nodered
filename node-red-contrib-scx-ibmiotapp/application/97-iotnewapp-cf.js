@@ -383,30 +383,34 @@ module.exports = function(RED) {
 						that.deviceType = "+";
 					}
 
-					this.client.subscribeToDeviceEvents(that.deviceType, this.deviceId, this.eventType, this.format);
+					if(n.service === "quickstart" && (that.deviceId === null || that.deviceId === '') ) {
+						that.warn("Device Id is not set for Quickstart flow");
+					} else {
+						this.client.subscribeToDeviceEvents(that.deviceType, this.deviceId, this.eventType, this.format);
 
-					this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload, topic) {
-						var parsedPayload = "";
-						if ( that.format === "json" ){
-							try{
-								parsedPayload = JSON.parse(payload);
+						this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload, topic) {
+							var parsedPayload = "";
+							if ( that.format === "json" ){
+								try{
+									parsedPayload = JSON.parse(payload);
+									var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
+									that.log("[App-In] Forwarding message to output.");
+									that.send(msg);
+								}catch(err){
+									that.warn("JSON payload expected");
+								}
+							} else {
+								try{
+									parsedPayload = JSON.parse(payload);
+								}catch(err){
+									parsedPayload = payload;
+								}
 								var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
 								that.log("[App-In] Forwarding message to output.");
 								that.send(msg);
-							}catch(err){
-								that.warn("JSON payload expected");
 							}
-						} else {
-							try{
-								parsedPayload = JSON.parse(payload);
-							}catch(err){
-								parsedPayload = payload;
-							}
-							var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
-							that.log("[App-In] Forwarding message to output.");
-							that.send(msg);
-						}
-					});
+						});
+					}
 				} else if (that.inputType === "devsts") {
 				
 					var deviceTypeSubscribed = this.deviceType;
