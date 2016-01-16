@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014 IBM Corp.
+  Copyright 2014,2016 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -21,64 +21,75 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 	<br>
-	<b>MBaaS Application Properties</b><br/>
-    <div class="form-row">
-        <label id="node-input-ApplicationIDLabel" for="node-input-ApplicationID"><i class="icon-bookmark"></i> ID</label>
-        <input type="text" id="node-input-ApplicationID" placeholder="e.g: 57341182-3f39-46eb-916c-2f0172e0b5cd">
-    </div>
-    <div class="form-row">
-        <label id="node-input-ApplicationRouteLabel" for="node-input-ApplicationRoute"><i class="icon-tasks"></i> Route</label>
-        <input type="text" id="node-input-ApplicationRoute" placeholder="e.g: notif.mybluemix.net">
-    </div>
-	<div class="form-row">
-        <label for="node-input-ApplicationSecret"><i class="icon-lock"></i> Secret</label>
-        <input type="password" id="node-input-ApplicationSecret" placeholder="">
-    </div>
+    <div id="propDiv">
+    	<b>Mobile Push Properties</b><br/>
+        <div class="form-row">
+            <label id="node-input-ApplicationIDLabel" for="node-input-ApplicationID"><i class="icon-bookmark"></i> ID</label>
+            <input type="text" id="node-input-ApplicationID" placeholder="Application ID e.g: 4cf38f2e-0465-4e40-887c-d69c85128389">
+        </div>
+    	<div class="form-row">
+            <label for="node-input-ApplicationSecret"><i class="icon-lock"></i> Secret</label>
+            <input type="password" id="node-input-ApplicationSecret" placeholder="Application Secret">
+        </div>
 
-    <br/>
+        <br/>
+    </div>
 	<b>Notification</b>
 	
 	<div class="form-row">
 		<label for="node-input-notification"><i class="icon-tasks"></i> Type</label>
 		<select id="node-input-notification" style="margin-right:3px;">
-            <option value="broadcast">Broadcast</option>
+            <option default value="broadcast">Broadcast</option>
             <option value="tags">By Tags</option>
 			<option value="deviceid">By DeviceIds</option>
-			<option value="consumerid">By ConsumerIds</option>
+            <option value="android">Only Android devices</option>
+            <option value="ios">Only iOS devices</option>
         </select>
         
     </div>
 	
 	<div class="form-row">
         <label id="node-input-identifiersLabel" for="node-input-identifiers"><i class="icon-tag"></i> Identifiers</label>
-        <input type="text" id="node-input-identifiers" placeholder="e.g: Killers,Robots">
+        <input type="text" id="node-input-identifiers" placeholder="e.g: GoldCoupons,SilverCoupons">
     </div>
+    <div class="form-tips">
+        <div id = "form-tipsBounded">        
+            <b>Bounded Service:</b> Select a Notification Type and <i>msg.payload</i> will be sent as a Notification <br/>         
+            Check the info tab, to get more information about each of the fields
+        </div>
+        <div id = "form-tipsUnbounded">
+            <b>Unbounded Service:</b> IBM Push Notification service is not bound. Either bind the IBM Push Notification service or provide the <i>Application ID and Secret</i>.<br/>
+        </div>
+        <div id = "form-tipsLocal">
+            <b>Local Mode:</b> Node-RED is running in local mode. Provide the <i>Application ID and Secret</i><br/>
+        </div>
+</div>
 	
 </script>
 
 
 
 <script type="text/x-red" data-help-name="ibmpush">
-	<p>Sends push notifications to mobile devices using IBM Push for Bluemix</p>
-	<p><code>msg.payload</code> is used as the alert in the Notification. Optionally, <code>msg.url</code> can be used as the URL in the notification</p>
-	<p><b>MBaaS Application Properties</b></p> 
-	<p> <b>Application ID and Route</b> mandatory only when used in <i>non-Bluemix environment</i> and must be copied from the IBM MBaaS service in Bluemix. 
+	<p>Sends Push Notifications to mobile devices using IBM Push notification for Bluemix</p>
+	<p><code>msg.payload</code> is used as the alert in the Notification.
+	<p><b>Mobile Push Properties</b></p> 
+	<p> <b>Application ID and Secret</b> mandatory only when used in <i>non-Bluemix environment</i> and must be copied from the IBM Push Notification service in Bluemix. 
 	If used in <i>Bluemix</i>, these properties will be automatically read.</p> 
-	<p> <b>Application Secret</b> Bluemix application secret key. </p>
-
+	
 	<p><b>Notification Type</b> Type of notification to be pushed.
 		<ul>
 			<li><i>Broadcast</i> - Send notifications to all the registered devices</li>
-			<li><i>By Tags</i> - Send notifications to devices subscribed to that tag. Can take multiple values</li>
-			<li><i>By DeviceIds</i> - Send notifications to devices by their device ID. Can take multiple values</li>
-			<li><i>By ConsumerIds</i> - Send notifications to devices by their consumer ID. Can take multiple values</li>
+			<li><i>By Tags</i> - Send notifications to devices subscribed to that tag. Can take multiple values seperated by comma(,)</li>
+			<li><i>By DeviceIds</i> - Send notifications to devices by their device ID. Can take multiple values seperated by comma(,)</li>
+			<li><i>Only Android devices</i> - Send notifications to all the registered Android devices</li>
+            <li><i>Only iOS devices</i> - Send notifications to all the registered iOS devices</li>
 
 		</ul>
 	</p>
 
-	<p><b>Notification Identifiers</b> Used when notifications are sent <i>By Tags, By DeviceIds and By ConsumerIds</i>. This can take multiple values seperated by comma(,). Example: Killers,Robots</p>
+	<p><b>Notification Identifiers</b> Used when notifications are sent <i>By Tags and By DeviceIds</i>. This can take multiple values seperated by comma(,). Example: GoldCoupons,SilverCoupons</p>
 
-	<p> Visit this <a target="_blank" href="https://www.ng.bluemix.net/docs/#services/push/index.html#gettingstarted">link</a> for more information on IBM Push for Bluemix
+	<p> Visit this <a target="_blank" href="https://www.ng.bluemix.net/docs/services/mobilepush/c_push_overview.html">link</a> for more information on IBM Push Notification for Bluemix
 
 </script>
 
@@ -90,10 +101,9 @@
         defaults: {   
             name: {},
             ApplicationID: {value:"", required:false},
-            ApplicationRoute: {value:"", required:false},
             //ApplicationSecret: {value:"", required:true},
             identifiers: {value:""},
-            notification: {}
+            notification: {value:"broadcast"}
         },
         inputs:1,               
         outputs:0,
@@ -107,47 +117,53 @@
         },
         oneditprepare: function () {
 
-        $.getJSON('ibmpush/vcap/',function(data) {
-            
-            if(data) {
-            	
-           		$("#node-input-ApplicationIDLabel").hide();
-				$("#node-input-ApplicationID").hide();
-				$("#node-input-ApplicationRouteLabel").hide();
-				$("#node-input-ApplicationRoute").hide();
-            } else {
-				$("#node-input-ApplicationIDLabel").show();
-				$("#node-input-ApplicationID").show();
-				$("#node-input-ApplicationRouteLabel").show();
-				$("#node-input-ApplicationRoute").show();
-            }
-            
-        });
-        
-        $.getJSON("ibmpush/"+this.id, function(data) {
-                
-                if (data.hasPassword) {
-                	$('#node-input-ApplicationSecret').data("v",'__PWRD__');
-                    $("#node-input-ApplicationSecret").val("__PWRD__");
+            $.getJSON('ibmpush/vcap/',function(data) {
+                console.log("resp");
+                console.log(data);
+                if(data.isBound) {
+                	
+               		$("#propDiv").hide();
+                    //tooltip
+                    $("#form-tipsUnbounded").hide();
+                    $("#form-tipsLocal").hide();
+                } else if(data.isBluemix){
+    				$("#propDiv").show();
+                    //tooltip
+                    $("#form-tipsBounded").hide();
+                    $("#form-tipsLocal").hide();
                 } else {
-               		$('#node-input-ApplicationSecret').data("v",'');
-                    $("#node-input-ApplicationSecret").val("");
+                    $("#propDiv").show();
+                    //tooltip
+                    $("#form-tipsBounded").hide();
+                    $("#form-tipsUnbounded").hide();
+                }
+                
+            });
+            
+            $.getJSON("ibmpush/"+this.id, function(data) {
+                    
+                    if (data.hasPassword) {
+                    	$('#node-input-ApplicationSecret').data("v",'__PWRD__');
+                        $("#node-input-ApplicationSecret").val("__PWRD__");
+                    } else {
+                   		$('#node-input-ApplicationSecret').data("v",'');
+                        $("#node-input-ApplicationSecret").val("");
+                    }
+            });
+
+    		var notificationSelect = $('#node-input-notification');
+            notificationSelect.change(function() {
+                var service = notificationSelect.val();
+                if (service === "broadcast" || service === "android" || service === "ios") {
+                    $("#node-input-identifiersLabel").hide();
+                    $("#node-input-identifiers").hide();
+                } else {
+                    $("#node-input-identifiersLabel").show();
+                    $("#node-input-identifiers").show();
                 }
             });
 
-		var notificationSelect = $('#node-input-notification');
-        notificationSelect.change(function() {
-            var service = notificationSelect.val();
-            if (service == "broadcast") {
-                $("#node-input-identifiersLabel").hide();
-                $("#node-input-identifiers").hide();
-            } else {
-                $("#node-input-identifiersLabel").show();
-                $("#node-input-identifiers").show();
-            }
-        });
-
-    },
+        },
         
         oneditsave: function() {
             
