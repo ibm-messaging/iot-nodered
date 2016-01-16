@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, 2015 IBM Corp.
+ * Copyright 2014, 2016 IBM Corp.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,19 +13,34 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 var RED = require(process.env.NODE_RED_HOME + "/red/red");
 
-var ibmbluemix = require('ibmbluemix');
-var ibmpush = require('ibmpush');
+var request = require('request');
 
-var isVCapEnv = process.env.VCAP_APPLICATION ? true:false;
+var isBluemix = process.env.VCAP_SERVICES ? true:false;
+var isBound = false;
+
+//creds
+var applicationUrl = "";
+var applicationSecret = "";
+
+if(isBluemix) {
+	var vcapServices = JSON.parse(process.env.VCAP_SERVICES);
+	if(vcapServices.imfpush) {
+		isBound = true;
+		applicationUrl = vcapServices.imfpush[0].credentials.url;
+		applicationSecret = vcapServices.imfpush[0].credentials.appSecret;
+	}
+}
 
 //
 // HTTP endpoints that will be accessed from the HTML file
 //
 RED.httpAdmin.get('/ibmpush/vcap', function(req,res) {
-    res.send(isVCapEnv);
+    res.json({
+    	isBluemix : isBluemix,
+    	isBound : isBound
+    });
 });
 
 // REMINDER: routes are order dependent
@@ -45,7 +60,7 @@ RED.httpAdmin.get('/ibmpush/:id', function(req,res) {
 
 RED.httpAdmin.delete('/ibmpush/:id', function(req,res) {
     RED.nodes.deleteCredentials(req.params.id);
-    res.send(200);
+    res.sendStatus(200);
 });
 
 RED.httpAdmin.post('/ibmpush/:id', function(req,res) {
@@ -59,7 +74,7 @@ RED.httpAdmin.post('/ibmpush/:id', function(req,res) {
     }
 
     RED.nodes.addCredentials(req.params.id, credentials);
-    res.send(200);
+    res.sendStatus(200);
 });
 
 
@@ -67,64 +82,35 @@ function IBMPushNode(n) {
 
 	RED.nodes.createNode(this, n);
 	var vcapApplication = {};
-	var appName = n.name || "ibmpushApp";
-
 	// read the credential(appSecret)
-	var credentials = RED.nodes.getCredentials(n.id);
-	var applicationSecret = credentials.password;
-	var config = {};
+	var credentials = RED.nodes.getCredentials(n.id);	
 
-	if (isVCapEnv) {
-		this.log("In Bluemix Environment");
-		try {
-			vcapApplication = JSON.parse(process.env.VCAP_APPLICATION);
-		} catch (e) {
-			  // syntax error
-			this.error("There is no Mobile Application Security service bound to " +
-					"this application. Please add the Mobile Application Security " +
-					"and Push service to this application.");
+	if (isBound) {
+		this.log("In Bluemix Environment & the IBM Push Notification service is bound");
+	} else if(isBluemix) {
+		this.log("In Bluemix Environment & the IBM Push Notification service is NOT bound");
+		if (n.ApplicationID == "" || credentials.password == "") {
+			this
+					.error("The Push Notification service is not bound. "
+							+ "Input Bluemix Application related properties - ID and Secret.");
 			return null;
 		}
-		var vcap_app_id = vcapApplication.application_id;
-		var vcap_app_route = vcapApplication.application_uris[0];
-		if (vcap_app_id == "" || vcap_app_route == "") {
-			this.error("There is no Mobile Application Security service bound to this " +
-					"application. Please add the Mobile Application Security and " +
-					"Push service to this application.");
-			return null;
-		}
-		if (applicationSecret == "") {
-			this.error("The Application Secret is empty.");
-			return null;
-		}
-		config = {
-			applicationId : vcap_app_id,
-			applicationRoute : vcap_app_route,
-			applicationSecret : applicationSecret,
-			applicationName : appName
-		};
+		applicationUrl = "http://imfpush.ng.bluemix.net/imfpush/v1/apps/"+n.ApplicationID;
+		applicationSecret = credentials.password;
 	} else {
 		this.log("In Local Environment");
-		if (n.ApplicationID == "" || n.ApplicationRoute == ""
-				|| applicationSecret == "") {
+		if (n.ApplicationID == "" || credentials.password == "") {
 			this
 					.error("The application is not in Bluemix Environment. "
-							+ "Input Bluemix Application related properties - ID, route and Secret.");
+							+ "Input Bluemix Application related properties - ID and Secret.");
 			return null;
 		}
-		config = {
-			applicationId : n.ApplicationID,
-			applicationRoute : n.ApplicationRoute,
-			applicationSecret : applicationSecret,
-			applicationName : appName
-		};
+		applicationUrl = "http://imfpush.ng.bluemix.net/imfpush/v1/apps/"+n.ApplicationID;
+		applicationSecret = credentials.password;
 	}
 
-	this.log("Connecting to Push service with application ID : "
-			+ config.applicationId + " route : " + config.applicationRoute);
-
-	ibmbluemix.initialize(config);
-	var push = ibmpush.initializeService();
+	this.log("Connecting to Push service with application URL : "
+			+ applicationUrl );
 
 	// get the identifiers for tags/deviceids
 	this.notificationType = n.notification;
@@ -134,67 +120,91 @@ function IBMPushNode(n) {
 
 		var alert = msg.payload;
 		alert = alert.toString();
-		var url = null;
-		var ids = null;
 
 		if (this.identifiers != null)
 			ids = this.identifiers.split(',');
 
-		if (msg.url != null) {
-			url = msg.url;
-		}
+		// 
+		for(var i=0;i<ids.length;i++)
+			ids[i] = ids[i].trim();
 
 		var message = {
-			alert : alert,
-			url : url
+				message : {
+					alert : alert
+				},
+				target : {}
 		};
 
 		switch (this.notificationType) {
-		case "broadcast":
-			push.sendBroadcastNotification(message).then(function(response) {
-				console.log(response);
-			}, function(err) {
-				console.log(err);
-			});
-			break;
+			case "broadcast":
+				invokePush('SANDBOX',message,this);
+				break;
 
-		case "tags":
-			push.sendNotificationByTags(message, ids).then(function(response) {
-				console.log(response);
-			}, function(err) {
-				console.log(err);
-			});
-			break;
+			case "tags":
+				
+				message.target = {
+					"tagNames": ids
+				}
+				invokePush('SANDBOX',message,this);
+				break;
 
-		case "deviceid":
-			push.sendNotificationByDeviceIds(message, ids).then(
-					function(response) {
-						console.log(response);
-					}, function(err) {
-						console.log(err);
-					});
-			break;
+			case "deviceid":
+				message.target = {
+					"deviceIds": ids
+				}
+				invokePush('SANDBOX',message,this);
+				break;
 
-		case "consumerid":
-			var conIds  = [];
-			for(var i =0 ; i< ids.length ; i++ ){
-				conIds[i] = {};
-				conIds[i].consumerId = ids[i];
-			}
-			push.sendNotificationByConsumerId(message, conIds).then(
-					function(response) {
-						console.log(response);
-					}, function(err) {
-						console.log(err);
-					});
-			break;
+			case "android":
+				message.target = {
+					"platforms":["G"]
+				}
+				invokePush('SANDBOX',message,this);
+				break;
 
-		default:
-			console.log("Invalid option. Please retry");
-			return null;
+			case "ios":
+				message.target = {
+					"platforms":["A"]
+				}
+				invokePush('SANDBOX',message,this);
+
+				break;
+
+			default:
+				console.log("Invalid option. Please retry");
+				return null;
 		}
 
 	});
 }
 
 RED.nodes.registerType("ibmpush", IBMPushNode);
+
+//util function for Mobile Push ReST calls
+
+function invokePush (appMode, message, node) {
+	var options = {
+	  url: applicationUrl+'/messages',
+	  headers: {
+	    'appSecret': applicationSecret,
+	    'Application-Mode': appMode
+	  },
+	  method : 'POST',
+	  json : true,
+	  body : message
+	};
+	 
+	function callback(error, response, body) {
+	  if (!error && response.statusCode == 202) {
+	    node.status({fill:"blue",shape:"dot",text:"Sent"});
+	    node.status({});
+	    
+	  } else {
+	  	node.error(response.statusCode +" : "+body.message);
+	  	node.status({fill:"red",shape:"dot",text:"Error: "+response.statusCode+" : "+body.message});
+	  }
+	}
+	 
+	request(options, callback);
+	node.status({fill:"blue",shape:"dot",text:"Sending"});
+}
