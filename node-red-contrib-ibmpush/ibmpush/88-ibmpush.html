@@ -13,121 +13,259 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
- 
+
 <script type="text/x-red" data-template-name="ibmpush">
-   
+
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-	<br>
+    <br>
     <div id="propDiv">
-    	<b>Mobile Push Properties</b><br/>
+        <b>Mobile Push Properties</b>
+        <br/>
         <div class="form-row">
             <label id="node-input-ApplicationIDLabel" for="node-input-ApplicationID"><i class="icon-bookmark"></i> ID</label>
             <input type="text" id="node-input-ApplicationID" placeholder="Application ID e.g: 4cf38f2e-0465-4e40-887c-d69c85128389">
         </div>
-    	<div class="form-row">
+        <div class="form-row">
             <label for="node-input-ApplicationSecret"><i class="icon-lock"></i> Secret</label>
             <input type="password" id="node-input-ApplicationSecret" placeholder="Application Secret">
         </div>
 
         <br/>
     </div>
-	<b>Notification</b>
-	
-	<div class="form-row">
-		<label for="node-input-notification"><i class="icon-tasks"></i> Type</label>
-		<select id="node-input-notification" style="margin-right:3px;">
+
+    <b>Notification</b>
+
+    <div class="form-row">
+        <label for="node-input-notification"><i class="icon-tasks"></i> Type</label>
+        <select id="node-input-notification" style="margin-right:3px;">
             <option default value="broadcast">Broadcast</option>
             <option value="tags">By Tags</option>
-			<option value="deviceid">By DeviceIds</option>
+            <option value="deviceid">By DeviceIds</option>
             <option value="android">Only Android devices</option>
             <option value="ios">Only iOS devices</option>
         </select>
-        
+
     </div>
-	
-	<div class="form-row">
+
+    <div class="form-row">
         <label id="node-input-identifiersLabel" for="node-input-identifiers"><i class="icon-tag"></i> Identifiers</label>
         <input type="text" id="node-input-identifiers" placeholder="e.g: GoldCoupons,SilverCoupons">
     </div>
     <div class="form-tips">
-        <div id = "form-tipsBounded">        
-            <b>Bounded Service:</b> Select a Notification Type and <i>msg.payload</i> will be sent as a Notification <br/>         
-            Check the info tab, to get more information about each of the fields
+        <div id="form-tipsBounded">
+            <b>Bounded Service:</b> Select a Notification Type and <i>msg.payload</i> will be sent as a Notification
+            <br/> Check the info tab, to get more information about each of the fields
         </div>
-        <div id = "form-tipsUnbounded">
-            <b>Unbounded Service:</b> IBM Push Notification service is not bound. Either bind the IBM Push Notification service or provide the <i>Application ID and Secret</i>.<br/>
+        <div id="form-tipsUnbounded">
+            <b>Unbounded Service:</b> IBM Push Notification service is not bound. Either bind the IBM Push Notification service or provide the <i>Application ID and Secret</i>.
+            <br/>
         </div>
-        <div id = "form-tipsLocal">
-            <b>Local Mode:</b> Node-RED is running in local mode. Provide the <i>Application ID and Secret</i><br/>
+        <div id="form-tipsLocal">
+            <b>Local Mode:</b> Node-RED is running in local mode. Provide the <i>Application ID and Secret</i>
+            <br/>
         </div>
-</div>
-	
+    </div>
+
+
+    <div id="apnsDiv">
+        <b>Optional APNS-specific Properties</b>
+        <br/>
+        <div class="form-row">
+            <label id="node-input-badgeLabel" for="node-input-badge"><i class="icon-bookmark"></i> Badge</label>
+            <input type="number" id="node-input-badge" placeholder="Badge count e.g: 1">
+        </div>
+        <div class="form-row">
+            <label id="node-input-categoryLabel" for="node-input-category"><i class="icon-bookmark"></i> Category</label>
+            <input type="text" id="node-input-category" placeholder="string value">
+        </div>
+        <div class="form-row">
+            <label id="node-input-iosActionKeyLabel" for="node-input-iosActionKey"><i class="icon-bookmark"></i> ActionKey</label>
+            <input type="text" id="node-input-iosActionKey" placeholder="string value">
+        </div>
+        <div class="form-row">
+            <label id="node-input-payloadLabel" for="node-input-payload"><i class="icon-bookmark"></i> Payload</label>
+            <input type="text" id="node-input-payload" placeholder="string value">
+        </div>
+        <div class="form-row">
+            <label id="node-input-soundLabel" for="node-input-sound"><i class="icon-bookmark"></i> Sound file</label>
+            <input type="text" id="node-input-sound" placeholder="Sound file in bundle e.g: ding.caf">
+        </div>
+        <div class="form-row">
+            <label id="node-input-iOStypeLabel" for="node-input-iOStype"><i class="icon-tasks"></i> Type</label>
+            <select id="node-input-iOStype" style="margin-right:3px;">
+                <option default value="dflt">DEFAULT</option>
+                <option value="mixed">MIXED</option>
+                <option value="silent">SILENT</option>
+            </select>
+        </div>
+
+        <br/>
+    </div>
+
+    <div id="gcmDiv">
+        <b>Optional GCM-specific Properties</b>
+        <br/>
+        <div class="form-row">
+            <label id="node-input-collapseKeyLabel" for="node-input-collapseKey"><i class="icon-bookmark"></i> cllpsKey</label>
+            <input type="string" id="node-input-collapseKey" placeholder="identifies a group of messages">
+        </div>
+        <div class="form-row">
+            <label id="node-input-delayWhileIdleLabel" for="node-input-delayWhileIdle"><i class="icon-tasks"></i> delay Idle</label>
+            <select id="node-input-delayWhileIdle" style="margin-right:3px;">
+                <option default value=""></option>
+                <option value="true">TRUE</option>
+                <option value="false">FALSE</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label id="node-input-GCMpayloadLabel" for="node-input-GCMpayload"><i class="icon-bookmark"></i> Payload</label>
+            <input type="text" id="node-input-GCMpayload" placeholder="string value">
+        </div>
+        <div class="form-row">
+            <label id="node-input-priorityLabel" for="node-input-priority"><i class="icon-bookmark"></i> Priority</label>
+            <input type="text" id="node-input-priority" placeholder="priority">
+        </div>
+        <div class="form-row">
+            <label id="node-input-GCMsoundLabel" for="node-input-GCMsound"><i class="icon-bookmark"></i> Sound file</label>
+            <input type="text" id="node-input-GCMsound" placeholder="Sound file on device">
+        </div>
+        <div class="form-row">
+            <label id="node-input-TTLLabel" for="node-input-TTL"><i class="icon-bookmark"></i> TTL</label>
+            <input type="text" id="node-input-TTL" placeholder="seconds">
+        </div>
+
+        <br/>
+    </div>
+
+
 </script>
 
 
 
 <script type="text/x-red" data-help-name="ibmpush">
-	<p>Sends Push Notifications to mobile devices using IBM Push notification for Bluemix</p>
-	<p><code>msg.payload</code> is used as the alert in the Notification.
-	<p><b>Mobile Push Properties</b></p> 
-	<p> <b>Application ID and Secret</b> mandatory only when used in <i>non-Bluemix environment</i> and must be copied from the IBM Push Notification service in Bluemix. 
-	If used in <i>Bluemix</i>, these properties will be automatically read.</p> 
-	
-	<p><b>Notification Type</b> Type of notification to be pushed.
-		<ul>
-			<li><i>Broadcast</i> - Send notifications to all the registered devices</li>
-			<li><i>By Tags</i> - Send notifications to devices subscribed to that tag. Can take multiple values seperated by comma(,)</li>
-			<li><i>By DeviceIds</i> - Send notifications to devices by their device ID. Can take multiple values seperated by comma(,)</li>
-			<li><i>Only Android devices</i> - Send notifications to all the registered Android devices</li>
+    <p>Sends Push Notifications to mobile devices using IBM Push notification for Bluemix</p>
+    <p><code>msg.payload</code> is used as the alert in the Notification. Additional customized settings for apns and/or gcm can be provided in <code>msg.settings</code>.</p>
+    <p><b>Mobile Push Properties</b></p>
+    <p> <b>Application ID and Secret</b> mandatory only when used in <i>non-Bluemix environment</i> and must be copied from the IBM Push Notification service in Bluemix. If used in <i>Bluemix</i>, these properties will be automatically read.</p>
+
+    <p><b>Notification Type</b> Type of notification to be pushed.
+        <ul>
+            <li><i>Broadcast</i> - Send notifications to all the registered devices</li>
+            <li><i>By Tags</i> - Send notifications to devices subscribed to that tag. Can take multiple values seperated by comma(,)</li>
+            <li><i>By DeviceIds</i> - Send notifications to devices by their device ID. Can take multiple values seperated by comma(,)</li>
+            <li><i>Only Android devices</i> - Send notifications to all the registered Android devices</li>
             <li><i>Only iOS devices</i> - Send notifications to all the registered iOS devices</li>
 
-		</ul>
-	</p>
+        </ul>
+    </p>
 
-	<p><b>Notification Identifiers</b> Used when notifications are sent <i>By Tags and By DeviceIds</i>. This can take multiple values seperated by comma(,). Example: GoldCoupons,SilverCoupons</p>
+    <p><b>Notification Identifiers</b> Used when notifications are sent <i>By Tags and By DeviceIds</i>. This can take multiple values seperated by comma(,). Example: GoldCoupons,SilverCoupons</p>
 
-	<p> Visit this <a target="_blank" href="https://www.ng.bluemix.net/docs/services/mobilepush/c_push_overview.html">link</a> for more information on IBM Push Notification for Bluemix
+    <p><b>Optional APNS-specific Properties</b> Properties that are specifically for use with Apple Push Notification Service.</p>
+    <ul>
+        <li><i>badge</i> - An integer value to be displayed in a badge on the application icon.</li>
+        <li><i>category</i> - Name of the category for iOS8 & up interactive push notifications.</li>
+        <li><i>actionKey</i> - The label of the dialog box button that allows the user to open the app upon receiving the notification.</li>
+        <li><i>payload</i> - A JSON block that is transferred to the application if the application is opened by the user when the notification is received, or if the application is already open.</li>
+        <li><i>sound file</i> - The name of a file to play when the notification arrives.</li>
+        <li><i>type</i> - A string representing the type of notification. One of DEFAULT, SILENT and MIXED</li>
+    </ul>
+
+    <p><b>Optional GCM-specific Properties</b> Properties that are specifically for use with Google Cloud Messaging.</p>
+    <ul>
+        <li><i>collapseKey</i> - A string value that indicates that the message can be replaced. When multiple messages are queued up in GCM Servers with the same key, only the last one is delivered.</li>
+        <li><i>delayWhileIdle</i> - A Boolean value that indicates that the message should not be sent if the device is idle. The server waits for the device to become active before the message is sent. Default value is false.</li>
+        <li><i>payload</i> - A JSON block that is transferred to the application if the application is opened by the user when the notification is received, or if the application is already open.</li>
+        <li><i>priority</i> - A string value that indicates the priority of this notification. Allowed values are 'max', 'high', 'default', 'low' and 'min'. High/Max priority notifications along with 'sound' field may be used for Heads up notification in Android 5.0 or higher.</li>
+        <li><i>sound file</i> - The name of a file to play when the notification arrives.</li>
+        <li><i>timeToLive</i> - How long, in seconds, the message should be kept on GCM storage if the device is offline. Default value is 4 weeks, and must be set as a JSON number.</li>
+    </ul>
+
+    <p> Visit this <a target="_blank" href="https://www.ng.bluemix.net/docs/services/mobilepush/c_push_overview.html">link</a> for more information on IBM Push Notification for Bluemix
 
 </script>
 
 
 <script type="text/javascript">
-    RED.nodes.registerType('ibmpush',{
+    RED.nodes.registerType('ibmpush', {
         category: 'output',
-        color:"rgb(115, 185, 221)", 	
-        defaults: {   
+        color: "rgb(115, 185, 221)",
+        defaults: {
             name: {},
-            ApplicationID: {value:"", required:false},
+            ApplicationID: {
+                value: "",
+                required: false
+            },
             //ApplicationSecret: {value:"", required:true},
-            identifiers: {value:""},
-            notification: {value:"broadcast"}
+            badge: {
+                value: ""
+            },
+            category: {
+                value: ""
+            },
+            iosActionKey: {
+                value: ""
+            },
+            payload: {
+                value: ""
+            },
+            sound: {
+                value: ""
+            },
+            iOStype: {
+                value: "dflt"
+            },
+            collapseKey: {
+                value: ""
+            },
+            delayWhileIdle: {
+                value: ""
+            },
+            GCMpayload: {
+                value: ""
+            },
+            priority: {
+                value: ""
+            },
+            GCMsound: {
+                value: ""
+            },
+            TTL: {
+                value: ""
+            },
+            identifiers: {
+                value: ""
+            },
+            notification: {
+                value: "broadcast"
+            }
         },
-        inputs:1,               
-        outputs:0,
-        icon: "ibmpush-icon.png", 
-		align: "right",
+        inputs: 1,
+        outputs: 0,
+        icon: "ibmpush-icon.png",
+        align: "right",
         label: function() {
-            return this.name ||"IBM Push";
+            return this.name || "IBM Push";
         },
         labelStyle: function() {
-            return this.name?"node_label_italic":"";
+            return this.name ? "node_label_italic" : "";
         },
-        oneditprepare: function () {
+        oneditprepare: function() {
 
-            $.getJSON('ibmpush/vcap/',function(data) {
+            $.getJSON('ibmpush/vcap/', function(data) {
                 console.log("resp");
                 console.log(data);
-                if(data.isBound) {
-                	
-               		$("#propDiv").hide();
+                if (data.isBound) {
+
+                    $("#propDiv").hide();
                     //tooltip
                     $("#form-tipsUnbounded").hide();
                     $("#form-tipsLocal").hide();
-                } else if(data.isBluemix){
-    				$("#propDiv").show();
+                } else if (data.isBluemix) {
+                    $("#propDiv").show();
                     //tooltip
                     $("#form-tipsBounded").hide();
                     $("#form-tipsLocal").hide();
@@ -137,21 +275,21 @@
                     $("#form-tipsBounded").hide();
                     $("#form-tipsUnbounded").hide();
                 }
-                
-            });
-            
-            $.getJSON("ibmpush/"+this.id, function(data) {
-                    
-                    if (data.hasPassword) {
-                    	$('#node-input-ApplicationSecret').data("v",'__PWRD__');
-                        $("#node-input-ApplicationSecret").val("__PWRD__");
-                    } else {
-                   		$('#node-input-ApplicationSecret').data("v",'');
-                        $("#node-input-ApplicationSecret").val("");
-                    }
+
             });
 
-    		var notificationSelect = $('#node-input-notification');
+            $.getJSON("ibmpush/" + this.id, function(data) {
+
+                if (data.hasPassword) {
+                    $('#node-input-ApplicationSecret').data("v", '__PWRD__');
+                    $("#node-input-ApplicationSecret").val("__PWRD__");
+                } else {
+                    $('#node-input-ApplicationSecret').data("v", '');
+                    $("#node-input-ApplicationSecret").val("");
+                }
+            });
+
+            var notificationSelect = $('#node-input-notification');
             notificationSelect.change(function() {
                 var service = notificationSelect.val();
                 if (service === "broadcast" || service === "android" || service === "ios") {
@@ -164,35 +302,34 @@
             });
 
         },
-        
+
         oneditsave: function() {
-            
+
             var oldPass = $('#node-input-ApplicationSecret').data("v");
             var newPass = $("#node-input-ApplicationSecret").val();
-            
-            if(oldPass != newPass) {
-	            if (newPass == "") {
-	                    $.ajax({
-	                        url: 'ibmpush/'+this.id,
-	                        type: 'DELETE',
-	                        success: function(result) {}
-	                    });
-	            } else {
-	            	var credentials = {};
-		            if (newPass != "__PWRD__") {
-		                credentials.password = newPass;
-		            }
-		            $.ajax({
-		                url: "ibmpush/"+this.id,
-		                type: "POST",
-		                data: credentials,
-		                success: function(result) {}
-		            });
-		        }
-		        return true;
-			}
+
+            if (oldPass != newPass) {
+                if (newPass == "") {
+                    $.ajax({
+                        url: 'ibmpush/' + this.id,
+                        type: 'DELETE',
+                        success: function(result) {}
+                    });
+                } else {
+                    var credentials = {};
+                    if (newPass != "__PWRD__") {
+                        credentials.password = newPass;
+                    }
+                    $.ajax({
+                        url: "ibmpush/" + this.id,
+                        type: "POST",
+                        data: credentials,
+                        success: function(result) {}
+                    });
+                }
+                return true;
+            }
         }
     });
 
-    
 </script>
