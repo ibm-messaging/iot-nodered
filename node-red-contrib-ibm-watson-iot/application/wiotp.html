@@ -1,0 +1,393 @@
+<!--
+  Copyright 2016 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="ibmwiotp-credentials">
+    <div class="form-row">
+        <label for="node-config-input-org"></i> Organization</label>
+        <input type="text" id="node-config-input-org" placeholder="organization" >
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-devType"></i> Device Type</label>
+        <input type="text" id="node-config-input-devType" placeholder="device type e.g. temperature" >
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-devId"></i> Device ID</label>
+        <input type="text" id="node-config-input-devId" placeholder="device id e.g. ab12cd231a21">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-authToken">Auth Token</label>
+        <input type="password" id="node-config-input-authToken">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips hidden" id="node-config-tip-bluemix">
+        <b>Note:</b> if used with a bound Bluemix Service, the Organization field
+        can be left blank.
+    </div>
+</script>
+
+<script type="text/javascript">
+(function() {
+    function generateQuickstartId() {
+        var id = "";
+        for (var i=0;i<6;i++) {
+            var j = Math.floor(Math.random()*256);
+            id += ((i>0 && i%2===0)?'-':'')+(j<16?'0':'')+j.toString(16);
+        }
+        return id.toUpperCase();
+    }
+
+    RED.nodes.registerType('ibmwiotp-credentials',{
+        category: 'config',
+        defaults: {
+            name: { value:"" },
+            org: {value: "", required: true },
+            devType: { value: "", required: true },
+            devId: { value: "", required: true }
+        },
+        label: function() {
+            return this.name||this.devType+"/"+this.devId||"Device";
+        },
+        credentials: {
+            authToken: {type:"password"}
+        }
+    });
+
+    RED.nodes.registerType('ibmwiotp in',{
+        category: 'input',
+        color:"#6C9FC3",
+        defaults: {
+            authType: {value:"d"},
+            deviceKey: {type:"ibmwiotp-credentials"},
+            deviceType: {value:"", validate: function(v) {
+                var ct = $("#node-form-row-commandType input[type='radio']:checked").val()|| this.commandType;
+                return ct === 'g' || (v != '');
+            }},
+            deviceId: {value:"", validate: function(v) {
+                var ct = $("#node-form-row-commandType input[type='radio']:checked").val()|| this.commandType;
+                return ct === 'g' || (v != '');
+            }},
+            command: {value:""},
+            commandType: {value: "g"},
+            name: { value:"" }
+        },
+        inputs:0,
+        outputs:1,
+        icon: "ibmwiotp.png",
+        label: function() {
+            return this.name || ((this.command === '' ||this.command === '+')?'all commands':this.command);
+        },
+        labelStyle: function() {
+                return this.name ? "node_label_italic" : "";
+        },
+        paletteLabel: "IBM IoT Device",
+        oneditprepare: function() {
+            var command = $("#node-input-command").typedInput({
+                default: 'all',
+                types:[{value:"str",label:"set command",icon:"red/images/typedInput/az.png"},{value:"all",label:"all commands",hasValue:false}]
+            });
+
+            if (this.command === '' || this.command === '+') {
+                command.typedInput('value','');
+                command.typedInput('type','all');
+            } else {
+                command.typedInput('value',this.command);
+                command.typedInput('type','str');
+            }
+
+            $("#node-form-row-commandType input[type='radio'][value='"+(this.commandType||'g')+"']").attr('checked',true).change();
+
+
+            function updateOptions() {
+                var authType = $("#node-input-authType").val();
+                var commandType = $("#node-form-row-commandType input[type='radio']:checked").val();
+                if (authType === 'd' || commandType === 'g') {
+                    $('#node-form-row-deviceId').hide();
+                    $('#node-form-row-deviceType').hide();
+                    if (authType === 'd') {
+                        $("#node-form-row-commandType").hide();
+                    } else {
+                        $("#node-form-row-commandType").show();
+                    }
+                } else {
+                    $('#node-form-row-deviceId').show();
+                    $('#node-form-row-deviceType').show();
+                    $("#node-form-row-commandType").show();
+                }
+            }
+            $("#node-input-authType").change(updateOptions);
+            $("#node-form-row-commandType input[type='radio']").change(updateOptions);
+            updateOptions();
+        },
+        oneditsave: function() {
+            if ($("#node-input-command").typedInput('type') === 'all') {
+                $("#node-input-command").typedInput('value','+');
+            }
+            this.commandType = $("#node-form-row-commandType input[type='radio']:checked").val();
+            if (this.commandType === 'g') {
+                $('#node-input-deviceId').val('');
+                $('#node-input-deviceType').val('');
+            }
+
+        }
+    });
+
+    RED.nodes.registerType('ibmwiotp out',{
+        category: 'output',
+        color:"#6C9FC3",
+        defaults: {
+            authType: {value:"d"},
+            qs: {value: "true"},
+            qsDeviceId: { value: "",validate: function(v) {
+                var qs = $("#node-form-row-qs input[type='radio']:checked").val()|| this.qs;
+                return qs === 'false' || /^[a-z0-9\-_\.]*$/i.test(v);
+            }},
+            deviceKey: {
+                type:"ibmwiotp-credentials",
+                required: false,
+                validate: function(v) {
+                    var qs = $("#node-form-row-qs input[type='radio']:checked").val()|| this.qs;
+                    return qs === 'true' || (v != '' && v!='_ADD_');
+                }
+            },
+            deviceType: {value:""},
+            deviceId: {value:""},
+            event: {value:""},
+            format: {value:"json"},
+            name: { value:"" }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "ibmwiotp.png",
+        align: "right",
+        label: function() {
+            return this.name || this.event || "IBM IoT "+(this.authType === 'd'?"Device":"Gateway");
+        },
+        labelStyle: function() {
+                return this.name ? "node_label_italic" : "";
+        },
+        paletteLabel: "IBM IoT Device",
+        oneditprepare: function() {
+            $("#node-form-row-qs input[type='radio']").change(function() {
+                var value = $("#node-form-row-qs input[type='radio']:checked").val();
+                if (value === 'true') {
+                    $("#node-form-row-deviceKey").hide();
+                    if ($("#node-input-qsDeviceId").val() === '') {
+                        $("#node-input-qsDeviceId").val(generateQuickstartId())
+                    }
+                    $("#node-form-row-qsDeviceId").show();
+                } else {
+                    $("#node-form-row-deviceKey").show();
+                    $("#node-form-row-qsDeviceId").hide();
+                }
+            });
+            $("#node-form-row-qs input[type='radio'][value='"+this.qs+"']").attr('checked',true).change();
+            function updateOptions() {
+                var type = $("#node-input-authType").val();
+                if (type === 'd') {
+                    $("#node-form-row-deviceId").hide();
+                    $("#node-form-row-deviceType").hide();
+                } else {
+                    $("#node-form-row-deviceId").show();
+                    $("#node-form-row-deviceType").show();
+                }
+            }
+            $("#node-input-authType").change(updateOptions);
+            updateOptions();
+
+            var format = $("#node-input-format").typedInput({
+                default: 'json',
+                types:[{value:"json",label:"json",hasValue:false},{value:"str",label:"other",icon:"red/images/typedInput/az.png"}]
+            });
+            if (this.format === 'json') {
+                format.typedInput('value','');
+                format.typedInput('type','json');
+            } else {
+                format.typedInput('value',this.format);
+                format.typedInput('type','str');
+            }
+            $("#node-input-qsDeviceId").change(function() {
+                if ($(this).val() === '') {
+                    $("#node-input-qsDeviceId-link").addClass('disabled');
+                } else {
+                    $("#node-input-qsDeviceId-link").removeClass('disabled');
+                    $("#node-input-qsDeviceId-link").attr('href','https://quickstart.internetofthings.ibmcloud.com/#/device/'+$(this).val()+'/sensor/');
+                }
+            });
+
+            $("#node-input-qsDeviceId-link").click(function(e) {
+                if ($("#node-input-qsDeviceId").val() === '') {
+                    e.preventDefault();
+                }
+            })
+
+        },
+        oneditsave: function() {
+            this.qs = $("#node-form-row-qs input[type='radio']:checked").val();
+            if (this.qs === 'true') {
+                $("#node-input-deviceKey").val('_ADD_');
+            } else {
+                $("#node-input-qsDeviceId").val('');
+            }
+            if ($("#node-input-format").typedInput('type') === 'json') {
+                $("#node-input-format").typedInput('value','json');
+            }
+
+        }
+    });
+})();
+</script>
+
+<script type="text/x-red" data-template-name="ibmwiotp in">
+    <div class="form-row">
+        <label for="node-input-authType">Connect as</label>
+        <select id="node-input-authType" style="width: 300px;">
+            <option value="d">Device</option>
+            <option value="g">Gateway</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-form-row-deviceKey">
+        <label for="node-input-deviceKey">Credentials</label>
+        <input type="text" id="node-input-deviceKey" style="width: 300px;">
+    </div>
+
+    <div class="form-row" id="node-form-row-commandType">
+        <label>Subscribe to</label>
+        <label style="width:auto; margin: 0 15px 0 5px;" for="node-input-commandType-g"><input style="width: auto; margin-right: 5px; vertical-align: top;" type="radio" id="node-input-commandType-g" name="node-input-commandType" value="g"> Gateway commands</label>
+        <label style="width:auto;" for="node-input-commandType-d"><input style="width: auto; margin-right: 5px; vertical-align: top;" type="radio" id="node-input-commandType-d" name="node-input-commandType" value="d"> Device commands</label>
+    </div>
+
+
+    <div class="form-row" id="node-form-row-deviceType">
+        <label for="node-input-deviceType">Device Type</label>
+        <input type="text" id="node-input-deviceType" placeholder="device type e.g. temperature" style="width: 300px;">
+    </div>
+
+    <div class="form-row" id="node-form-row-deviceId">
+        <label for="node-input-deviceId">Device Id</label>
+        <input type="text" id="node-input-deviceId" placeholder="device id e.g. ab12cd231a21" style="width: 300px;">
+    </div>
+
+    <div class="form-row" id="node-form-row-command">
+        <label for="node-input-command">Command</label>
+        <input type="text" id="node-input-command" placeholder="command type e.g. blink" style="width: 300px;">
+    </div>
+</script>
+
+<script type="text/x-red" data-template-name="ibmwiotp out">
+    <div class="form-row">
+        <label for="node-input-authType">Connect as</label>
+        <select id="node-input-authType" style="width: 300px;">
+            <option value="d">Device</option>
+            <option value="g">Gateway</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-form-row-qs">
+        <label/>
+        <label style="width:auto; margin: 0 30px 0 5px;" for="node-input-qs-true"><input style="width: auto; margin-right: 5px; vertical-align: top;" type="radio" id="node-input-qs-true" name="node-input-qs" value="true"> Quickstart</label>
+        <label style="width:auto;" for="node-input-qs-false"><input style="width: auto; margin-right: 5px; vertical-align: top;" type="radio" id="node-input-qs-false" name="node-input-qs" value="false"> Registered</label>
+    </div>
+
+    <div class="form-row" id="node-form-row-qsDeviceId">
+        <label for="node-input-qsDeviceId">Quickstart Id</label>
+        <input type="text" id="node-input-qsDeviceId" placeholder="quickstart device id e.g. ab12cd231a21" style="width: 260px;">
+        <a class="editor-button" id="node-input-qsDeviceId-link" href="#" target="_new"><i class="fa fa-external-link" /></a>
+    </div>
+
+    <div class="form-row" id="node-form-row-deviceKey">
+        <label for="node-input-deviceKey">Credentials</label>
+        <input type="text" id="node-input-deviceKey" style="width: 300px;">
+    </div>
+
+    <div class="form-row" id="node-form-row-deviceType">
+        <label for="node-input-deviceType">Device Type</label>
+        <input type="text" id="node-input-deviceType" placeholder="device type e.g. temperature" style="width: 300px;">
+    </div>
+
+    <div class="form-row" id="node-form-row-deviceId">
+        <label for="node-input-deviceId">Device Id</label>
+        <input type="text" id="node-input-deviceId" placeholder="device id e.g. ab12cd231a21" style="width: 300px;">
+    </div>
+
+    <div class="form-row" id="node-form-row-event">
+        <label for="node-input-event">Event</label>
+        <input type="text" id="node-input-event" placeholder="event type e.g. temperature" style="width: 300px;">
+    </div>
+
+    <div class="form-row" id="node-form-row-format">
+        <label for="node-input-format">Format</label>
+        <input type="text" id="node-input-format" placeholder="format e.g. json" style="width: 300px;">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="ibmwiotp in">
+    <p>Receive device commands from the IBM Watson Internet of Things Platform.</p>
+    <p>The node can connect as either a Device or Gateway:</p>
+    <ul>
+      <li><b>Device</b>: the node can be configured to either receive all commands for
+          the Device, or just select a specific command type.</li>
+      <li><b>Gateway</b>: the node can be configured to receive commands for all devices
+          connected through the gateway, or to select a subset of them.</li>
+    </ul>
+    <p>The message sent by this node will include the following properties:</p>
+    <ul>
+       <li><code>payload</code> - the body of the command. If the command was
+        identified as json, this property will be a JavaScript object, otherwise
+        it will be a string.</li>
+       <li><code>topic</code> - the topic the command was received on</li>
+       <li><code>command</code> - the command name</li>
+       <li><code>format</code> - the format of the command</li>
+       <li><code>deviceType</code> - (<i>gateway only</i>) the type of device
+        the command is for</li>
+       <li><code>deviceId</code> - (<i>gateway only</i>) the id of the device
+        the command is for</li>
+    </ul>
+</script>
+<script type="text/x-red" data-help-name="ibmwiotp out">
+    <p>Send device events to the IBM Watson Internet of Things Platform.</p>
+    <p>The node can connect as either a Device or Gateway, in registered mode or
+     using the Quickstart service.</p>
+    <p>When connecting using the Quickstart service, the connection will use a
+     device type of <code>node-red-ibmwiotp</code> and a randomly generated
+     device id, which can be configured in the node. The events from the node can
+     then be viewed on the <a href="https://quickstart.internetofthings.ibmcloud.com/" target="_new">Quickstart dashboard</a>.</p>
+    <p>The type of the event sent can be configured in the node or, if left blank,
+     can be set by the <code>msg.event</code> property.</p>
+    <p>The format of the event defaults to <code>json</code>, but can be set to
+     another value or, if left blank, can be set by the <code>msg.format</code>
+      property.</p>
+    <p>The data for the event is taken from <code>msg.payload</code>. If
+     <code>format</code> is set to <code>json</code>, this node will attempt to
+      encode the data appropriately:</p>
+    <ul>
+        <li>If the data is an Object of the form: <code>{ d: { ... }}</code>
+            it will be used as-is. Similarly if it is a string representation
+            of such an object no further encoding will be done.</li>
+        <li>For any other type of object, for example a Number, it will be sent
+            as <code>{"d":{"value":123}}</code></li>
+    </ul>
+    <p>If <code>format</code> is set to anything else, the data will be passed on
+       as-is.</p>
+    <p>When connected as a Gateway, the type and id of the Device the event is being
+       sent on behalf of can be configured in the node or, if left blank, can be
+       set by the <code>msg.deviceType</code> and <code>msg.deviceId</code> properties.
+       If these properties are not provided, either in the node or the message,
+       it will use the type and id of the Gateway itself.
+    </p>
+</script>
