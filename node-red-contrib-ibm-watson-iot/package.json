@@ -19,7 +19,7 @@
     "readmeFilename": "README.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/ibm-messaging/iot-nodered/tree/master/node-red-contrib-ibmiot"
+        "url": "https://github.com/ibm-messaging/iot-nodered/tree/master/node-red-contrib-ibm-watson-iot"
     },
     "license": "Apache-2.0",
     "node-red": {
