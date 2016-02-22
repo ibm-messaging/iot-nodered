@@ -21,11 +21,11 @@
     </div>
     <div class="form-row">
         <label for="node-config-input-devType"></i> Device Type</label>
-        <input type="text" id="node-config-input-devType" placeholder="device type e.g. temperature" >
+        <input type="text" id="node-config-input-devType" placeholder="e.g. sensor" >
     </div>
     <div class="form-row">
         <label for="node-config-input-devId"></i> Device ID</label>
-        <input type="text" id="node-config-input-devId" placeholder="device id e.g. ab12cd231a21">
+        <input type="text" id="node-config-input-devId" placeholder="e.g. ab12cd231a21">
     </div>
     <div class="form-row">
         <label for="node-config-input-authToken">Auth Token</label>
@@ -99,7 +99,7 @@
         oneditprepare: function() {
             var command = $("#node-input-command").typedInput({
                 default: 'all',
-                types:[{value:"str",label:"set command",icon:"red/images/typedInput/az.png"},{value:"all",label:"all commands",hasValue:false}]
+                types:[{value:"str",label:"specify command",icon:"red/images/typedInput/az.png"},{value:"all",label:"all commands",hasValue:false}]
             });
 
             if (this.command === '' || this.command === '+') {
@@ -275,17 +275,17 @@
 
     <div class="form-row" id="node-form-row-deviceType">
         <label for="node-input-deviceType">Device Type</label>
-        <input type="text" id="node-input-deviceType" placeholder="device type e.g. temperature" style="width: 300px;">
+        <input type="text" id="node-input-deviceType" placeholder="e.g. sensor" style="width: 300px;">
     </div>
 
     <div class="form-row" id="node-form-row-deviceId">
         <label for="node-input-deviceId">Device Id</label>
-        <input type="text" id="node-input-deviceId" placeholder="device id e.g. ab12cd231a21" style="width: 300px;">
+        <input type="text" id="node-input-deviceId" placeholder="e.g. ab12cd231a21" style="width: 300px;">
     </div>
 
     <div class="form-row" id="node-form-row-command">
         <label for="node-input-command">Command</label>
-        <input type="text" id="node-input-command" placeholder="command type e.g. blink" style="width: 300px;">
+        <input type="text" id="node-input-command" placeholder="e.g. blink" style="width: 300px;">
     </div>
 </script>
 
@@ -305,7 +305,7 @@
 
     <div class="form-row" id="node-form-row-qsDeviceId">
         <label for="node-input-qsDeviceId">Quickstart Id</label>
-        <input type="text" id="node-input-qsDeviceId" placeholder="quickstart device id e.g. ab12cd231a21" style="width: 260px;">
+        <input type="text" id="node-input-qsDeviceId" placeholder="e.g. ab12cd231a21" style="width: 260px;">
         <a class="editor-button" id="node-input-qsDeviceId-link" href="#" target="_new"><i class="fa fa-external-link" /></a>
     </div>
 
@@ -316,22 +316,22 @@
 
     <div class="form-row" id="node-form-row-deviceType">
         <label for="node-input-deviceType">Device Type</label>
-        <input type="text" id="node-input-deviceType" placeholder="device type e.g. temperature" style="width: 300px;">
+        <input type="text" id="node-input-deviceType" placeholder="e.g. sensor" style="width: 300px;">
     </div>
 
     <div class="form-row" id="node-form-row-deviceId">
         <label for="node-input-deviceId">Device Id</label>
-        <input type="text" id="node-input-deviceId" placeholder="device id e.g. ab12cd231a21" style="width: 300px;">
+        <input type="text" id="node-input-deviceId" placeholder="e.g. ab12cd231a21" style="width: 300px;">
     </div>
 
     <div class="form-row" id="node-form-row-event">
-        <label for="node-input-event">Event</label>
-        <input type="text" id="node-input-event" placeholder="event type e.g. temperature" style="width: 300px;">
+        <label for="node-input-event">Event type</label>
+        <input type="text" id="node-input-event" placeholder="e.g. temperature" style="width: 300px;">
     </div>
 
     <div class="form-row" id="node-form-row-format">
         <label for="node-input-format">Format</label>
-        <input type="text" id="node-input-format" placeholder="format e.g. json" style="width: 300px;">
+        <input type="text" id="node-input-format" placeholder="e.g. text, xml" style="width: 300px;">
     </div>
 </script>
 
