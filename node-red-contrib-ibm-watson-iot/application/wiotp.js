@@ -100,7 +100,7 @@ module.exports = function(RED) {
         })
     }
 
-    RED.nodes.registerType("ibmwiotp-credentials",IotDeviceNode, {
+    RED.nodes.registerType("wiotp-credentials",IotDeviceNode, {
         credentials: {
             authToken: {type:"password"}
         }
@@ -176,16 +176,7 @@ module.exports = function(RED) {
             }
         });
     }
-    RED.nodes.registerType("ibmwiotp in", IotAppInNode);
-
-    function generateQuickstartId() {
-        var id = "";
-        for (var i=0;i<6;i++) {
-            var j = Math.floor(Math.random()*256);
-            id += ((i>0 && i%2===0)?'-':'')+(j<16?'0':'')+j.toString(16);
-        }
-        return id.toUpperCase();
-    }
+    RED.nodes.registerType("wiotp in", IotAppInNode);
 
     function IotAppOutNode(n) {
         RED.nodes.createNode(this, n);
@@ -198,7 +189,6 @@ module.exports = function(RED) {
         this.format = n.format || "json";
         this.event = n.event;
 
-        this.credentials;
         if (!isQuickstart) {
             var deviceNode = RED.nodes.getNode(n.deviceKey);
             if (!deviceNode || !deviceNode.valid) {
@@ -208,8 +198,8 @@ module.exports = function(RED) {
         } else {
             this.credentials = {
                 org: "quickstart",
-                type: "node-red-ibmwiotp",
-                id: n.qsDeviceId || generateQuickstartId()
+                type: "node-red-wiotp",
+                id: n.qsDeviceId || n.id
             }
             node.log("Connecting to Quickstart service as device "+this.credentials.type+"/"+this.credentials.id);
         }
@@ -233,7 +223,7 @@ module.exports = function(RED) {
                 }
             } else {
                 if (Buffer.isBuffer(data)) {
-                    data = JSON.stringify({d:{value:data.toString()}})
+                    data = JSON.stringify({d:{value:data.toString()}});
                 } else {
                     if (typeof data === "object") {
                         if (!data.hasOwnProperty('d')) {
@@ -260,7 +250,7 @@ module.exports = function(RED) {
                             data = JSON.stringify({d:{value:data}});
                         }
                     } else {
-                        data = JSON.stringify({d:{value:data}})
+                        data = JSON.stringify({d:{value:data}});
                     }
                 }
             }
@@ -273,7 +263,7 @@ module.exports = function(RED) {
                     node.client.publish(event,format,data,qos);
                 }
             } catch(err) {
-                node.warn("Error sending message: "+err.toString(),msg)
+                node.warn("Error sending message: "+err.toString(),msg);
             }
         });
 
@@ -283,7 +273,7 @@ module.exports = function(RED) {
             }
         });
     }
-    RED.nodes.registerType("ibmwiotp out", IotAppOutNode);
+    RED.nodes.registerType("wiotp out", IotAppOutNode);
 
 
 };

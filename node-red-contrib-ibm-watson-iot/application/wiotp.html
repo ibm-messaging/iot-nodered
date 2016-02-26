@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="ibmwiotp-credentials">
+<script type="text/x-red" data-template-name="wiotp-credentials">
     <div class="form-row">
         <label for="node-config-input-org"></i> Organization</label>
         <input type="text" id="node-config-input-org" placeholder="organization" >
@@ -43,16 +43,7 @@
 
 <script type="text/javascript">
 (function() {
-    function generateQuickstartId() {
-        var id = "";
-        for (var i=0;i<6;i++) {
-            var j = Math.floor(Math.random()*256);
-            id += ((i>0 && i%2===0)?'-':'')+(j<16?'0':'')+j.toString(16);
-        }
-        return id.toUpperCase();
-    }
-
-    RED.nodes.registerType('ibmwiotp-credentials',{
+    RED.nodes.registerType('wiotp-credentials',{
         category: 'config',
         defaults: {
             name: { value:"" },
@@ -68,12 +59,12 @@
         }
     });
 
-    RED.nodes.registerType('ibmwiotp in',{
+    RED.nodes.registerType('wiotp in',{
         category: 'input',
         color:"#6C9FC3",
         defaults: {
             authType: {value:"d"},
-            deviceKey: {type:"ibmwiotp-credentials"},
+            deviceKey: {type:"wiotp-credentials"},
             deviceType: {value:"", validate: function(v) {
                 var ct = $("#node-form-row-commandType input[type='radio']:checked").val()|| this.commandType;
                 return ct === 'g' || (v != '');
@@ -88,7 +79,7 @@
         },
         inputs:0,
         outputs:1,
-        icon: "ibmwiotp.png",
+        icon: "wiotp.png",
         label: function() {
             return this.name || ((this.command === '' ||this.command === '+')?'all commands':this.command);
         },
@@ -147,7 +138,7 @@
         }
     });
 
-    RED.nodes.registerType('ibmwiotp out',{
+    RED.nodes.registerType('wiotp out',{
         category: 'output',
         color:"#6C9FC3",
         defaults: {
@@ -158,7 +149,7 @@
                 return qs === 'false' || /^[a-z0-9\-_\.]*$/i.test(v);
             }},
             deviceKey: {
-                type:"ibmwiotp-credentials",
+                type:"wiotp-credentials",
                 required: false,
                 validate: function(v) {
                     var qs = $("#node-form-row-qs input[type='radio']:checked").val()|| this.qs;
@@ -173,7 +164,7 @@
         },
         inputs:1,
         outputs:0,
-        icon: "ibmwiotp.png",
+        icon: "wiotp.png",
         align: "right",
         label: function() {
             return this.name || this.event || "IBM IoT "+(this.authType === 'd'?"Device":"Gateway");
@@ -183,12 +174,16 @@
         },
         paletteLabel: "Watson IoT",
         oneditprepare: function() {
+            var node = this;
             $("#node-form-row-qs input[type='radio']").change(function() {
                 var value = $("#node-form-row-qs input[type='radio']:checked").val();
                 if (value === 'true') {
                     $("#node-form-row-deviceKey").hide();
                     if ($("#node-input-qsDeviceId").val() === '') {
-                        $("#node-input-qsDeviceId").val(generateQuickstartId())
+                        $("#node-input-qsDeviceId").val(node.id)
+                    }
+                    if ($("#node-input-event").val() === '') {
+                        $("#node-input-event").val("event");
                     }
                     $("#node-form-row-qsDeviceId").show();
                 } else {
@@ -253,7 +248,7 @@
 })();
 </script>
 
-<script type="text/x-red" data-template-name="ibmwiotp in">
+<script type="text/x-red" data-template-name="wiotp in">
     <div class="form-row">
         <label for="node-input-authType">Connect as</label>
         <select id="node-input-authType" style="width: 300px;">
@@ -289,7 +284,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-template-name="ibmwiotp out">
+<script type="text/x-red" data-template-name="wiotp out">
     <div class="form-row">
         <label for="node-input-authType">Connect as</label>
         <select id="node-input-authType" style="width: 300px;">
@@ -336,7 +331,7 @@
 </script>
 
 
-<script type="text/x-red" data-help-name="ibmwiotp in">
+<script type="text/x-red" data-help-name="wiotp in">
     <p>Receive device commands from the IBM Watson Internet of Things Platform.</p>
     <p>The node can connect as either a Device or Gateway:</p>
     <ul>
@@ -359,16 +354,18 @@
         the command is for</li>
     </ul>
 </script>
-<script type="text/x-red" data-help-name="ibmwiotp out">
+<script type="text/x-red" data-help-name="wiotp out">
     <p>Send device events to the IBM Watson Internet of Things Platform.</p>
     <p>The node can connect as either a Device or Gateway, in registered mode or
      using the Quickstart service.</p>
     <p>When connecting using the Quickstart service, the connection will use a
-     device type of <code>node-red-ibmwiotp</code> and a randomly generated
+     device type of <code>node-red-wiotp</code> and a randomly generated
      device id, which can be configured in the node. The events from the node can
      then be viewed on the <a href="https://quickstart.internetofthings.ibmcloud.com/" target="_new">Quickstart dashboard</a>.</p>
     <p>The type of the event sent can be configured in the node or, if left blank,
-     can be set by the <code>msg.event</code> property.</p>
+     can be set by the <code>msg.event</code> property. If using the Quickstart service,
+     the event type must be set to <code>event</code> for the data to be seen on the
+     Quickstart dashboard.</p>
     <p>The format of the event defaults to <code>json</code>, but can be set to
      another value or, if left blank, can be set by the <code>msg.format</code>
       property.</p>
