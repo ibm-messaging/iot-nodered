@@ -4,8 +4,6 @@ node-red-contrib-ibm-watson-iot
 A pair of Node-RED nodes for connecting to the IBM Watson Internet of Things Platform
 as a Device or Gateway.
 
-This node requires Node-RED version 0.13 or later.
-
 ## Install
 
 Run the following command in the user directory of your Node-RED install. This is
