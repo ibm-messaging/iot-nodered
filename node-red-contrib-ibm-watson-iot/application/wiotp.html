@@ -39,6 +39,10 @@
 
 <script type="text/javascript">
 (function() {
+
+    var hasTypedInputs = (typeof jQuery.nodered !== "undefined") && (typeof jQuery.nodered.typedInput !== "undefined");
+
+
     RED.nodes.registerType('wiotp-credentials',{
         category: 'config',
         defaults: {
@@ -84,20 +88,42 @@
         },
         paletteLabel: "Watson IoT",
         oneditprepare: function() {
-            var command = $("#node-input-command").typedInput({
-                default: 'all',
-                types:[{value:"str",label:"specify command",icon:"red/images/typedInput/az.png"},{value:"all",label:"all commands",hasValue:false}]
-            });
+            if (hasTypedInputs) {
+                var command = $("#node-input-command").typedInput({
+                    default: 'all',
+                    types:[{value:"str",label:"specify command",icon:"red/images/typedInput/az.png"},{value:"all",label:"all commands",hasValue:false}]
+                });
 
-            if (this.command === '' || this.command === '+') {
-                command.typedInput('value','');
-                command.typedInput('type','all');
+                if (this.command === '' || this.command === '+') {
+                    command.typedInput('value','');
+                    command.typedInput('type','all');
+                } else {
+                    command.typedInput('value',this.command);
+                    command.typedInput('type','str');
+                }
             } else {
-                command.typedInput('value',this.command);
-                command.typedInput('type','str');
+                $('#node-input-command').width(250);
+                $('<label style="width:auto;" for="node-input-command-all"><input style="width: auto; margin-right: 5px; vertical-align: top;" type="radio" id="node-input-command-all" name="node-input-command" value="all"> all </label>').insertBefore("#node-input-command");
+                $('<label style="width:auto; margin-left: 10px;" for="node-input-command-input"><input style="width: auto; margin-right: 5px; vertical-align: top;" type="radio" id="node-input-command-input" name="node-input-command" value="input"> </label>').insertBefore("#node-input-command");
+
+                function updateCommandOptions() {
+                    var commandType = $("#node-form-row-command input[type='radio']:checked").val();
+                    if (commandType === 'all') {
+                        $('#node-input-command').val("");
+                    }
+                }
+                $("#node-form-row-command input[type='radio']").change(updateCommandOptions);
+                if (this.command === '' || this.command === '+') {
+                    $("#node-form-row-command input[type='radio'][value='all']").prop('checked',true).change();
+                } else {
+                    $("#node-form-row-command input[type='radio'][value='input']").prop('checked',true).change();
+                }
+                $('#node-input-command').on('click',function() {
+                    $("#node-form-row-command input[type='radio'][value='input']").prop('checked',true);
+                })
             }
 
-            $("#node-form-row-commandType input[type='radio'][value='"+(this.commandType||'g')+"']").attr('checked',true).change();
+            $("#node-form-row-commandType input[type='radio'][value='"+(this.commandType||'g')+"']").prop('checked',true).change();
 
 
             function updateOptions() {
@@ -122,8 +148,15 @@
             updateOptions();
         },
         oneditsave: function() {
-            if ($("#node-input-command").typedInput('type') === 'all') {
-                $("#node-input-command").typedInput('value','+');
+            if (hasTypedInputs) {
+                if ($("#node-input-command").typedInput('type') === 'all') {
+                    $("#node-input-command").typedInput('value','+');
+                }
+            } else {
+                var commandType = $("#node-form-row-command input[type='radio']:checked").val();
+                if (commandType === 'all') {
+                    $("#node-input-command").val('+');
+                }
             }
             this.commandType = $("#node-form-row-commandType input[type='radio']:checked").val();
             if (this.commandType === 'g') {
@@ -201,16 +234,38 @@
             $("#node-input-authType").change(updateOptions);
             updateOptions();
 
-            var format = $("#node-input-format").typedInput({
-                default: 'json',
-                types:[{value:"json",label:"json",hasValue:false},{value:"str",label:"other",icon:"red/images/typedInput/az.png"}]
-            });
-            if (this.format === 'json') {
-                format.typedInput('value','');
-                format.typedInput('type','json');
+            if (hasTypedInputs) {
+                var format = $("#node-input-format").typedInput({
+                    default: 'json',
+                    types:[{value:"json",label:"json",hasValue:false},{value:"str",label:"other",icon:"red/images/typedInput/az.png"}]
+                });
+                if (this.format === 'json') {
+                    format.typedInput('value','');
+                    format.typedInput('type','json');
+                } else {
+                    format.typedInput('value',this.format);
+                    format.typedInput('type','str');
+                }
             } else {
-                format.typedInput('value',this.format);
-                format.typedInput('type','str');
+                $('#node-input-format').width(230);
+                $('<label style="width:auto;" for="node-input-format-json"><input style="width: auto; margin-right: 5px; vertical-align: top;" type="radio" id="node-input-format-json" name="node-input-format" value="json"> json </label>').insertBefore("#node-input-format");
+                $('<label style="width:auto; margin-left: 10px;" for="node-input-format-input"><input style="width: auto; margin-right: 5px; vertical-align: top;" type="radio" id="node-input-format-input" name="node-input-format" value="input"> </label>').insertBefore("#node-input-format");
+
+                function updateFormatOptions() {
+                    var formatType = $("#node-form-row-format input[type='radio']:checked").val();
+                    if (formatType === 'json') {
+                        $('#node-input-format').val("");
+                    }
+                }
+                $("#node-form-row-format input[type='radio']").change(updateFormatOptions);
+                if (this.format === 'json' || this.format === '') {
+                    $("#node-form-row-format input[type='radio'][value='json']").prop('checked',true).change();
+                } else {
+                    $("#node-form-row-format input[type='radio'][value='input']").prop('checked',true).change();
+                }
+                $('#node-input-format').on('click',function() {
+                    $("#node-form-row-format input[type='radio'][value='input']").prop('checked',true);
+                })
             }
             $("#node-input-qsDeviceId").change(function() {
                 if ($(this).val() === '') {
@@ -235,8 +290,15 @@
             } else {
                 $("#node-input-qsDeviceId").val('');
             }
-            if ($("#node-input-format").typedInput('type') === 'json') {
-                $("#node-input-format").typedInput('value','json');
+            if (hasTypedInputs) {
+                if ($("#node-input-format").typedInput('type') === 'json') {
+                    $("#node-input-format").typedInput('value','json');
+                }
+            } else {
+                var formatType = $("#node-form-row-format input[type='radio']:checked").val();
+                if (formatType === 'json') {
+                    $("#node-input-format").val('json');
+                }
             }
 
         }
