@@ -125,8 +125,13 @@ module.exports = function(RED) {
         }
         var isGateway = (n.authType === 'g');
         if (isGateway) {
-            this.deviceType = n.deviceType;
-            this.deviceId = n.deviceId;
+            if (n.commandType === 'g') {
+                this.deviceType = deviceNode.config.type;
+                this.deviceId = deviceNode.config.id;
+            } else {
+                this.deviceType = n.deviceType;
+                this.deviceId = n.deviceId;
+            }
         } else {
             this.deviceType = "+";
             this.deviceId = "+";
