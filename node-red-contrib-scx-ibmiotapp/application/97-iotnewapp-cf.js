@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, 2015 IBM Corp.
+ * Copyright 2014, 2015, 2016 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 module.exports = function(RED) {
 	"use strict";
 
-	var connectionPool = require(process.env.NODE_RED_HOME + "/nodes/core/io/lib/mqttConnectionPool");
 	var util = require("./lib/util.js");
 	var cfenv = require("cfenv");
 	//var fs = require("fs");
@@ -382,7 +381,8 @@ module.exports = function(RED) {
 					if(n.service === "quickstart") {
 						that.deviceType = "+";
 					}
-
+					//This condition has been added as by default the device id field is blank 
+					//and this causes multiple subscription attempts when the default flow is created in Bluemix
 					if(n.service === "quickstart" && (that.deviceId === null || that.deviceId === '') ) {
 						that.warn("Device Id is not set for Quickstart flow");
 					} else {
