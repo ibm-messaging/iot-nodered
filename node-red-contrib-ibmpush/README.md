@@ -30,4 +30,4 @@ Type of notification to be pushed.
 
 *Notification Identifiers* - Used when notifications are sent *By Tags and By DeviceIds*. This can take multiple values seperated by comma(,). Example: GoldCoupons,SilverCoupons
 
-Visit this [link](https://www.ng.bluemix.net/docs/services/mobilepush/c_push_overview.html) for more information on IBM Push Notification for Bluemix
+Visit this [link](https://console.ng.bluemix.net/docs/services/mobilepush/index.html) for more information on IBM Push Notification for Bluemix
