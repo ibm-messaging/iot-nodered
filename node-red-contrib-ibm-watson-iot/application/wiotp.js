@@ -22,7 +22,8 @@ module.exports = function(RED) {
     var connectionPool = (function() {
         var connections = {};
         return {
-            getClient: function(nodeId,config,isGateway,callback) {
+            getClient: function(node,config,isGateway,callback) {
+                var nodeId = node.id;
                 var key = JSON.stringify(config);
                 if (!connections[key]) {
                     connections[key] = {
@@ -43,17 +44,42 @@ module.exports = function(RED) {
                         var users = connections[key].users;
                         for (var u in users) {
                             if (users.hasOwnProperty(u)) {
-                                users[u](connections[key].client);
+                                users[u].node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+                                users[u].callback(connections[key].client);
                             }
                         }
                     });
                     client.on('disconnect',function() {
-                    })
+                        if (connections.hasOwnProperty(key)) {
+                            var users = connections[key].users;
+                            for (var u in users) {
+                                if (users.hasOwnProperty(u)) {
+                                    users[u].node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
+                                }
+                            }
+                        }
+                    });
+                    client.on('reconnect',function() {
+                        if (connections.hasOwnProperty(key)) {
+                            var users = connections[key].users;
+                            for (var u in users) {
+                                if (users.hasOwnProperty(u)) {
+                                    users[u].node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+                                }
+                            }
+                        }
+                    });
+
                     client.connect();
                     connections[key].client = client;
                 }
-                connections[key].users[nodeId] = callback;
+                connections[key].users[nodeId] = {
+                    node: node,
+                    callback:callback
+                }
+                node.status({fill:"yellow",shape:"ring",text:"node-red:common.status.connecting"});
                 if (connections[key].client.isConnected) {
+                    node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                     callback(connections[key].client);
                 }
                 return connections[key].client;
@@ -65,7 +91,9 @@ module.exports = function(RED) {
                     var users = connections[key].users;
                     delete users[nodeId];
                     if (Object.keys(users).length === 0) {
-                        connections[key].client.disconnect();
+                        try {
+                            connections[key].client.disconnect();
+                        } catch(err) {}
                         delete connections[key];
                     }
                 }
@@ -73,7 +101,9 @@ module.exports = function(RED) {
             destroyClient: function(config) {
                 var key = JSON.stringify(config);
                 if (connections[key]) {
-                    connections[key].client.disconnect();
+                    try {
+                        connections[key].client.disconnect();
+                    } catch(err) {}
                     delete connections[key];
                 }
             }
@@ -136,7 +166,7 @@ module.exports = function(RED) {
             this.deviceType = "+";
             this.deviceId = "+";
         }
-        this.client = connectionPool.getClient(this.id,deviceNode.config,isGateway,function(client){
+        this.client = connectionPool.getClient(this,deviceNode.config,isGateway,function(client){
             if (isGateway) {
                 client.subscribeToDeviceCommand(node.deviceType,node.deviceId,node.command,'+');
             }
@@ -208,7 +238,7 @@ module.exports = function(RED) {
             }
             node.log("Connecting to Quickstart service as device "+this.credentials.type+"/"+this.credentials.id);
         }
-        this.client = connectionPool.getClient(this.id,this.credentials,isGateway,function(client){});
+        this.client = connectionPool.getClient(this,this.credentials,isGateway,function(client){});
         this.on('input',function(msg) {
             var event = node.event || msg.event || "event";
             var format = node.format || msg.format || "json";
@@ -261,8 +291,8 @@ module.exports = function(RED) {
             }
             try {
                 if (isGateway) {
-                    var deviceType = node.deviceType || msg.deviceType || credentials.type;
-                    var deviceId = node.deviceId || msg.deviceId || credentials.id;
+                    var deviceType = node.deviceType || msg.deviceType || node.credentials.type;
+                    var deviceId = node.deviceId || msg.deviceId || node.credentials.id;
                     node.client.publishEvent(deviceType,deviceId,event,format,data,qos);
                 } else {
                     node.client.publish(event,format,data,qos);
