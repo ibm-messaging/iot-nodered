@@ -7,9 +7,10 @@
   "description": "IoT Application Node-RED node for the Registered, as well as, Quickstart mode, on the IBM Internet of Things Cloud Foundation",
   "dependencies": {
     "cfenv": "1.0.0",
-    "iotclient": "0.2.4"
+    "ibmiotf": "^0.2.18",
+	"is-utf8": "^0.2.1"
   },
-  "version": "0.0.38",
+  "version": "0.0.39",
   "keywords": [
     "node-red",
     "bluemix",

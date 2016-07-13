@@ -52,6 +52,26 @@ In case the out and in nodes need to run outside the IBM Bluemix environment, us
 1. On selecting the API Key, API Key and API Token options are made available
 2. The API Key and Token can be shared across multiple nodes
 
+**Supported formats**
+
+1. JSON, 
+2. buffer, 
+3. number
+4. String
+5. boolean and Other types. 
+
+**JSON**
+
+When the format is specified as json, one can send the JSON object or the Stringify version of the JSON object using the App Out Node. Upon receiving from the Watson IoT Platform, the App In Node parses and sends the JSON object to the output.
+
+**Buffer**
+
+The buffer should be sent as is without doing any conversion. Upon receiving it, the App In Node forwards the buffer as is without any conversion.
+
+**Other types**
+
+Similar to buffer, the IoT App Out Node sends the payload as is in the case of number, string, boolean and other types. Upon receiving them, the App In Node forwards the values as Strings.
+
 
 Note
 -------
