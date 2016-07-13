@@ -19,9 +19,11 @@ module.exports = function(RED) {
 
 	var util = require("./lib/util.js");
 	var cfenv = require("cfenv");
-	//var fs = require("fs");
-	var IoTAppClient = require("iotclient");
+	var fs = require("fs");
+    var isUtf8 = require('is-utf8');
 
+	//var IoTAppClient = require("iotclient");
+	var WIoTClient = require("ibmiotf");
 	var APPLICATION_PUB_TOPIC_REGEX = /^iot-2\/(?:evt|cmd|mon)\/[^#+\/]+\/fmt\/[^#+\/]+$/;
 
 	// Load the services VCAP from the CloudFoundry environment
@@ -58,7 +60,7 @@ module.exports = function(RED) {
 				}
 			}
 		}
-	} 
+	}
 	/*
 	else {
 
@@ -73,7 +75,7 @@ module.exports = function(RED) {
 			} else {
 				console.log("Didnt find host");
 			}
-			
+
 
 			if(fileContents !== null && fileContents.mqtt_u_port) {
 				credentials.mqtt_u_port = fileContents.mqtt_u_port;
@@ -81,14 +83,14 @@ module.exports = function(RED) {
 				console.log("Didnt find u_port");
 			}
 
-			
+
 			if(fileContents !== null && fileContents.mqtt_s_port) {
 				credentials.mqtt_s_port = fileContents.mqtt_s_port;
 			} else {
 				console.log("Didnt find s_port");
 			}
 
-			
+
 			if(fileContents !== null && fileContents.org) {
 				credentials.org = fileContents.org;
 			} else {
@@ -181,7 +183,7 @@ module.exports = function(RED) {
 		var newCredentials = null;
 		if(nodeCfg.authentication === "apiKey") {
 			 var iotnode = RED.nodes.getNode(nodeCfg.apiKey);
-			 newCredentials = RED.nodes.getCredentials(iotnode.id);		 
+			 newCredentials = RED.nodes.getCredentials(iotnode.id);
 		}
 
 		if(node.service !== "quickstart") {
@@ -200,7 +202,7 @@ module.exports = function(RED) {
 		nodeCfg.deviceId = nodeCfg.deviceId.trim();
 
 		node.deviceId = ( node.allDevices ) ? '+' : nodeCfg.deviceId;
-		node.applicationId = ( node.allApplications ) ? '+' : nodeCfg.applicationId;	
+		node.applicationId = ( node.allApplications ) ? '+' : nodeCfg.applicationId;
 
 		if(newCredentials !== 'undefined' && node.authentication === 'apiKey') {
 			node.apikey = newCredentials.user;
@@ -210,11 +212,11 @@ module.exports = function(RED) {
 			if(node.organization === 'undefined' || node.organization === null || typeof node.organization === 'undefined') {
 				node.organization = node.apikey.split('-')[1];
 			} else {
-				console.log("UNABLE TO SPLIT");
+				console.log("UNABLE TO RETRIEVE THE ORGANIZATION FROM APIKEY");
 			}
 	//		node.brokerHost = node.organization + ".messaging.staging.test.internetofthings.ibmcloud.com";
 			node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
-			node.brokerPort = 1883;	
+			node.brokerPort = 1883;
 		} else if(credentials !== null && credentials !== 'undefined' && node.authentication === 'boundService') {
 			node.apikey = credentials.apiKey;
 			node.apitoken = credentials.apiToken;
@@ -231,9 +233,9 @@ module.exports = function(RED) {
 			if(credentials.mqtt_u_port !== 'undefined' || credentials.mqtt_u_port !== null ) {
 				node.brokerPort = credentials.mqtt_u_port;
 			} else if(credentials !== null && credentials.mqtt_s_port) {
-				node.brokerPort = credentials.mqtt_s_port;		
+				node.brokerPort = credentials.mqtt_s_port;
 			} else {
-				node.brokerPort = 1883;		
+				node.brokerPort = 1883;
 			}
 
 			if(credentials.mqtt_host !== 'undefined' || credentials.mqtt_host !== null) {
@@ -259,9 +261,9 @@ module.exports = function(RED) {
 			if(node.inputType === "evt" || node.inputType === "cmd") {
 				if(node.service !== "quickstart") {
 					if(node.inputType === "evt") {
-						node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.deviceId + "/" + node.inputType + "/" + node.eventType +"/fmt/" + node.format;					
+						node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.deviceId + "/" + node.inputType + "/" + node.eventType +"/fmt/" + node.format;
 					} else {
-						node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.deviceId + "/" + node.inputType + "/" + node.commandType +"/fmt/" + node.format;					
+						node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.deviceId + "/" + node.inputType + "/" + node.commandType +"/fmt/" + node.format;
 					}
 
 				}else {
@@ -282,10 +284,10 @@ module.exports = function(RED) {
 		else {
 			node.log("CANT COME HERE AT ALL");
 		}
-		
+
 
 		node.name = nodeCfg.name;
-		
+
 		node.log('	Authentication: '		+ node.authentication);
 		node.log('	Organization: '			+ node.organization);
 		node.log('	Client ID: '			+ node.clientId);
@@ -295,26 +297,33 @@ module.exports = function(RED) {
 		node.log('	InputType: '			+ node.inputType);
 		node.log('	OutputType: '			+ node.outputType);
 		node.log('	Device Id: '			+ node.deviceId);
-		node.log('	Application Id: '		+ node.applicationId);    
+		node.log('	Application Id: '		+ node.applicationId);
 		node.log('	Name: '					+ node.name);
 		node.log('	Format: '				+ node.format);
 		node.log('	Event/Command Type: '	+ node.eventCommandType);
-		node.log('	Event Type: '			+ node.eventType);	
-		node.log('	Command Type: '			+ node.commandType);	
+		node.log('	Event Type: '			+ node.eventType);
+		node.log('	Command Type: '			+ node.commandType);
 		node.log('	DeviceType: '			+ node.deviceType);
 		node.log('	Service: '				+ node.service);
 
 		try {
-			node.client = new IoTAppClient(appId, node.apikey, node.apitoken, node.brokerHost);
-			node.client.connectBroker(node.brokerPort);
+			console.log('appClientConfig being initialized.... ');
+			var appClientConfig = {
+				"org" : node.organization,
+				"id" : appId,
+				"auth-key" : node.apikey,
+				"auth-token" : node.apitoken
+			};
+			node.client = new WIoTClient.IotfApplication(appClientConfig);
+			node.client.connect();
 		}
 		catch(err) {
-			console.log(' IoTAppClient not has yet been initialized.... '); 
+			console.log(' WIoTClient has NOT yet been initialized OR connected.... ');
 		}
 
 		node.on("close", function() {
 			if (node.client) {
-				node.client.disconnectBroker();
+				node.client.disconnect();
 			}
 		});
 	}
@@ -337,9 +346,18 @@ module.exports = function(RED) {
 
 			if (msg !== null && (n.service === "quickstart" || n.format === "json") ) {
 				try {
-					var parsedPayload = JSON.parse(payload);
-					that.log("[App-Out] Trying to publish MQTT JSON message " + parsedPayload + " on topic: " + topic);
-					this.client.publish(topic, payload);
+					if(typeof payload !== "object") {
+						// check the validity of JSON format
+						JSON.parse(payload);
+					}
+					that.log("[App-Out] Trying to publish JSON message " + payload + " on topic: " + topic);
+					if(n.outputType === "evt") {
+						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload);
+					} else if(n.outputType === "cmd") {
+						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload);
+					} else {
+						that.warn("Shouldn't have come here as it can either be a command or an event");
+					}
 				}
 				catch (error) {
 					if(error.name === "SyntaxError") {
@@ -350,14 +368,15 @@ module.exports = function(RED) {
 
 				}
 			} else if(msg !== null) {
-				if(typeof payload === "number") {
-					payload = "" + payload + "";
-					that.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
-				} else if(typeof payload === "string") {
-					that.log("[App-Out] Trying to publish MQTT message" + payload + " on topic: " + topic);
-				}
+				that.log("[App-Out] Trying to publish message " + payload.toString() + " on topic: " + topic );
 				try {
-					this.client.publish(topic, payload);								
+					if(n.outputType === "evt") {
+						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload);
+					} else if(n.outputType === "cmd") {
+						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload);
+					} else {
+						that.warn("Shouldn't have come here as it can either be a command or an event");
+					}
 				}
 				catch (err) {
 					that.warn("MQTT Client is not fully initialized for out node - please wait");
@@ -370,6 +389,7 @@ module.exports = function(RED) {
 
 
 	function IotAppInNode(n) {
+
 		RED.nodes.createNode(this, n);
 		setUpNode(this, n, "in");
 
@@ -381,45 +401,50 @@ module.exports = function(RED) {
 					if(n.service === "quickstart") {
 						that.deviceType = "+";
 					}
-					//This condition has been added as by default the device id field is blank 
+					//This condition has been added as by default the device id field is blank
 					//and this causes multiple subscription attempts when the default flow is created in Bluemix
 					if(n.service === "quickstart" && (that.deviceId === null || that.deviceId === '') ) {
 						that.warn("Device Id is not set for Quickstart flow");
 					} else {
-						this.client.subscribeToDeviceEvents(that.deviceType, this.deviceId, this.eventType, this.format);
-
-						this.client.on("deviceEvent", function(deviceType, deviceId, eventType, formatType, payload, topic) {
+						that.client.on("connect", function () {
+							that.client.subscribeToDeviceEvents(that.deviceType, that.deviceId, that.eventType, that.format);
+						});
+						
+						this.client.on("deviceEvent", function(deviceType, deviceId, eventType, format, payload, topic) {
 							var parsedPayload = "";
-							if ( that.format === "json" ){
+							if ( format === "json" ){
 								try{
-									parsedPayload = JSON.parse(payload);
-									var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
-									that.log("[App-In] Forwarding message to output.");
+									parsedPayload = JSON.parse(payload.toString());
+									var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : format};
+									that.log("[App-In] Forwarding JSON device event to output.");
 									that.send(msg);
 								}catch(err){
 									that.warn("JSON payload expected");
 								}
 							} else {
-								try{
-									parsedPayload = JSON.parse(payload);
+								try {
+									// Using a similar technique that Node.js MQTT uses to find the content
+									// whether its a buffer or not
+									if (isUtf8(payload)) { payload = payload.toString(); }
+									var msg = {"topic":topic, "payload":payload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : format};
+									that.log("[App-In] Forwarding " + format + " device event to output." );
+									that.send(msg);
 								}catch(err){
-									parsedPayload = payload;
+									that.warn("payload type unexpected");
 								}
-								var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : formatType};
-								that.log("[App-In] Forwarding message to output.");
-								that.send(msg);
 							}
 						});
 					}
 				} else if (that.inputType === "devsts") {
-				
+
 					var deviceTypeSubscribed = this.deviceType;
 
 					if(this.service === "quickstart") {
 						deviceTypeSubscribed = "+";
 					}
-
-					this.client.subscribeToDeviceStatus(deviceTypeSubscribed, this.deviceId);
+					that.client.on("connect", function () {
+						that.client.subscribeToDeviceStatus(that.deviceType, that.deviceId);
+					});
 
 					this.client.on("deviceStatus", function(deviceType, deviceId, payload, topic) {
 						var parsedPayload = "";
@@ -429,14 +454,16 @@ module.exports = function(RED) {
 							parsedPayload = payload;
 						}
 						var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
-						that.log("[App-In] Forwarding message to output.");
+						that.log("[App-In] Forwarding device status to output.");
 						that.send(msg);
 					});
+
 				} else if (that.inputType === "appsts") {
+					that.client.on("connect", function () {
+						that.client.subscribeToAppStatus(that.applicationId);
+					});
 
-					this.client.subscribeToAppStatus(this.applicationId);
-
-					this.client.on("appStatus", function(deviceId, payload, topic) {
+					this.client.on("appStatus", function(appId, payload, topic) {
 
 						var parsedPayload = "";
 
@@ -445,14 +472,16 @@ module.exports = function(RED) {
 						}catch(err){
 							parsedPayload = payload;
 						}
-						var msg = {"topic":topic, "payload":parsedPayload, "applicationId" : deviceId};
-						that.log("[App-In] Forwarding message to output.");
+						var msg = {"topic":topic, "payload":parsedPayload, "applicationId" : appId};
+						that.log("[App-In] Forwarding application status to output.");
 						that.send(msg);
 					});
 
 				} else if (that.inputType === "cmd") {
 
-					this.client.subscribeToDeviceCommands(this.deviceType, this.deviceId, this.commandType, this.format);
+					that.client.on("connect", function () {
+						that.client.subscribeToDeviceCommands(that.deviceType, that.deviceId, that.commandType, that.format);
+					});
 
 					this.client.on("deviceCommand", function(deviceType, deviceId, commandType, formatType, payload, topic) {
 
@@ -461,7 +490,7 @@ module.exports = function(RED) {
 							try{
 								parsedPayload = JSON.parse(payload);
 								var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
-								that.log("[App-In] Forwarding message to output.");
+								that.log("[App-In] Forwarding JSON device command to output." + "\t" + JSON.stringify(msg) );
 								that.send(msg);
 							}catch(err){
 								that.warn("JSON payload expected");
@@ -470,16 +499,16 @@ module.exports = function(RED) {
 							try{
 								parsedPayload = JSON.parse(payload);
 							}catch(err){
-								parsedPayload = payload;
+								parsedPayload = new Buffer(payload);
 							}
 							var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
-							that.log("[App-In] Forwarding message to output.");
+							that.log("[App-In] Forwarding message non JSON command to output.");
 							that.send(msg);
 						}
 					});
 				}
 			} catch(err) {
-				that.warn("MQTT Client is not fully initialized for in node - please wait");			
+				that.warn("MQTT Client is not fully initialized for in node - please wait");
 			}
 		}
 	}
