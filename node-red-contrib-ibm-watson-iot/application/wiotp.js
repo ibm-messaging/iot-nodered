@@ -22,7 +22,7 @@ module.exports = function(RED) {
     var connectionPool = (function() {
         var connections = {};
         return {
-            getClient: function(node,config,isGateway,callback) {
+            getClient: function(node,config,isGateway,keepAlive,qos,callback) {
                 var nodeId = node.id;
                 var key = JSON.stringify(config);
                 if (!connections[key]) {
@@ -37,8 +37,11 @@ module.exports = function(RED) {
                     }
                     client.log.setLevel('info');
                     client.setMaxListeners(0);
+                    client.setKeepAliveInterval(parseInt(keepAlive));
+                    RED.log.info("[wiot:connectionPool:getClient] Connection Keep Alive Interval set to "+keepAlive+" Seconds");
+
                     client.on('error',function(err) {
-                        RED.log.error("IBMIoT: "+err.toString());
+                        RED.log.error("[wiot:connectionPool:getClient] "+err.toString());
                     });
                     client.on('connect',function(err) {
                         var users = connections[key].users;
@@ -70,7 +73,9 @@ module.exports = function(RED) {
                         }
                     });
 
-                    client.connect();
+                    RED.log.info("[wiot:connectionPool:getClient] Trying to connect with QoS: "+qos);
+                    client.connect(parseInt(qos));
+                    RED.log.info("[wiot:connectionPool:getClient] Client Connected with QoS: "+qos);
                     connections[key].client = client;
                 }
                 connections[key].users[nodeId] = {
@@ -82,6 +87,7 @@ module.exports = function(RED) {
                     node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                     callback(connections[key].client);
                 }
+
                 return connections[key].client;
             },
             returnClient: function(nodeId, config) {
@@ -149,6 +155,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, n);
         var node = this;
         this.command = n.command;
+        this.qos = parseInt(n.qos) || 0;
+        this.keepalive = parseInt(n.keepalive) || 60;
         var deviceNode = RED.nodes.getNode(n.deviceKey);
         if (!deviceNode || !deviceNode.valid) {
             return this.error('missing IoT Device credentials');
@@ -166,9 +174,10 @@ module.exports = function(RED) {
             this.deviceType = "+";
             this.deviceId = "+";
         }
-        this.client = connectionPool.getClient(this,deviceNode.config,isGateway,function(client){
+        this.client = connectionPool.getClient(this,deviceNode.config,isGateway,this.keepalive,this.qos,function(client){
             if (isGateway) {
-                client.subscribeToDeviceCommand(node.deviceType,node.deviceId,node.command,'+');
+                client.subscribeToDeviceCommand(node.deviceType,node.deviceId,node.command,'+',node.qos);
+                node.log("Subscribed to Device Command with QoS : "+node.qos);
             }
         });
         var handleMessage = function(deviceType,deviceId,commandName,format,payload,topic) {
@@ -223,6 +232,8 @@ module.exports = function(RED) {
         this.deviceId = n.deviceId;
         this.format = n.format || "json";
         this.event = n.event;
+        this.qos = parseInt(n.qos) || 0;
+        this.keepalive = parseInt(n.keepalive) || 60;
 
         if (!isQuickstart) {
             var deviceNode = RED.nodes.getNode(n.deviceKey);
@@ -237,12 +248,15 @@ module.exports = function(RED) {
                 id: n.qsDeviceId || n.id
             }
             node.log("Connecting to Quickstart service as device "+this.credentials.type+"/"+this.credentials.id);
+            this.qos = 0;
+            this.keepalive = 60;
+            node.log("Setting default value for QoS to "+this.qos+" and keepalive to "+this.keepalive+" Seconds");
         }
-        this.client = connectionPool.getClient(this,this.credentials,isGateway,function(client){});
+        this.client = connectionPool.getClient(this,this.credentials,isGateway,this.keepalive,this.qos,function(client){});
         this.on('input',function(msg) {
             var event = node.event || msg.event || "event";
             var format = node.format || msg.format || "json";
-            var qos = msg.qos || 0;
+            var qos = node.qos || 0;
             if (isQuickstart || qos < 0 || qos > 2 ) {
                 qos = 0;
             }
@@ -290,6 +304,7 @@ module.exports = function(RED) {
                 }
             }
             try {
+              node.log("Publishing device event with QoS : " + qos);
                 if (isGateway) {
                     var deviceType = node.deviceType || msg.deviceType || node.credentials.type;
                     var deviceId = node.deviceId || msg.deviceId || node.credentials.id;
