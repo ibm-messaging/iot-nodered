@@ -477,6 +477,21 @@
        <li><code>deviceId</code> - (<i>gateway only</i>) the id of the device
         the command is for</li>
     </ul>
+    <p>Value for QoS (Quality of Service) and connection keep alive interval value
+       can be specified.
+    </p>
+    <p>The <b>Quality of Service (QoS)</b> level is an agreement between sender
+       and receiver of a message regarding the guarantees of delivering a message.
+       There are 3 QoS levels in MQTT: 0,1,2. Client can choose the QoS level
+       depending on its network reliability and application logic.
+    </p>
+    <p>
+       The <b>keep alive</b> functionality assures that the connection is still open and
+       both broker and client are connected to one another. Therefore the client
+       species a time interval in seconds and communicates it to the broker during
+       the establishment of the connection. The interval is the longest possible
+       period of time, which broker and client can endure without sending a message.
+    </p>
 </script>
 <script type="text/x-red" data-help-name="wiotp out">
     <p>Send device events to the IBM Watson Internet of Things Platform.</p>
@@ -510,5 +525,20 @@
        set by the <code>msg.deviceType</code> and <code>msg.deviceId</code> properties.
        If these properties are not provided, either in the node or the message,
        it will use the type and id of the Gateway itself.
+    </p>
+    <p>In Registered Mode, value for QoS (Quality of Service) and connection
+       keep alive interval value can be specified.
+    </p>
+    <p>The <b>Quality of Service (QoS)</b> level is an agreement between sender
+       and receiver of a message regarding the guarantees of delivering a message.
+       There are 3 QoS levels in MQTT: 0,1,2. Client can choose the QoS level
+       depending on its network reliability and application logic.
+    </p>
+    <p>
+       The <b>keep alive</b> functionality assures that the connection is still open and
+       both broker and client are connected to one another. Therefore the client
+       species a time interval in seconds and communicates it to the broker during
+       the establishment of the connection. The interval is the longest possible
+       period of time, which broker and client can endure without sending a message.
     </p>
 </script>

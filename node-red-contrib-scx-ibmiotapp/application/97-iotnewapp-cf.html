@@ -174,6 +174,21 @@
    <p><b>msg.eventOrCommandType</b> overrides the value of "Event Type" or "Command Type"</p>
    <p><b>msg.format</b> overrides the value of "Format". This Node supports json, buffer and other types. When the format is set to json, this node expects either an object or Stringify version of the json object. In order to send the buffer and other types, just send the contents as is without doing any conversion and set the format appropriately.</p>
    <p><b>msg.payload</b> overrides the value of "Data"</p>
+   <p>In Non-Quickstart mode, value for QoS (Quality of Service) and connection
+      keep alive interval value can be specified.
+   </p>
+   <p>The <b>Quality of Service (QoS)</b> level is an agreement between sender
+      and receiver of a message regarding the guarantees of delivering a message.
+      There are 3 QoS levels in MQTT: 0,1,2. Client can choose the QoS level
+      depending on its network reliability and application logic.
+   </p>
+   <p>
+      The <b>keep alive</b> functionality assures that the connection is still open and
+      both broker and client are connected to one another. Therefore the client
+      species a time interval in seconds and communicates it to the broker during
+      the establishment of the connection. The interval is the longest possible
+      period of time, which broker and client can endure without sending a message.
+   </p>
    <p><b>Note:</b>Some of the functions of this node are not available when it is running in <b>Quickstart</b> Mode.</p>
 </script>
 
@@ -292,6 +307,21 @@
 	<p>The value of "Event Type" is stored in  <b>msg.eventType</b></p>
 	<p>The value of "Command Type" is stored in <b>msg.commandType</b></p>
 	<p>The value of "Format" is stored in <b>msg.format</b>. This node supports json, buffer and other types. When the format is set to json, this node parses the incoming data using JSON.parse() and outputs. When the buffer object is received by this node, it outputs the contents as is without any conversion. And for remaining types, this node outputs the message in String. </p>
+  <p>In Non-Quickstart mode, value for QoS (Quality of Service) and connection
+     keep alive interval value can be specified.
+  </p>
+  <p>The <b>Quality of Service (QoS)</b> level is an agreement between sender
+     and receiver of a message regarding the guarantees of delivering a message.
+     There are 3 QoS levels in MQTT: 0,1,2. Client can choose the QoS level
+     depending on its network reliability and application logic.
+  </p>
+  <p>
+     The <b>keep alive</b> functionality assures that the connection is still open and
+     both broker and client are connected to one another. Therefore the client
+     species a time interval in seconds and communicates it to the broker during
+     the establishment of the connection. The interval is the longest possible
+     period of time, which broker and client can endure without sending a message.
+  </p>
 	<p><b>Note:</b>Some of the functions of this node are not available when it is running in <b>Quickstart</b> Mode.</p>
 </script>
 
