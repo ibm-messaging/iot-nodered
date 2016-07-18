@@ -33,17 +33,17 @@ module.exports = function(RED) {
 	var userServices = services['iotf-service-staging'];
 
 	if(userServices === null || userServices === undefined) {
-		console.log("iotf-service-staging credentials not obtained...");
+		RED.log.info("[ibm iot:function(RED)] iotf-service-staging credentials not obtained...");
 		userServices = services	['iotf-service'];
 	} else {
-		console.log("iotf-service-staging credentials obtained...");
+		RED.log.info("[ibm iot:function(RED)] iotf-service-staging credentials obtained...");
 	}
 
 	if(userServices === null || userServices === undefined) {
-		console.log("neither iotf-service nor iotf-service-staging credentials were obtained...");
+		RED.log.info("[ibm iot:function(RED)] neither iotf-service nor iotf-service-staging credentials were obtained...");
 		userServices = services	['user-provided'];
 	} else {
-		console.log("iotf-service-staging or iotf-service credentials obtained...");
+		RED.log.info("[ibm iot:function(RED)] iotf-service-staging or iotf-service credentials obtained...");
 	}
 
 
@@ -73,33 +73,33 @@ module.exports = function(RED) {
 			if(fileContents !== null && fileContents.mqtt_host) {
 				credentials.mqtt_host = fileContents.mqtt_host;
 			} else {
-				console.log("Didnt find host");
+				RED.log.info("[ibm iot:function(RED)] Didnt find host");
 			}
 
 
 			if(fileContents !== null && fileContents.mqtt_u_port) {
 				credentials.mqtt_u_port = fileContents.mqtt_u_port;
 			} else {
-				console.log("Didnt find u_port");
+				RED.log.info("[ibm iot:function(RED)] Didnt find u_port");
 			}
 
 
 			if(fileContents !== null && fileContents.mqtt_s_port) {
 				credentials.mqtt_s_port = fileContents.mqtt_s_port;
 			} else {
-				console.log("Didnt find s_port");
+				RED.log.info("[ibm iot:function(RED)] Didnt find s_port");
 			}
 
 
 			if(fileContents !== null && fileContents.org) {
 				credentials.org = fileContents.org;
 			} else {
-				console.log("Didnt find org");
+				RED.log.info("[ibm iot:function(RED)] Didnt find org");
 			}
 
 		}
 		catch (ex){
-			console.log("credentials.cfg doesn't exist or is not well formed, reverting to quickstart mode");
+			RED.log.info("[ibm iot:function(RED)] credentials.cfg doesn't exist or is not well formed, reverting to quickstart mode");
 			credentials = null;
 		}
 	}
@@ -180,6 +180,9 @@ module.exports = function(RED) {
 		node.inputType = nodeCfg.inputType;
 		node.outputType = nodeCfg.outputType;
 
+		node.qos = parseInt(nodeCfg.qos) || 0;
+		node.keepalive = parseInt(nodeCfg.keepalive) || 60;
+
 		var newCredentials = null;
 		if(nodeCfg.authentication === "apiKey") {
 			 var iotnode = RED.nodes.getNode(nodeCfg.apiKey);
@@ -193,6 +196,9 @@ module.exports = function(RED) {
 			node.log("ITS A QUICKSTART FLOW");
 			node.deviceType = "nodered-version" + RED.version();
 			node.format = "json";
+			node.qos = 0;
+			node.keepalive = 60;
+			node.log("Setting default value for QoS to "+node.qos+" and keepalive to "+node.keepalive+" Seconds");
 		}
 
 
@@ -306,8 +312,13 @@ module.exports = function(RED) {
 		node.log('	DeviceType: '			+ node.deviceType);
 		node.log('	Service: '				+ node.service);
 
+		if(node.service !== "quickstart") {
+		    node.log('	QoS: '				+ node.qos);
+		    node.log('	Keep Alive Interval: '				+ node.keepalive);
+	  }
+
 		try {
-			console.log('appClientConfig being initialized.... ');
+			node.log('appClientConfig being initialized.... ');
 			var appClientConfig = {
 				"org" : node.organization,
 				"id" : appId,
@@ -315,17 +326,36 @@ module.exports = function(RED) {
 				"auth-token" : node.apitoken
 			};
 			node.client = new WIoTClient.IotfApplication(appClientConfig);
-			node.client.connect();
+			node.client.setKeepAliveInterval(node.keepalive);
+			node.log("Connection keepAlive Interval value set to "+node.client.mqttConfig.keepalive+" Seconds");
+			node.client.connect(node.qos);
 		}
 		catch(err) {
-			console.log(' WIoTClient has NOT yet been initialized OR connected.... ');
+			node.log(' WIoTClient has NOT yet been initialized OR connected.... ');
 		}
+
+		node.client.on('connect',function() {
+				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+		});
+
+		node.client.on('disconnect',function() {
+				node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
+		});
+
+		node.client.on('reconnect',function() {
+				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+		});
 
 		node.on("close", function() {
 			if (node.client) {
 				node.client.disconnect();
 			}
 		});
+
+		node.status({fill:"yellow",shape:"ring",text:"node-red:common.status.connecting"});
+		if (node.client.isConnected) {
+				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+		}
 	}
 
 
@@ -350,11 +380,11 @@ module.exports = function(RED) {
 						// check the validity of JSON format
 						JSON.parse(payload);
 					}
-					that.log("[App-Out] Trying to publish JSON message " + payload + " on topic: " + topic);
+					that.log("[App-Out] Trying to publish JSON message " + payload + " on topic: " + topic + " with QoS " + that.qos);
 					if(n.outputType === "evt") {
-						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload);
+						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload, that.qos);
 					} else if(n.outputType === "cmd") {
-						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload);
+						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload, that.qos);
 					} else {
 						that.warn("Shouldn't have come here as it can either be a command or an event");
 					}
@@ -368,12 +398,12 @@ module.exports = function(RED) {
 
 				}
 			} else if(msg !== null) {
-				that.log("[App-Out] Trying to publish message " + payload.toString() + " on topic: " + topic );
+				that.log("[App-Out] Trying to publish message " + payload.toString() + " on topic: " + topic + " with QoS " + that.qos);
 				try {
 					if(n.outputType === "evt") {
-						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload);
+						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload,that.qos);
 					} else if(n.outputType === "cmd") {
-						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload);
+						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload,that.qos);
 					} else {
 						that.warn("Shouldn't have come here as it can either be a command or an event");
 					}
@@ -407,9 +437,10 @@ module.exports = function(RED) {
 						that.warn("Device Id is not set for Quickstart flow");
 					} else {
 						that.client.on("connect", function () {
-							that.client.subscribeToDeviceEvents(that.deviceType, that.deviceId, that.eventType, that.format);
+							that.log("[App-In] Subscribing to Device Event with device type - "+that.deviceType+", with QoS " + that.qos);
+							that.client.subscribeToDeviceEvents(that.deviceType, that.deviceId, that.eventType, that.format,that.qos);
 						});
-						
+
 						this.client.on("deviceEvent", function(deviceType, deviceId, eventType, format, payload, topic) {
 							var parsedPayload = "";
 							if ( format === "json" ){
@@ -443,7 +474,8 @@ module.exports = function(RED) {
 						deviceTypeSubscribed = "+";
 					}
 					that.client.on("connect", function () {
-						that.client.subscribeToDeviceStatus(that.deviceType, that.deviceId);
+						that.log("[App-In] Subscribing to Device Status with device type - "+that.deviceType+", with QoS " + that.qos);
+						that.client.subscribeToDeviceStatus(that.deviceType, that.deviceId, that.qos);
 					});
 
 					this.client.on("deviceStatus", function(deviceType, deviceId, payload, topic) {
@@ -460,7 +492,8 @@ module.exports = function(RED) {
 
 				} else if (that.inputType === "appsts") {
 					that.client.on("connect", function () {
-						that.client.subscribeToAppStatus(that.applicationId);
+						that.log("[App-In] Subscribing to Applicatin Status with Id - "+that.applicationId+", with QoS " + that.qos);
+						that.client.subscribeToAppStatus(that.applicationId, that.qos);
 					});
 
 					this.client.on("appStatus", function(appId, payload, topic) {
@@ -480,7 +513,8 @@ module.exports = function(RED) {
 				} else if (that.inputType === "cmd") {
 
 					that.client.on("connect", function () {
-						that.client.subscribeToDeviceCommands(that.deviceType, that.deviceId, that.commandType, that.format);
+						that.log("[App-In] Subscribing to Device Commands with command type - "+that.commandType+", with QoS " + that.qos);
+						that.client.subscribeToDeviceCommands(that.deviceType, that.deviceId, that.commandType, that.format, that.qos);
 					});
 
 					this.client.on("deviceCommand", function(deviceType, deviceId, commandType, formatType, payload, topic) {
