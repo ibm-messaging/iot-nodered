@@ -127,19 +127,17 @@
         <input type="text" id="node-input-data" placeholder="payload information e.g. data points" style="width:300px;">
     </div>
 
-    <div class="form-row">
-        <label id="node-input-qos-label" for="node-input-qos" style="width:130px;" <i class="fa fa-empire"></i> <span data-i18n="mqtt.label.qos"></span></label>
-        <select id="node-input-qos" style="width:70px;">
+    <div class="form-row" id="node-form-qos-ka-div">
+        <label id="node-input-qos-label" for="node-input-qos" style="width:130px;" <i class="fa fa-empire"></i> QoS </label>
+        <select id="node-input-qos" style="width:50px;">
             <option value=0>0</option>
             <option value=1>1</option>
             <option value=2>2</option>
         </select>
-    </div>
-
-    <div class="form-row" id="node-form-row-keepalive">
-        <label for="node-input-keepalive" style="width:130px;"<i class="fa fa-clock-o"></i> <span data-i18n="mqtt.label.keepalive"></span></label>
-        <input type="text" id="node-input-keepalive" placeholder="60" style="width: 70px;">
-        <label for="node-input-keepalive">Seconds</label>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       <label id="node-input-keepalive-label" for="node-input-keepalive" style="width:90px;" <i class="fa fa-clock-o"></i> Keep Alive </label>&nbsp;
+       <input type="text" id="node-input-keepalive" placeholder="60" style="width: 50px;">
+       <label id="node-input-keepalive-seconds style="width: 80px;"> Seconds </label>
     </div>
 
 	<div class="form-row">
@@ -258,19 +256,17 @@
         <input type="text" id="node-input-format" placeholder="format e.g. json" style="width:240px;">
     </div>
 
-    <div class="form-row">
-        <label id="node-input-qos-label" for="node-input-qos" style="width:130px;" <i class="fa fa-empire"></i> <span data-i18n="mqtt.label.qos"></span></label>
-        <select id="node-input-qos" style="width:70px;">
+    <div class="form-row" id="node-form-qos-ka-div">
+        <label id="node-input-qos-label" for="node-input-qos" style="width:130px;" <i class="fa fa-empire"></i> QoS </label>
+        <select id="node-input-qos" style="width:50px;">
             <option value=0>0</option>
             <option value=1>1</option>
             <option value=2>2</option>
         </select>
-    </div>
-
-    <div class="form-row" id="node-form-row-keepalive">
-        <label for="node-input-keepalive" style="width:130px;"<i class="fa fa-clock-o"></i> <span data-i18n="mqtt.label.keepalive"></span></label>
-        <input type="text" id="node-input-keepalive" placeholder="60" style="width: 70px;">
-        <label for="node-input-keepalive">Seconds</label>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       <label id="node-input-keepalive-label" for="node-input-keepalive" style="width:90px;" <i class="fa fa-clock-o"></i> Keep Alive </label>&nbsp;
+       <input type="text" id="node-input-keepalive" placeholder="60" style="width: 50px;">
+       <label id="node-input-keepalive-seconds style="width: 80px;"> Seconds </label>
     </div>
 
 	<div class="form-row">
@@ -339,8 +335,8 @@
 			eventCommandType: {value:"", required: true},
 			format: {value:"", required: true},
 			data: {value:"", required: true},
-      qos: {value: 0},
-      keepalive: {value: 60, validate:RED.validators.number()},
+                        qos: {value: 0},
+                        keepalive: {value: 60, validate:RED.validators.number()},
 			name: { value:"IBM IoT" },
 			service: {value: ""}
 		},
@@ -397,9 +393,7 @@
 					$("#registeredTips").hide();
 					$("#quickstartTips").show();
 
-          $("#node-form-row-keepalive").hide();
-          $("#node-input-qos-label").hide();
-          $("#node-input-qos").hide();
+                                        $("#node-form-qos-ka-div").hide();
 				} else if(serviceSelected === "apiKey"){
 					result = "registered";
 
@@ -426,20 +420,18 @@
 					$("#node-input-formatLabel").show();
 					$("#node-input-format").show();
 
-          $("#node-form-row-keepalive").show();
-          $("#node-input-qos-label").show();
-          $("#node-input-qos").show();
+                                        $("#node-form-qos-ka-div").show();
 
 					$("#registeredTips").show();
 					$("#quickstartTips").hide();
 
-          if(!$("#node-input-qos option:selected").length) {
-            document.getElementById("node-input-qos").options[0].selected = true;
-          }
+                                        if(!$("#node-input-qos option:selected").length) {
+                                           document.getElementById("node-input-qos").options[0].selected = true;
+                                        }
 
-          if($("#node-input-keepalive").val() === '') {
-            $("#node-input-keepalive").val("60");
-          }
+                                        if($("#node-input-keepalive").val() === '') {
+                                           $("#node-input-keepalive").val("60");
+                                        }
 
 					$("#node-input-outputType").change(function() {
 						var id = $("#node-input-outputType option:selected").val();
@@ -481,9 +473,7 @@
 					$("#node-input-formatLabel").show();
 					$("#node-input-format").show();
 
-          $("#node-form-row-keepalive").show();
-          $("#node-input-qos-label").show();
-          $("#node-input-qos").show();
+                                        $("#node-form-qos-ka-div").show();
 
 					$("#registeredTips").show();
 					$("#quickstartTips").hide();
@@ -528,9 +518,7 @@
 						$("#registeredTips").hide();
 						$("#quickstartTips").show();
 
-            $("#node-form-row-keepalive").hide();
-            $("#node-input-qos-label").hide();
-            $("#node-input-qos").hide();
+                                                $("#node-form-qos-ka-div").hide();
 					} else if(serviceSelected === "apiKey"){
 						result = "registered";
 						$("#node-input-apiKey-div").show();
@@ -556,9 +544,7 @@
 						$("#node-input-formatLabel").show();
 						$("#node-input-format").show();
 
-            $("#node-form-row-keepalive").show();
-            $("#node-input-qos-label").show();
-            $("#node-input-qos").show();
+                                                $("#node-form-qos-ka-div").show();
 
 						$("#registeredTips").show();
 						$("#quickstartTips").hide();
@@ -599,9 +585,7 @@
 						$("#node-input-formatLabel").show();
 						$("#node-input-format").show();
 
-            $("#node-form-row-keepalive").show();
-            $("#node-input-qos-label").show();
-            $("#node-input-qos").show();
+                                                $("#node-form-qos-ka-div").show();
 
 						$("#registeredTips").show();
 						$("#quickstartTips").hide();
@@ -651,8 +635,8 @@
 			allEvents: {value: ""},
 			allCommands: {value: ""},
 			allFormats: {value: ""},
-      qos: {value: 0},
-      keepalive: {value: 60, validate:RED.validators.number()}
+                        qos: {value: 0},
+                        keepalive: {value: 60, validate:RED.validators.number()}
 
 		},
 		inputs:0,
@@ -839,9 +823,7 @@
 					}
 
 				});
-        $("#node-form-row-keepalive").hide();
-        $("#node-input-qos-label").hide();
-        $("#node-input-qos").hide();
+                                $("#node-form-qos-ka-div").hide();
 			} else {
 
 				result = "registered";
@@ -869,20 +851,19 @@
 				$("#node-input-format").show();
 				$("#node-input-allFormatsLabel").show();
 				$("#node-input-allFormats").show();
-        $("#node-form-row-keepalive").show();
-        $("#node-input-qos-label").show();
-        $("#node-input-qos").show();
+                               
+                                $("#node-form-qos-ka-div").show();
 
 				$("#registeredTips").show();
 				$("#quickstartTips").hide();
 
-        if(!$("#node-input-qos option:selected").length) {
-          document.getElementById("node-input-qos").options[0].selected = true;
-        }
+                                if(!$("#node-input-qos option:selected").length) {
+                                   document.getElementById("node-input-qos").options[0].selected = true;
+                                }
 
-        if($("#node-input-keepalive").val() === '') {
-          $("#node-input-keepalive").val("60");
-        }
+                                if($("#node-input-keepalive").val() === '') {
+                                   $("#node-input-keepalive").val("60");
+                                }
 
 				var allDevicesValue = $("#node-input-allDevices").is(":checked");
 				if( allDevicesValue) {
@@ -1358,9 +1339,7 @@
 					$("#node-input-format").hide();
 					$("#node-input-allFormatsLabel").hide();
 					$("#node-input-allFormats").hide();
-          $("#node-form-row-keepalive").hide();
-          $("#node-input-qos-label").hide();
-          $("#node-input-qos").hide();
+                                        $("#node-form-qos-ka-div").hide();
 
 					$("#node-input-commandLabel").hide();
 					$("#node-input-allCommands").hide();
@@ -1463,9 +1442,7 @@
 					$("#node-input-format").show();
 					$("#node-input-allFormatsLabel").show();
 					$("#node-input-allFormats").show();
-          $("#node-form-row-keepalive").show();
-          $("#node-input-qos-label").show();
-          $("#node-input-qos").show();
+                                        $("#node-form-qos-ka-div").show();
 
 					$("#registeredTips").show();
 					$("#quickstartTips").hide();
