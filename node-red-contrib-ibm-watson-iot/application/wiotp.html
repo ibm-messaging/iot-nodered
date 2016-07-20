@@ -227,16 +227,13 @@
                         $("#node-input-event").val("event");
                     }
                     $("#node-form-row-qsDeviceId").show();
-                    $("#node-form-row-keepalive").hide();
-                    $("#node-input-qos-label").hide();
-                    $("#node-input-qos").hide();
+                    $("#node-form-qos-ka-div").hide();
                 } else {
                     $("#node-form-row-deviceKey").show();
                     $("#node-form-row-qsDeviceId").hide();
 
-                    $("#node-form-row-keepalive").show();
-                    $("#node-input-qos-label").show();
-                    $("#node-input-qos").show();
+                    $("#node-form-qos-ka-div").show();
+                    
                     if(!$("#node-input-qos option:selected").length) {
                       document.getElementById("node-input-qos").options[0].selected = true;
                     }
@@ -367,19 +364,17 @@
         <input type="text" id="node-input-command" placeholder="e.g. blink" style="width: 300px;">
     </div>
 
-    <div class="form-row">
-        <label id="node-input-qos-label" for="node-input-qos">QoS</label>
-        <select id="node-input-qos" style="width: 70px;">
+    <div class="form-row" id="node-form-qos-ka-div">
+        <label id="node-input-qos-label" for="node-input-qos" > QoS </label>
+        <select id="node-input-qos" style="width:50px;">
             <option value=0>0</option>
             <option value=1>1</option>
             <option value=2>2</option>
         </select>
-    </div>
-
-    <div class="form-row" id="node-form-row-keepalive">
-        <label for="node-input-keepalive">Keep Alive</label>
-        <input type="text" id="node-input-keepalive" placeholder="60" style="width: 70px;">
-        <label for="node-input-keepalive">Seconds</label>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       <label id="node-input-keepalive-label" for="node-input-keepalive" style="width:80px;" > Keep Alive </label>&nbsp;
+       <input type="text" id="node-input-keepalive" placeholder="60" style="width: 50px;">
+       <label id="node-input-keepalive-seconds style="width: 80px;"> Seconds </label>
     </div>
 
     <div class="form-row">
@@ -433,19 +428,17 @@
         <input type="text" id="node-input-format" placeholder="e.g. text, xml" style="width: 300px;">
     </div>
 
-    <div class="form-row">
-        <label id="node-input-qos-label" for="node-input-qos">QoS</label>
-        <select id="node-input-qos" style="width: 70px;">
+    <div class="form-row" id="node-form-qos-ka-div">
+        <label id="node-input-qos-label" for="node-input-qos" > QoS </label>
+        <select id="node-input-qos" style="width:50px;">
             <option value=0>0</option>
             <option value=1>1</option>
             <option value=2>2</option>
         </select>
-    </div>
-
-    <div class="form-row" id="node-form-row-keepalive">
-        <label for="node-input-keepalive">Keep Alive</label>
-        <input type="text" id="node-input-keepalive" placeholder="60" style="width: 70px;">
-        <label for="node-input-keepalive">Seconds</label>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       <label id="node-input-keepalive-label" for="node-input-keepalive" style="width:80px;" > Keep Alive </label>&nbsp;
+       <input type="text" id="node-input-keepalive" placeholder="60" style="width: 50px;">
+       <label id="node-input-keepalive-seconds style="width: 80px;"> Seconds </label>
     </div>
 
     <div class="form-row">
