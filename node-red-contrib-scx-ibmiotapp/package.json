@@ -8,9 +8,9 @@
   "dependencies": {
     "cfenv": "1.0.0",
     "ibmiotf": "^0.2.18",
-	"is-utf8": "^0.2.1"
+    "is-utf8": "^0.2.1"
   },
-  "version": "0.0.39",
+  "version": "0.0.40",
   "keywords": [
     "node-red",
     "bluemix",
@@ -27,14 +27,11 @@
       "ibmiotapp": "application/97-iotnewapp-cf.js"
     }
   },
-  "maintainers": [
-    {
-      "name": "amitmangalvedkar",
-      "email": "amitmangalvedkar@in.ibm.com"
-    },
-    {
-      "name": "jeffdare",
-      "email": "jeffdare@in.ibm.com"
-    }
-  ]
+  "maintainers": [{
+    "name": "amitmangalvedkar",
+    "email": "amitmangalvedkar@in.ibm.com"
+  }, {
+    "name": "jeffdare",
+    "email": "jeffdare@in.ibm.com"
+  }]
 }
