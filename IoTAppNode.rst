@@ -1,13 +1,13 @@
 IBM IoT App Node
 ========================
-This is a set of 2 complimentary Nodes - 
+This is a set of two complementary Nodes - 
 
-1. IoT App In Node which is meant for subscribing to IBM IoT Foundation and
-2. IoT App Out Node which is meant for publishing to IBM IoT Foundation 
+1. IoT App In Node which is meant for subscribing to Watson IoT Platform, and
+2. IoT App Out Node which is meant for publishing to Watson IoT Platform 
 
-This set of Nodes is an IoT application which can communicate, bidirectionally, with IBM IoT Foundation. It can be used in both - Quickstart, as well as, in Registered flow. Being an app, it can subscribe to device events, as well as, publish commands for IoT Foundation registered devices. 
+This set of Nodes is an IoT application which can communicate, bidirectionally, with Watson IoT Platform. It can be used in both Quickstart and Registered flows. Being an app, it can subscribe to device events, as well as publish commands for Watson IoT Platform registered devices. 
 
-It can also act as a Proxy for devices. This IoT Pattern is typically used in cases where the device is incapable of sending events or receiving commands. In such a case, the Node can also subscribe to device commands and publish device events. While subscribing to device commands, the device (for which this app is a proxy) should be a registered device.
+It can also act as a Proxy for devices. This IoT pattern is typically used in cases where the device is incapable of sending events or receiving commands. In such a case, the Node can also subscribe to device commands and publish device events. While subscribing to device commands, the device (for which this app is a proxy) should be a registered device.
 
 This set of Nodes provides multiple authentication modes (provided as drop-down), namely 
 
@@ -54,7 +54,7 @@ In case the out and in nodes need to run outside the IBM Bluemix environment, us
 
 Documentation
 -------------
-Adhering to the convention of providing in-line documentation, all the fields, in the Nodes, are well documented and their usage and features can be viewed by just clicking on the node and switching to the Info tab, in the workspace.
+Adhering to the convention of providing in-line documentation, all the fields in the Nodes are well documented and their usage and features can be viewed by just clicking on the node and switching to the Info tab, in the workspace.
 
 Apart from that, the below links provide more detailed information about whats going under the hood for both the nodes.
 
