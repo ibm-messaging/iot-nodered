@@ -201,16 +201,16 @@
    </p>
    <p>
       The <b>keep alive</b> functionality assures that the connection is still open and
-      both broker and client are connected to one another. Therefore the client
-      species a time interval in seconds and communicates it to the broker during
+      both Watson IoT Platform and client are connected to one another. Therefore the client
+      species a time interval in seconds and communicates it to the Watson IoT Platform during
       the establishment of the connection. The interval is the longest possible
-      period of time, which broker and client can endure without sending a message.
+      period of time, which Watson IoT Platform and client can endure without sending a message.
    </p>
    <p>
-       A <b>persistent session</b> can be requested by the client on connection establishment with the broker using the <b>cleanSession</b> Flag.
+       A <b>persistent session</b> can be requested by the client on connection establishment with the Watson IoT Platform using the <b>cleanSession</b> Flag.
        If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
        When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again. 
-       If there is already a session available then it is used and queued messages will be delivered to the client if available.
+       If there is already a session available then it is used and queued messages will be delivered to the client if available. For more information, refer to Watson IoT Platform documentation.
     </p>
    <p><b>Note:</b>Some of the functions of this node are not available when it is running in <b>Quickstart</b> Mode.</p>
 </script>
@@ -334,16 +334,16 @@
   </p>
   <p>
      The <b>keep alive</b> functionality assures that the connection is still open and
-     both broker and client are connected to one another. Therefore the client
-     species a time interval in seconds and communicates it to the broker during
+     both Watson IoT Platform and client are connected to one another. Therefore the client
+     species a time interval in seconds and communicates it to the Watson IoT Platform during
      the establishment of the connection. The interval is the longest possible
-     period of time, which broker and client can endure without sending a message.
+     period of time, which Watson IoT Platform and client can endure without sending a message.
   </p>
   <p>
-       A <b>persistent session</b> can be requested by the client on connection establishment with the broker using the <b>cleanSession</b> Flag.
+       A <b>persistent session</b> can be requested by the client on connection establishment with the Watson IoT Platform using the <b>cleanSession</b> Flag.
        If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
        When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again. 
-       If there is already a session available then it is used and queued messages will be delivered to the client if available.
+       If there is already a session available then it is used and queued messages will be delivered to the client if available. For more information, refer to Watson IoT Platform documentation.
    </p>
 	<p><b>Note:</b>Some of the functions of this node are not available when it is running in <b>Quickstart</b> Mode.</p>
 </script>
