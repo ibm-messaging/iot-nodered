@@ -22,7 +22,7 @@ This set of Nodes provides multiple authentication modes (provided as drop-down)
 "API Key" option is available even if the Node is running in a non-Bluemix environment or if the application, although running in Bluemix, does not have any bound IoT service. This option makes it possible for an application to communicate with multiple organizations.
 
 
-This set of Nodes depend upon the `iotclient library <https://www.npmjs.com/package/iotclient>`__, made available in npmjs, for performing the IoT Foundation connectivity.
+This set of Nodes depends upon the `iotclient library <https://www.npmjs.com/package/iotclient>`__, made available in npmjs, for performing the Watson IoT Platform connectivity.
 
 
 ----
