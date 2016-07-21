@@ -9,7 +9,7 @@ Quickstart Flow
 This has a single flow
 Quickstart Flow from device
 ===============================
-This is the sample program to send the following events from the Raspberry Pi to the Quickstart messaging of IBM Internet of Things service.
+This is the sample program to send the following events from the Raspberry Pi to the Quickstart messaging service of IBM Watson IoT Platform.
 
 The events that are emitted in this sample are:
 
@@ -45,7 +45,7 @@ This has 2 flows
 
 Registered Flow from device
 ===============================
-This is the sample program to send the following events from the Raspberry Pi to the Registered messaging of IBM Internet of Things service.
+This is the sample program to send the following events from the Raspberry Pi to the Registered messaging service of IBM Watson IoT Platform.
 
 The events that are emitted in this sample are:
 

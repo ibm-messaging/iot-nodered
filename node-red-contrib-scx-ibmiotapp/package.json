@@ -4,7 +4,7 @@
     "email": "amitmangalvedkar@gmail.com"
   },
   "name": "node-red-contrib-scx-ibmiotapp",
-  "description": "IoT Application Node-RED node for the Registered, as well as, Quickstart mode, on the IBM Internet of Things Cloud Foundation",
+  "description": "IoT Application Node-RED node for the Registered and Quickstart flows in IBM Watson IoT Platform",
   "dependencies": {
     "cfenv": "1.0.0",
     "ibmiotf": "^0.2.18",

@@ -1,9 +1,9 @@
 ibmiotapp
 ========================
-This is a Node-RED node meant for connecting to both quickstart, as well as, registered flow on the IBM Watson IoT Foundation Connect.
+This is a Node-RED node meant for connecting to both the Quickstart and Registered flows in IBM Watson IoT Platform.
 This Node-RED node replaces the node-red-iotcloudshapeshift. This Node-RED node can be used within, as well as, outside the IBM Bluemix environment. 
   
-In case its used within the IBM Bluemix environment, the node is smart enough to detect whether an IoT service is bound to this application and provides the respective drop-down options. 
+In case it is used within the IBM Bluemix environment, the node is smart enough to detect whether an IoT service is bound to this application and provides the respective drop-down options. 
 In case no IoT service is bound to this application, the drop-down, for authentication, does not contain "Bluemix Service".  
 
 
@@ -19,14 +19,14 @@ Usage
 
 **IoT App In Node**
 
-In case of registered flow, the App In node can be used to 
+In case of Registered flow, the App In node can be used to 
 
 1. Receive device events, 
 2. Receive device status, 
 3. Receive device commands, on the behalf of a device, and 
 4. Receive application status.  
 
-In case of quickstart flow, the App In node can be used to  
+In case of Quickstart flow, the App In node can be used to  
 
 1. Receive device events, 
 2. Receive device status and 
