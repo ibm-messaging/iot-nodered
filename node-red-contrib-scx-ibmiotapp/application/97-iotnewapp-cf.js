@@ -20,7 +20,7 @@ module.exports = function(RED) {
 	var util = require("./lib/util.js");
 	var cfenv = require("cfenv");
 	var fs = require("fs");
-    var isUtf8 = require('is-utf8');
+        var isUtf8 = require('is-utf8');
 
 	//var IoTAppClient = require("iotclient");
 	var WIoTClient = require("ibmiotf");
@@ -125,6 +125,8 @@ module.exports = function(RED) {
 		if (newCredentials) {
 			this.username = newCredentials.user;
 			this.password = newCredentials.password;
+                        this.keepalive = newCredentials.keepalive;
+                        this.cleansession = newCredentials.cleansession;
 		}
 	}
 
@@ -157,7 +159,9 @@ module.exports = function(RED) {
 		} else {
 			newCredentials.password = newCreds.password || newCredentials.password;
 		}
-		RED.nodes.addCredentials(req.params.id, newCredentials);
+                newCredentials.keepalive = newCreds.keepalive;
+                newCredentials.cleansession = newCreds.cleansession;
+                RED.nodes.addCredentials(req.params.id, newCredentials);
 		res.send(200);
 	});
 
@@ -181,7 +185,6 @@ module.exports = function(RED) {
 		node.outputType = nodeCfg.outputType;
 
 		node.qos = parseInt(nodeCfg.qos) || 0;
-		node.keepalive = parseInt(nodeCfg.keepalive) || 60;
 
 		var newCredentials = null;
 		if(nodeCfg.authentication === "apiKey") {
@@ -198,7 +201,8 @@ module.exports = function(RED) {
 			node.format = "json";
 			node.qos = 0;
 			node.keepalive = 60;
-			node.log("Setting default value for QoS to "+node.qos+" and keepalive to "+node.keepalive+" Seconds");
+                        node.cleansession = true;
+			node.log("Setting default value for QoS to "+node.qos+" , keepalive to "+node.keepalive+" Seconds and Clean Session to "+node.cleansession);
 		}
 
 
@@ -213,6 +217,8 @@ module.exports = function(RED) {
 		if(newCredentials !== 'undefined' && node.authentication === 'apiKey') {
 			node.apikey = newCredentials.user;
 			node.apitoken = newCredentials.password;
+		        node.keepalive = parseInt(newCredentials.keepalive);
+		        node.cleansession = newCredentials.cleansession;
 
 			node.organization = node.apikey.split(':')[1];
 			if(node.organization === 'undefined' || node.organization === null || typeof node.organization === 'undefined') {
@@ -315,6 +321,7 @@ module.exports = function(RED) {
 		if(node.service !== "quickstart") {
 		    node.log('	QoS: '				+ node.qos);
 		    node.log('	Keep Alive Interval: '				+ node.keepalive);
+		    node.log('	Clean Session Value: '				+ node.cleansession);
 	  }
 
 		try {
@@ -328,6 +335,8 @@ module.exports = function(RED) {
 			node.client = new WIoTClient.IotfApplication(appClientConfig);
 			node.client.setKeepAliveInterval(node.keepalive);
 			node.log("Connection keepAlive Interval value set to "+node.client.mqttConfig.keepalive+" Seconds");
+			node.client.setCleanSession(node.cleansession);
+			node.log("Connection Clean Session value set to "+node.client.mqttConfig.clean);
 			node.client.connect(node.qos);
 		}
 		catch(err) {
@@ -368,6 +377,14 @@ module.exports = function(RED) {
 		this.on("input", function(msg) {
 			var payload = msg.payload || n.data;
 			var deviceType = that.deviceType;
+                        var qos = 0;
+                        if (msg.qos) {
+                           msg.qos = parseInt(msg.qos);
+                        if ((msg.qos !== 0) && (msg.qos !== 1) && (msg.qos !== 2)) {
+                           msg.qos = null;
+                         }
+                        }
+                        qos = Number(that.qos || msg.qos || qos);
 			if(that.service === "registered") {
 				deviceType = msg.deviceType || n.deviceType;
 			}
@@ -380,11 +397,11 @@ module.exports = function(RED) {
 						// check the validity of JSON format
 						JSON.parse(payload);
 					}
-					that.log("[App-Out] Trying to publish JSON message " + payload + " on topic: " + topic + " with QoS " + that.qos);
+					that.log("[App-Out] Trying to publish JSON message " + payload + " on topic: " + topic + " with QoS " + qos);
 					if(n.outputType === "evt") {
-						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload, that.qos);
+						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload, qos);
 					} else if(n.outputType === "cmd") {
-						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload, that.qos);
+						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload, qos);
 					} else {
 						that.warn("Shouldn't have come here as it can either be a command or an event");
 					}
@@ -398,12 +415,12 @@ module.exports = function(RED) {
 
 				}
 			} else if(msg !== null) {
-				that.log("[App-Out] Trying to publish message " + payload.toString() + " on topic: " + topic + " with QoS " + that.qos);
+				that.log("[App-Out] Trying to publish message " + payload.toString() + " on topic: " + topic + " with QoS " + qos);
 				try {
 					if(n.outputType === "evt") {
-						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload,that.qos);
+						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload,qos);
 					} else if(n.outputType === "cmd") {
-						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload,that.qos);
+						this.client.publishDeviceCommand(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload,qos);
 					} else {
 						that.warn("Shouldn't have come here as it can either be a command or an event");
 					}

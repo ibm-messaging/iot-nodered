@@ -31,6 +31,15 @@
         <label for="node-config-input-authToken">Auth Token</label>
         <input type="password" id="node-config-input-authToken">
     </div>
+
+    <div class="form-row" >
+       <label for="node-config-input-keepalive" > Keep Alive </label>
+       <input type="text" id="node-config-input-keepalive" placeholder="60" style="width: 50px;">
+       <label style="width: 80px;"> Seconds </label>
+       <input type="checkbox" id="node-config-input-cleansession" style="margin-left: 30px; height: 1em;display: inline-block; width: auto; vertical-align: middle;">
+       <label for="node-config-input-cleansession" style="width: auto;">Use Clean Session</label>
+    </div>
+
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
@@ -49,14 +58,28 @@
             name: { value:"" },
             org: {value: "", required: true },
             devType: { value: "", required: true },
-            devId: { value: "", required: true }
+            devId: { value: "", required: true },
+            keepalive: {value: 60, validate:RED.validators.number()},
+            cleansession: {value: true},
         },
         label: function() {
             return this.name||this.devType+"/"+this.devId||"Device";
         },
         credentials: {
             authToken: {type:"password"}
-        }
+        },
+        oneditprepare: function() {
+            if (typeof this.keepalive === 'undefined') {
+                this.keepalive = 60;
+                $("#node-config-input-keepalive").val(this.keepalive);
+            }
+            
+            if (typeof this.cleansession === 'undefined') {
+                this.cleansession = true;
+                $("#node-config-input-cleansession").prop("checked",true);
+            }
+
+        },
     });
 
     RED.nodes.registerType('wiotp in',{
@@ -76,7 +99,6 @@
             command: {value:""},
             commandType: {value: "g"},
             qos: {value: 0},
-            keepalive: {value: 60, validate:RED.validators.number()},
             name: { value:"" }
         },
         inputs:0,
@@ -153,9 +175,6 @@
               document.getElementById("node-input-qos").options[0].selected = true;
             }
 
-            if($("#node-input-keepalive").val() === '') {
-              $("#node-input-keepalive").val("60");
-            }
         },
         oneditsave: function() {
             if (hasTypedInputs) {
@@ -199,8 +218,7 @@
             deviceId: {value:""},
             event: {value:""},
             format: {value:"json"},
-            qos: {value: 0},
-            keepalive: {value: 60, validate:RED.validators.number()},
+            qos: {value: ""},
             name: { value:"" }
         },
         inputs:1,
@@ -227,20 +245,13 @@
                         $("#node-input-event").val("event");
                     }
                     $("#node-form-row-qsDeviceId").show();
-                    $("#node-form-qos-ka-div").hide();
+                    $("#node-form-qos-div").hide();
                 } else {
                     $("#node-form-row-deviceKey").show();
                     $("#node-form-row-qsDeviceId").hide();
 
-                    $("#node-form-qos-ka-div").show();
+                    $("#node-form-qos-div").show();
                     
-                    if(!$("#node-input-qos option:selected").length) {
-                      document.getElementById("node-input-qos").options[0].selected = true;
-                    }
-
-                    if($("#node-input-keepalive").val() === '') {
-                      $("#node-input-keepalive").val("60");
-                    }
                 }
             });
             $("#node-form-row-qs input[type='radio'][value='"+this.qs+"']").attr('checked',true).change();
@@ -364,17 +375,13 @@
         <input type="text" id="node-input-command" placeholder="e.g. blink" style="width: 300px;">
     </div>
 
-    <div class="form-row" id="node-form-qos-ka-div">
+    <div class="form-row" id="node-form-qos-div">
         <label id="node-input-qos-label" for="node-input-qos" > QoS </label>
         <select id="node-input-qos" style="width:50px;">
             <option value=0>0</option>
             <option value=1>1</option>
             <option value=2>2</option>
         </select>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       <label id="node-input-keepalive-label" for="node-input-keepalive" style="width:80px;" > Keep Alive </label>&nbsp;
-       <input type="text" id="node-input-keepalive" placeholder="60" style="width: 50px;">
-       <label id="node-input-keepalive-seconds style="width: 80px;"> Seconds </label>
     </div>
 
     <div class="form-row">
@@ -428,17 +435,14 @@
         <input type="text" id="node-input-format" placeholder="e.g. text, xml" style="width: 300px;">
     </div>
 
-    <div class="form-row" id="node-form-qos-ka-div">
+    <div class="form-row" id="node-form-qos-div">
         <label id="node-input-qos-label" for="node-input-qos" > QoS </label>
         <select id="node-input-qos" style="width:50px;">
+            <option value=""></option>
             <option value=0>0</option>
             <option value=1>1</option>
             <option value=2>2</option>
         </select>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       <label id="node-input-keepalive-label" for="node-input-keepalive" style="width:80px;" > Keep Alive </label>&nbsp;
-       <input type="text" id="node-input-keepalive" placeholder="60" style="width: 50px;">
-       <label id="node-input-keepalive-seconds style="width: 80px;"> Seconds </label>
     </div>
 
     <div class="form-row">
@@ -484,6 +488,12 @@
        species a time interval in seconds and communicates it to the broker during
        the establishment of the connection. The interval is the longest possible
        period of time, which broker and client can endure without sending a message.
+    </p>
+    <p>
+       A <b>persistent session</b> can be requested by the client on connection establishment with the broker using the <b>cleanSession</b> Flag.
+       If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
+       When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again. 
+       If there is already a session available then it is used and queued messages will be delivered to the client if available.
     </p>
 </script>
 <script type="text/x-red" data-help-name="wiotp out">
@@ -533,5 +543,11 @@
        species a time interval in seconds and communicates it to the broker during
        the establishment of the connection. The interval is the longest possible
        period of time, which broker and client can endure without sending a message.
+    </p>
+    <p>
+       A <b>persistent session</b> can be requested by the client on connection establishment with the broker using the <b>cleanSession</b> Flag.
+       If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
+       When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again. 
+       If there is already a session available then it is used and queued messages will be delivered to the client if available.
     </p>
 </script>

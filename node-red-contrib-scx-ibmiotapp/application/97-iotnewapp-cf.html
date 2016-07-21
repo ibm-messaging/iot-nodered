@@ -27,6 +27,13 @@
         <label for="node-config-input-pass"><i class="fa fa-lock"></i> API Token</label>
         <input type="password" id="node-config-input-pass">
     </div>
+    <div class="form-row">
+       <label for="node-config-input-keepalive"  <i class="fa fa-clock-o"></i> Keep Alive </label>
+       <input type="text" id="node-config-input-keepalive" placeholder="60" style="width: 50px;">
+       <label style="width: 80px;"> Seconds </label>
+       <input type="checkbox" id="node-config-input-cleansession" style="margin-left: 30px; height: 1em;display: inline-block; width: auto; vertical-align: middle;">
+       <label for="node-config-input-cleansession" style="width: auto;">Use Clean Session</label>
+    </div>
 </script>
 
 <script type="text/javascript">
@@ -35,6 +42,8 @@
         color:"rgb(0, 155, 255)",
         defaults: {
             name: { value:"" },
+            keepalive: {value: 60, validate:RED.validators.number()},
+            cleansession: {value: true},
             //user -> credentials
             //pass -> credentials
         },
@@ -52,12 +61,25 @@
                     $('#node-config-input-pass').val('');
                 }
             });
+
+            if($("#node-config-input-keepalive").val() === '') {
+                $("#node-config-input-keepalive").val("60");
+            }
+
+            if (typeof this.cleansession === 'undefined') {
+                this.cleansession = true;
+                $("#node-config-input-cleansession").prop("checked",true);
+            }
         },
         oneditsave: function() {
             var newUser = $('#node-config-input-user').val();
             var newPass = $('#node-config-input-pass').val();
+            var newKA = $('#node-config-input-keepalive').val();
+            var newCS = $('#node-config-input-cleansession').is(':checked');
             var credentials = {};
             credentials.user = newUser;
+            credentials.keepalive = newKA;
+            credentials.cleansession = newCS;
             if (newPass != '__PWRD__') {
                 credentials.password = newPass;
             }
@@ -127,17 +149,14 @@
         <input type="text" id="node-input-data" placeholder="payload information e.g. data points" style="width:300px;">
     </div>
 
-    <div class="form-row" id="node-form-qos-ka-div">
+    <div class="form-row" id="node-form-qos-div">
         <label id="node-input-qos-label" for="node-input-qos" style="width:130px;" <i class="fa fa-empire"></i> QoS </label>
         <select id="node-input-qos" style="width:50px;">
+            <option value=''></option>
             <option value=0>0</option>
             <option value=1>1</option>
             <option value=2>2</option>
         </select>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       <label id="node-input-keepalive-label" for="node-input-keepalive" style="width:90px;" <i class="fa fa-clock-o"></i> Keep Alive </label>&nbsp;
-       <input type="text" id="node-input-keepalive" placeholder="60" style="width: 50px;">
-       <label id="node-input-keepalive-seconds style="width: 80px;"> Seconds </label>
     </div>
 
 	<div class="form-row">
@@ -187,6 +206,12 @@
       the establishment of the connection. The interval is the longest possible
       period of time, which broker and client can endure without sending a message.
    </p>
+   <p>
+       A <b>persistent session</b> can be requested by the client on connection establishment with the broker using the <b>cleanSession</b> Flag.
+       If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
+       When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again. 
+       If there is already a session available then it is used and queued messages will be delivered to the client if available.
+    </p>
    <p><b>Note:</b>Some of the functions of this node are not available when it is running in <b>Quickstart</b> Mode.</p>
 </script>
 
@@ -256,17 +281,13 @@
         <input type="text" id="node-input-format" placeholder="format e.g. json" style="width:240px;">
     </div>
 
-    <div class="form-row" id="node-form-qos-ka-div">
+    <div class="form-row" id="node-form-qos-div">
         <label id="node-input-qos-label" for="node-input-qos" style="width:130px;" <i class="fa fa-empire"></i> QoS </label>
-        <select id="node-input-qos" style="width:50px;">
+        <select id="node-input-qos" style="width:70px;">
             <option value=0>0</option>
             <option value=1>1</option>
             <option value=2>2</option>
         </select>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       <label id="node-input-keepalive-label" for="node-input-keepalive" style="width:90px;" <i class="fa fa-clock-o"></i> Keep Alive </label>&nbsp;
-       <input type="text" id="node-input-keepalive" placeholder="60" style="width: 50px;">
-       <label id="node-input-keepalive-seconds style="width: 80px;"> Seconds </label>
     </div>
 
 	<div class="form-row">
@@ -318,6 +339,12 @@
      the establishment of the connection. The interval is the longest possible
      period of time, which broker and client can endure without sending a message.
   </p>
+  <p>
+       A <b>persistent session</b> can be requested by the client on connection establishment with the broker using the <b>cleanSession</b> Flag.
+       If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
+       When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again. 
+       If there is already a session available then it is used and queued messages will be delivered to the client if available.
+   </p>
 	<p><b>Note:</b>Some of the functions of this node are not available when it is running in <b>Quickstart</b> Mode.</p>
 </script>
 
@@ -336,7 +363,6 @@
 			format: {value:"", required: true},
 			data: {value:"", required: true},
                         qos: {value: 0},
-                        keepalive: {value: 60, validate:RED.validators.number()},
 			name: { value:"IBM IoT" },
 			service: {value: ""}
 		},
@@ -393,7 +419,7 @@
 					$("#registeredTips").hide();
 					$("#quickstartTips").show();
 
-                                        $("#node-form-qos-ka-div").hide();
+                                        $("#node-form-qos-div").hide();
 				} else if(serviceSelected === "apiKey"){
 					result = "registered";
 
@@ -420,18 +446,10 @@
 					$("#node-input-formatLabel").show();
 					$("#node-input-format").show();
 
-                                        $("#node-form-qos-ka-div").show();
+                                        $("#node-form-qos-div").show();
 
 					$("#registeredTips").show();
 					$("#quickstartTips").hide();
-
-                                        if(!$("#node-input-qos option:selected").length) {
-                                           document.getElementById("node-input-qos").options[0].selected = true;
-                                        }
-
-                                        if($("#node-input-keepalive").val() === '') {
-                                           $("#node-input-keepalive").val("60");
-                                        }
 
 					$("#node-input-outputType").change(function() {
 						var id = $("#node-input-outputType option:selected").val();
@@ -473,7 +491,7 @@
 					$("#node-input-formatLabel").show();
 					$("#node-input-format").show();
 
-                                        $("#node-form-qos-ka-div").show();
+                                        $("#node-form-qos-div").show();
 
 					$("#registeredTips").show();
 					$("#quickstartTips").hide();
@@ -518,7 +536,7 @@
 						$("#registeredTips").hide();
 						$("#quickstartTips").show();
 
-                                                $("#node-form-qos-ka-div").hide();
+                                                $("#node-form-qos-div").hide();
 					} else if(serviceSelected === "apiKey"){
 						result = "registered";
 						$("#node-input-apiKey-div").show();
@@ -544,7 +562,7 @@
 						$("#node-input-formatLabel").show();
 						$("#node-input-format").show();
 
-                                                $("#node-form-qos-ka-div").show();
+                                                $("#node-form-qos-div").show();
 
 						$("#registeredTips").show();
 						$("#quickstartTips").hide();
@@ -585,7 +603,7 @@
 						$("#node-input-formatLabel").show();
 						$("#node-input-format").show();
 
-                                                $("#node-form-qos-ka-div").show();
+                                                $("#node-form-qos-div").show();
 
 						$("#registeredTips").show();
 						$("#quickstartTips").hide();
@@ -636,7 +654,6 @@
 			allCommands: {value: ""},
 			allFormats: {value: ""},
                         qos: {value: 0},
-                        keepalive: {value: 60, validate:RED.validators.number()}
 
 		},
 		inputs:0,
@@ -676,7 +693,7 @@
 			if(serviceSelected === "quickstart") {
 				result = "quickstart";
 
-                $("#node-input-apiKey-div").hide();
+                                $("#node-input-apiKey-div").hide();
 
 				var id = $("#node-input-inputType").val();
 				if (id == "evt") {
@@ -823,7 +840,7 @@
 					}
 
 				});
-                                $("#node-form-qos-ka-div").hide();
+                                $("#node-form-qos-div").hide();
 			} else {
 
 				result = "registered";
@@ -852,17 +869,13 @@
 				$("#node-input-allFormatsLabel").show();
 				$("#node-input-allFormats").show();
                                
-                                $("#node-form-qos-ka-div").show();
+                                $("#node-form-qos-div").show();
 
 				$("#registeredTips").show();
 				$("#quickstartTips").hide();
 
                                 if(!$("#node-input-qos option:selected").length) {
                                    document.getElementById("node-input-qos").options[0].selected = true;
-                                }
-
-                                if($("#node-input-keepalive").val() === '') {
-                                   $("#node-input-keepalive").val("60");
                                 }
 
 				var allDevicesValue = $("#node-input-allDevices").is(":checked");
@@ -1339,7 +1352,7 @@
 					$("#node-input-format").hide();
 					$("#node-input-allFormatsLabel").hide();
 					$("#node-input-allFormats").hide();
-                                        $("#node-form-qos-ka-div").hide();
+                                        $("#node-form-qos-div").hide();
 
 					$("#node-input-commandLabel").hide();
 					$("#node-input-allCommands").hide();
@@ -1442,7 +1455,7 @@
 					$("#node-input-format").show();
 					$("#node-input-allFormatsLabel").show();
 					$("#node-input-allFormats").show();
-                                        $("#node-form-qos-ka-div").show();
+                                        $("#node-form-qos-div").show();
 
 					$("#registeredTips").show();
 					$("#quickstartTips").hide();
