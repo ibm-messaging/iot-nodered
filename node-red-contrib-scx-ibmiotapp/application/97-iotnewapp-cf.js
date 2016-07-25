@@ -343,6 +343,10 @@ module.exports = function(RED) {
 			node.log(' WIoTClient has NOT yet been initialized OR connected.... ');
 		}
 
+		node.client.on('error',function(err) {
+	            node.log(err.toString());
+	        });
+		
 		node.client.on('connect',function() {
 				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
 		});
