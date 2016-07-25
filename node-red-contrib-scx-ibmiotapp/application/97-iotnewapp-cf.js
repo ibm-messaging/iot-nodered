@@ -344,7 +344,7 @@ module.exports = function(RED) {
 		}
 
 		node.client.on('error',function(err) {
-	            node.log(err.toString());
+	            node.error(err.toString());
 	        });
 		
 		node.client.on('connect',function() {
