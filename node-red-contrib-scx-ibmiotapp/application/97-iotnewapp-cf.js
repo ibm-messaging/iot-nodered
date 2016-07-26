@@ -33,19 +33,12 @@ module.exports = function(RED) {
 	var userServices = services['iotf-service-staging'];
 
 	if(userServices === null || userServices === undefined) {
-		RED.log.info("[ibm iot:function(RED)] iotf-service-staging credentials not obtained...");
 		userServices = services	['iotf-service'];
-	} else {
-		RED.log.info("[ibm iot:function(RED)] iotf-service-staging credentials obtained...");
 	}
 
 	if(userServices === null || userServices === undefined) {
-		RED.log.info("[ibm iot:function(RED)] neither iotf-service nor iotf-service-staging credentials were obtained...");
-		userServices = services	['user-provided'];
-	} else {
-		RED.log.info("[ibm iot:function(RED)] iotf-service-staging or iotf-service credentials obtained...");
+	     userServices = services	['user-provided'];
 	}
-
 
 	// Store the IoT Cloud credentials, if any.
 	var credentials = false;
@@ -143,7 +136,7 @@ module.exports = function(RED) {
 
 	RED.httpAdmin.delete('/ibmiot/:id',function(req,res) {
 		RED.nodes.deleteCredentials(req.params.id);
-		res.send(200);
+		res.sendStatus(200);
 	});
 
 	RED.httpAdmin.post('/ibmiot/:id',function(req,res) {
@@ -162,7 +155,7 @@ module.exports = function(RED) {
                 newCredentials.keepalive = newCreds.keepalive;
                 newCredentials.cleansession = newCreds.cleansession;
                 RED.nodes.addCredentials(req.params.id, newCredentials);
-		res.send(200);
+		res.sendStatus(200);
 	});
 
 
@@ -196,13 +189,11 @@ module.exports = function(RED) {
 			node.deviceType = ( node.allDeviceTypes ) ? '+' : nodeCfg.deviceType;
 			node.format = ( node.allFormats ) ? '+' : nodeCfg.format;
 		} else {
-			node.log("ITS A QUICKSTART FLOW");
 			node.deviceType = "nodered-version" + RED.version();
 			node.format = "json";
 			node.qos = 0;
 			node.keepalive = 60;
                         node.cleansession = true;
-			node.log("Setting default value for QoS to "+node.qos+" , keepalive to "+node.keepalive+" Seconds and Clean Session to "+node.cleansession);
 		}
 
 
@@ -224,7 +215,7 @@ module.exports = function(RED) {
 			if(node.organization === 'undefined' || node.organization === null || typeof node.organization === 'undefined') {
 				node.organization = node.apikey.split('-')[1];
 			} else {
-				console.log("UNABLE TO RETRIEVE THE ORGANIZATION FROM APIKEY");
+				node.error("Unable to retrieve the organization from API Key");
 			}
 	//		node.brokerHost = node.organization + ".messaging.staging.test.internetofthings.ibmcloud.com";
 			node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
@@ -236,10 +227,8 @@ module.exports = function(RED) {
 				node.organization = credentials.org;
 			} else {
 				node.organization = node.apikey.split(':')[1];
-				node.log("Organization = " + node.organization);
 				if(node.organization === null) {
 					node.organization = node.apikey.split('-')[1];
-					node.log("Organization parsed again and is " + node.organization);
 				}
 			}
 			if(credentials.mqtt_u_port !== 'undefined' || credentials.mqtt_u_port !== null ) {
@@ -294,39 +283,13 @@ module.exports = function(RED) {
 			node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.deviceId + "/" + node.outputType + "/" + node.eventCommandType +"/fmt/" + node.format;
 		}
 		else {
-			node.log("CANT COME HERE AT ALL");
+			node.error("Control cannot come here as we have either In or Out");
 		}
 
 
 		node.name = nodeCfg.name;
-
-		node.log('	Authentication: '		+ node.authentication);
-		node.log('	Organization: '			+ node.organization);
-		node.log('	Client ID: '			+ node.clientId);
-		node.log('	Broker Host: '			+ node.brokerHost);
-		node.log('	Broker Port: '			+ node.brokerPort);
-		node.log('	Topic: '				+ node.topic);
-		node.log('	InputType: '			+ node.inputType);
-		node.log('	OutputType: '			+ node.outputType);
-		node.log('	Device Id: '			+ node.deviceId);
-		node.log('	Application Id: '		+ node.applicationId);
-		node.log('	Name: '					+ node.name);
-		node.log('	Format: '				+ node.format);
-		node.log('	Event/Command Type: '	+ node.eventCommandType);
-		node.log('	Event Type: '			+ node.eventType);
-		node.log('	Command Type: '			+ node.commandType);
-		node.log('	DeviceType: '			+ node.deviceType);
-		node.log('	Service: '				+ node.service);
-
-		if(node.service !== "quickstart") {
-		    node.log('	QoS: '				+ node.qos);
-		    node.log('	Keep Alive Interval: '				+ node.keepalive);
-		    node.log('	Clean Session Value: '				+ node.cleansession);
-	  }
-
 		try {
-			node.log('appClientConfig being initialized.... ');
-			var appClientConfig = {
+		        var appClientConfig = {
 				"org" : node.organization,
 				"id" : appId,
 				"auth-key" : node.apikey,
@@ -334,19 +297,17 @@ module.exports = function(RED) {
 			};
 			node.client = new WIoTClient.IotfApplication(appClientConfig);
 			node.client.setKeepAliveInterval(node.keepalive);
-			node.log("Connection keepAlive Interval value set to "+node.client.mqttConfig.keepalive+" Seconds");
 			node.client.setCleanSession(node.cleansession);
-			node.log("Connection Clean Session value set to "+node.client.mqttConfig.clean);
 			node.client.connect(node.qos);
 		}
 		catch(err) {
-			node.log(' WIoTClient has NOT yet been initialized OR connected.... ');
+			node.error("WIoTClient has NOT yet been initialized OR connected.... " + err.toString());
 		}
 
 		node.client.on('error',function(err) {
 	            node.error(err.toString());
 	        });
-		
+
 		node.client.on('connect',function() {
 				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
 		});
@@ -401,7 +362,6 @@ module.exports = function(RED) {
 						// check the validity of JSON format
 						JSON.parse(payload);
 					}
-					that.log("[App-Out] Trying to publish JSON message " + payload + " on topic: " + topic + " with QoS " + qos);
 					if(n.outputType === "evt") {
 						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload, qos);
 					} else if(n.outputType === "cmd") {
@@ -419,7 +379,6 @@ module.exports = function(RED) {
 
 				}
 			} else if(msg !== null) {
-				that.log("[App-Out] Trying to publish message " + payload.toString() + " on topic: " + topic + " with QoS " + qos);
 				try {
 					if(n.outputType === "evt") {
 						this.client.publishDeviceEvent(deviceType, (msg.deviceId || n.deviceId), (msg.eventOrCommandType || n.eventCommandType), (msg.format || n.format), payload,qos);
@@ -458,7 +417,6 @@ module.exports = function(RED) {
 						that.warn("Device Id is not set for Quickstart flow");
 					} else {
 						that.client.on("connect", function () {
-							that.log("[App-In] Subscribing to Device Event with device type - "+that.deviceType+", with QoS " + that.qos);
 							that.client.subscribeToDeviceEvents(that.deviceType, that.deviceId, that.eventType, that.format,that.qos);
 						});
 
@@ -468,7 +426,6 @@ module.exports = function(RED) {
 								try{
 									parsedPayload = JSON.parse(payload.toString());
 									var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : format};
-									that.log("[App-In] Forwarding JSON device event to output.");
 									that.send(msg);
 								}catch(err){
 									that.warn("JSON payload expected");
@@ -479,7 +436,6 @@ module.exports = function(RED) {
 									// whether its a buffer or not
 									if (isUtf8(payload)) { payload = payload.toString(); }
 									var msg = {"topic":topic, "payload":payload, "deviceId" : deviceId, "deviceType" : deviceType, "eventType" : eventType, "format" : format};
-									that.log("[App-In] Forwarding " + format + " device event to output." );
 									that.send(msg);
 								}catch(err){
 									that.warn("payload type unexpected");
@@ -495,7 +451,6 @@ module.exports = function(RED) {
 						deviceTypeSubscribed = "+";
 					}
 					that.client.on("connect", function () {
-						that.log("[App-In] Subscribing to Device Status with device type - "+that.deviceType+", with QoS " + that.qos);
 						that.client.subscribeToDeviceStatus(that.deviceType, that.deviceId, that.qos);
 					});
 
@@ -507,13 +462,11 @@ module.exports = function(RED) {
 							parsedPayload = payload;
 						}
 						var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType};
-						that.log("[App-In] Forwarding device status to output.");
 						that.send(msg);
 					});
 
 				} else if (that.inputType === "appsts") {
 					that.client.on("connect", function () {
-						that.log("[App-In] Subscribing to Applicatin Status with Id - "+that.applicationId+", with QoS " + that.qos);
 						that.client.subscribeToAppStatus(that.applicationId, that.qos);
 					});
 
@@ -527,14 +480,12 @@ module.exports = function(RED) {
 							parsedPayload = payload;
 						}
 						var msg = {"topic":topic, "payload":parsedPayload, "applicationId" : appId};
-						that.log("[App-In] Forwarding application status to output.");
 						that.send(msg);
 					});
 
 				} else if (that.inputType === "cmd") {
 
 					that.client.on("connect", function () {
-						that.log("[App-In] Subscribing to Device Commands with command type - "+that.commandType+", with QoS " + that.qos);
 						that.client.subscribeToDeviceCommands(that.deviceType, that.deviceId, that.commandType, that.format, that.qos);
 					});
 
@@ -545,7 +496,6 @@ module.exports = function(RED) {
 							try{
 								parsedPayload = JSON.parse(payload);
 								var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
-								that.log("[App-In] Forwarding JSON device command to output." + "\t" + JSON.stringify(msg) );
 								that.send(msg);
 							}catch(err){
 								that.warn("JSON payload expected");
@@ -557,7 +507,6 @@ module.exports = function(RED) {
 								parsedPayload = new Buffer(payload);
 							}
 							var msg = {"topic":topic, "payload":parsedPayload, "deviceId" : deviceId, "deviceType" : deviceType, "commandType" : commandType, "format" : formatType};
-							that.log("[App-In] Forwarding message non JSON command to output.");
 							that.send(msg);
 						}
 					});
