@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, 2015, 2016 IBM Corp.
+ * Copyright 2014, 2016 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,12 +98,7 @@ module.exports = function(RED) {
 	}
 	*/
 
-	RED.httpAdmin.get('/iotFoundation/credential', function(req,res) {
-		res.send("", credentials ? 200 : 403);
-	});
-
-
-	RED.httpAdmin.get('/iotFoundation/newcredential', function(req,res) {
+	RED.httpAdmin.get('/ibmiot/service', function(req,res) {
 		if (credentials) {
 			res.send(JSON.stringify({service:'registered', version: RED.version() }));
 		} else {
@@ -114,50 +109,20 @@ module.exports = function(RED) {
 	function IotAppNode(n) {
 		RED.nodes.createNode(this,n);
 		this.name = n.name;
-		var newCredentials = RED.nodes.getCredentials(n.id);
-		if (newCredentials) {
-			this.username = newCredentials.user;
-			this.password = newCredentials.password;
-                        this.keepalive = newCredentials.keepalive;
-                        this.cleansession = newCredentials.cleansession;
+		this.keepalive = n.keepalive;
+		this.cleansession = n.cleansession;
+		if (this.credentials) {
+			this.username = this.credentials.user;
+			this.password = this.credentials.password;
 		}
 	}
 
-	RED.nodes.registerType("ibmiot",IotAppNode);
-
-	RED.httpAdmin.get('/ibmiot/:id',function(req,res) {
-		var newCredentials = RED.nodes.getCredentials(req.params.id);
-		if (newCredentials) {
-			res.send(JSON.stringify({user:newCredentials.user,hasPassword:(newCredentials.password && newCredentials.password!="")}));
-		} else {
-			res.send(JSON.stringify({}));
+	RED.nodes.registerType("ibmiot",IotAppNode, {
+		credentials: {
+			user: {type:"text"},
+			password: {type:"password"}
 		}
 	});
-
-	RED.httpAdmin.delete('/ibmiot/:id',function(req,res) {
-		RED.nodes.deleteCredentials(req.params.id);
-		res.sendStatus(200);
-	});
-
-	RED.httpAdmin.post('/ibmiot/:id',function(req,res) {
-		var newCreds = req.body;
-		var newCredentials = RED.nodes.getCredentials(req.params.id)||{};
-		if (newCreds.user == null || newCreds.user == "") {
-			delete newCredentials.user;
-		} else {
-			newCredentials.user = newCreds.user;
-		}
-		if (newCreds.password == "") {
-			delete newCredentials.password;
-		} else {
-			newCredentials.password = newCreds.password || newCredentials.password;
-		}
-                newCredentials.keepalive = newCreds.keepalive;
-                newCredentials.cleansession = newCreds.cleansession;
-                RED.nodes.addCredentials(req.params.id, newCredentials);
-		res.sendStatus(200);
-	});
-
 
 	function setUpNode(node, nodeCfg, inOrOut){
 		// Create a random appId
@@ -193,7 +158,7 @@ module.exports = function(RED) {
 			node.format = "json";
 			node.qos = 0;
 			node.keepalive = 60;
-                        node.cleansession = true;
+			node.cleansession = true;
 		}
 
 
@@ -289,7 +254,7 @@ module.exports = function(RED) {
 
 		node.name = nodeCfg.name;
 		try {
-		        var appClientConfig = {
+			var appClientConfig = {
 				"org" : node.organization,
 				"id" : appId,
 				"auth-key" : node.apikey,
@@ -299,37 +264,39 @@ module.exports = function(RED) {
 			node.client.setKeepAliveInterval(node.keepalive);
 			node.client.setCleanSession(node.cleansession);
 			node.client.connect(node.qos);
+			node.client.on('error',function(err) {
+				node.error(err.toString());
+			});
+
+			node.client.on('connect',function() {
+				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+			});
+
+			node.client.on('disconnect',function() {
+				node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
+			});
+
+			node.client.on('reconnect',function() {
+				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+			});
+
+			node.on("close", function() {
+				if (node.client) {
+					node.client.disconnect();
+				}
+			});
+
+			node.status({fill:"yellow",shape:"ring",text:"node-red:common.status.connecting"});
+			if (node.client.isConnected) {
+				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+			}
+
 		}
 		catch(err) {
-			node.error("WIoTClient has NOT yet been initialized OR connected.... " + err.toString());
+			node.error("Watson IoT client configuration: " + err.toString());
 		}
 
-		node.client.on('error',function(err) {
-	            node.error(err.toString());
-	        });
 
-		node.client.on('connect',function() {
-				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
-		});
-
-		node.client.on('disconnect',function() {
-				node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
-		});
-
-		node.client.on('reconnect',function() {
-				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
-		});
-
-		node.on("close", function() {
-			if (node.client) {
-				node.client.disconnect();
-			}
-		});
-
-		node.status({fill:"yellow",shape:"ring",text:"node-red:common.status.connecting"});
-		if (node.client.isConnected) {
-				node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
-		}
 	}
 
 
@@ -337,6 +304,9 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this, n);
 		setUpNode(this, n, "out");
 
+		if (!this.client) {
+			return;
+		}
 		var that = this;
 
 		this.on("input", function(msg) {
@@ -402,6 +372,10 @@ module.exports = function(RED) {
 
 		RED.nodes.createNode(this, n);
 		setUpNode(this, n, "in");
+
+		if (!this.client) {
+			return;
+		}
 
 		var that = this;
 		if(this.topic){
