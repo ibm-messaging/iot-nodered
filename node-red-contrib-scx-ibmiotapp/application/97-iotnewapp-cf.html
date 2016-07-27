@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014, 2015, 2016 IBM Corp.
+  Copyright 2014, 2016 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
     </div>
     <div class="form-row">
         <label for="node-config-input-pass"><i class="fa fa-lock"></i> API Token</label>
-        <input type="password" id="node-config-input-pass">
+        <input type="password" id="node-config-input-password">
     </div>
     <div class="form-row">
        <label for="node-config-input-keepalive">  <i class="fa fa-clock-o"></i> Keep Alive </label>
@@ -51,17 +51,6 @@
             return this.name;
         },
         oneditprepare: function() {
-            $.getJSON('ibmiot/'+this.id,function(data) {
-                if (data.user) {
-                    $('#node-config-input-user').val(data.user);
-                }
-                if (data.hasPassword) {
-                    $('#node-config-input-pass').val('__PWRD__');
-                } else {
-                    $('#node-config-input-pass').val('');
-                }
-            });
-
             if($("#node-config-input-keepalive").val() === '') {
                 $("#node-config-input-keepalive").val("60");
             }
@@ -71,32 +60,10 @@
                 $("#node-config-input-cleansession").prop("checked",true);
             }
         },
-        oneditsave: function() {
-            var newUser = $('#node-config-input-user').val();
-            var newPass = $('#node-config-input-pass').val();
-            var newKA = $('#node-config-input-keepalive').val();
-            var newCS = $('#node-config-input-cleansession').is(':checked');
-            var credentials = {};
-            credentials.user = newUser;
-            credentials.keepalive = newKA;
-            credentials.cleansession = newCS;
-            if (newPass != '__PWRD__') {
-                credentials.password = newPass;
-            }
-            $.ajax({
-                url: 'ibmiot/'+this.id,
-                type: 'POST',
-                data: credentials,
-                success:function(result){}
-            });
-        },
-        ondelete: function() {
-            $.ajax({
-                url: 'ibmiot/'+this.id,
-                type: 'DELETE',
-                success: function(result) {}
-            });
-        }
+		credentials: {
+			user: {type:"text"},
+			password: {type:"password"}
+		}
     });
 </script>
 
@@ -282,7 +249,7 @@
     </div>
 
     <div class="form-row" id="node-form-qos-div">
-        <label id="node-input-qos-label" for="node-input-qos" style="width:130px;" <i class="fa fa-empire"></i> QoS </label>
+        <label id="node-input-qos-label" for="node-input-qos" style="width:130px;"><i class="fa fa-empire"></i> QoS </label>
         <select id="node-input-qos" style="width:70px;">
             <option value=0>0</option>
             <option value=1>1</option>
@@ -307,7 +274,7 @@
 		</div>
 
 		<div id="quickstartTips">
-			<b>Quickstart:</b> Use the Input Type property to configure this node to receive Events sent by IoT Devices, Status Messages referring to IoT Devices, or Status Messages referring to IoT Applications"<br/>
+			<b>Quickstart:</b> Use the Input Type property to configure this node to receive Events sent by IoT Devices, Status Messages referring to IoT Devices, or Status Messages referring to IoT Applications<br/>
 		</div>
 
 		Check the info tab, to get more information about each of the fields
@@ -362,7 +329,7 @@
 			eventCommandType: {value:"", required: true},
 			format: {value:"", required: true},
 			data: {value:"", required: true},
-                        qos: {value: 0},
+			qos: {value: 0},
 			name: { value:"IBM IoT" },
 			service: {value: ""}
 		},
@@ -379,7 +346,7 @@
 		oneditprepare: function() {
 			var result = "";
 			var noderedVersion = "";
-			$.getJSON('iotFoundation/newcredential?ts=' + Math.random(), function(data) {
+			$.getJSON('ibmiot/service?ts=' + Math.random(), function(data) {
 				var authnode = document.getElementById('node-input-authentication');
 				var bluemixnode = authnode.lastElementChild;
 				if(data.service !== 'registered') {
@@ -392,7 +359,6 @@
 				}
 				noderedVersion = data.version;
 				var serviceSelected = $("#node-input-authentication").val();
-				console.log("Service selected = " + serviceSelected);
 				if(serviceSelected === "quickstart") {
 
 					result = "quickstart";
@@ -669,7 +635,7 @@
 			result = "";
 
 			var noderedVersion = "";
-			$.getJSON('iotFoundation/newcredential?ts=' + Math.random(), function(data) {
+			$.getJSON('ibmiot/service?ts=' + Math.random(), function(data) {
 				var authnode = document.getElementById('node-input-authentication');
 				var bluemixnode = authnode.lastElementChild;
 
@@ -688,7 +654,6 @@
 			});
 
 			var serviceSelected = $("#node-input-authentication").val();
-			console.log("Service selected = " + serviceSelected);
 
 			if(serviceSelected === "quickstart") {
 				result = "quickstart";
