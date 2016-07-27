@@ -1,41 +1,40 @@
 {
-  "author": {
-    "name": "Amit M Mangalvedkar",
-    "email": "amitmangalvedkar@gmail.com"
-  },
-  "name": "node-red-contrib-scx-ibmiotapp",
-  "description": "IoT Application Node-RED node for the Registered and Quickstart flows in IBM Watson IoT Platform",
-  "dependencies": {
-    "cfenv": "1.0.0",
-    "ibmiotf": "^0.2.18",
-    "is-utf8": "^0.2.1"
-  },
-  "version": "0.0.40",
-  "keywords": [
-    "node-red",
-    "bluemix",
-    "iotcloud"
-  ],
-  "readmeFilename": "README.md",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ibm-messaging/iot-nodered/tree/master/node-red-contrib-scx-ibmiotapp"
-  },
-  "license": "Apache",
-  "node-red": {
-    "nodes": {
-      "ibmiotapp": "application/97-iotnewapp-cf.js"
-    }
-  },
-  "maintainers": [{
-    "name": "amitmangalvedkar",
-    "email": "amitmangalvedkar@in.ibm.com"
-  }, {
-    "name": "jeffdare",
-    "email": "jeffdare@in.ibm.com"
-  }, {
-	"name" : "lokesh.h.k",
-	"email" : "lokesh.h.k@in.ibm.com"
-  }
-]
+        "author": {
+                "name": "Amit M Mangalvedkar",
+                "email": "amitmangalvedkar@gmail.com"
+        },
+        "name": "node-red-contrib-scx-ibmiotapp",
+        "description": "IoT Application Node-RED node for the Registered and Quickstart flows in IBM Watson IoT Platform",
+        "dependencies": {
+                "cfenv": "1.0.0",
+                "ibmiotf": "^0.2.18",
+                "is-utf8": "^0.2.1"
+        },
+        "version": "0.0.41",
+        "keywords": [
+                "node-red",
+                "bluemix",
+                "iotcloud"
+        ],
+        "readmeFilename": "README.md",
+        "repository": {
+                "type": "git",
+                "url": "https://github.com/ibm-messaging/iot-nodered/tree/master/node-red-contrib-scx-ibmiotapp"
+        },
+        "license": "Apache",
+        "node-red": {
+                "nodes": {
+                        "ibmiotapp": "application/97-iotnewapp-cf.js"
+                }
+        },
+        "maintainers": [{
+                "name": "amitmangalvedkar",
+                "email": "amitmangalvedkar@in.ibm.com"
+        }, {
+                "name": "jeffdare",
+                "email": "jeffdare@in.ibm.com"
+        }, {
+                "name": "lokesh.h.k",
+                "email": "lokesh.h.k@in.ibm.com"
+        }]
 }
