@@ -116,6 +116,9 @@ function IBMPushNode(n) {
 	this.notificationType = n.notification;
 	this.identifiers = n.identifiers;
 
+	//get the mode
+	this.mode = n.mode;
+
 	this.on("input", function(msg) {
 
 		var alert = msg.payload;
@@ -124,7 +127,7 @@ function IBMPushNode(n) {
 		if (this.identifiers != null)
 			ids = this.identifiers.split(',');
 
-		// 
+		//remove the whitespaces for each value.
 		for(var i=0;i<ids.length;i++)
 			ids[i] = ids[i].trim();
 
@@ -135,9 +138,14 @@ function IBMPushNode(n) {
 				target : {}
 		};
 
+		//first pref to the mode sent from the message
+		this.mode = msg.mode || this.mode;
+
+		console.log("The mode is "+this.mode);
+
 		switch (this.notificationType) {
 			case "broadcast":
-				invokePush('SANDBOX',message,this);
+				invokePush(this.mode,message,this);
 				break;
 
 			case "tags":

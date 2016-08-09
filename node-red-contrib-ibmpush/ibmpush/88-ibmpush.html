@@ -20,35 +20,43 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-	<br>
+    <br>
+    <b>Mobile Push Properties</b><br/>
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-share-alt"></i> Mode</label>
+        <select id="node-input-mode" style="margin-right:3px;">
+            <option default value="SANDBOX">SANDBOX</option>
+            <option value="PRODUCTION">PRODUCTION</option>
+        </select>
+        
+    </div>
     <div id="propDiv">
-    	<b>Mobile Push Properties</b><br/>
         <div class="form-row">
             <label id="node-input-ApplicationIDLabel" for="node-input-ApplicationID"><i class="icon-bookmark"></i> ID</label>
             <input type="text" id="node-input-ApplicationID" placeholder="Application ID e.g: 4cf38f2e-0465-4e40-887c-d69c85128389">
         </div>
-    	<div class="form-row">
+        <div class="form-row">
             <label for="node-input-ApplicationSecret"><i class="icon-lock"></i> Secret</label>
             <input type="password" id="node-input-ApplicationSecret" placeholder="Application Secret">
         </div>
 
         <br/>
     </div>
-	<b>Notification</b>
-	
-	<div class="form-row">
-		<label for="node-input-notification"><i class="icon-tasks"></i> Type</label>
-		<select id="node-input-notification" style="margin-right:3px;">
+    <b>Notification</b>
+    
+    <div class="form-row">
+        <label for="node-input-notification"><i class="icon-tasks"></i> Type</label>
+        <select id="node-input-notification" style="margin-right:3px;">
             <option default value="broadcast">Broadcast</option>
             <option value="tags">By Tags</option>
-			<option value="deviceid">By DeviceIds</option>
+            <option value="deviceid">By DeviceIds</option>
             <option value="android">Only Android devices</option>
             <option value="ios">Only iOS devices</option>
         </select>
         
     </div>
-	
-	<div class="form-row">
+    
+    <div class="form-row">
         <label id="node-input-identifiersLabel" for="node-input-identifiers"><i class="icon-tag"></i> Identifiers</label>
         <input type="text" id="node-input-identifiers" placeholder="e.g: GoldCoupons,SilverCoupons">
     </div>
@@ -64,32 +72,34 @@
             <b>Local Mode:</b> Node-RED is running in local mode. Provide the <i>Application ID and Secret</i><br/>
         </div>
 </div>
-	
+    
 </script>
 
 
 
 <script type="text/x-red" data-help-name="ibmpush">
-	<p>Sends Push Notifications to mobile devices using IBM Push notification for Bluemix</p>
-	<p><code>msg.payload</code> is used as the alert in the Notification.
-	<p><b>Mobile Push Properties</b></p> 
-	<p> <b>Application ID and Secret</b> mandatory only when used in <i>non-Bluemix environment</i> and must be copied from the IBM Push Notification service in Bluemix. 
-	If used in <i>Bluemix</i>, these properties will be automatically read.</p> 
-	
-	<p><b>Notification Type</b> Type of notification to be pushed.
-		<ul>
-			<li><i>Broadcast</i> - Send notifications to all the registered devices</li>
-			<li><i>By Tags</i> - Send notifications to devices subscribed to that tag. Can take multiple values seperated by comma(,)</li>
-			<li><i>By DeviceIds</i> - Send notifications to devices by their device ID. Can take multiple values seperated by comma(,)</li>
-			<li><i>Only Android devices</i> - Send notifications to all the registered Android devices</li>
+    <p>Sends Push Notifications to mobile devices using IBM Push notification for Bluemix</p>
+    <p><code>msg.payload</code> is used as the alert in the Notification.
+    <p><b>Mobile Push Properties</b></p>
+    <p> <b>Mode</b> Select the mode of operation for the IBM Push Notification. You can override this property by providing <code>msg.mode</code> </p> 
+
+    <p> <b>Application ID and Secret</b> mandatory only when used in <i>non-Bluemix environment</i> and must be copied from the IBM Push Notification service in Bluemix. 
+    If used in <i>Bluemix</i>, these properties will be automatically read.</p> 
+    
+    <p><b>Notification Type</b> Type of notification to be pushed.
+        <ul>
+            <li><i>Broadcast</i> - Send notifications to all the registered devices</li>
+            <li><i>By Tags</i> - Send notifications to devices subscribed to that tag. Can take multiple values seperated by comma(,)</li>
+            <li><i>By DeviceIds</i> - Send notifications to devices by their device ID. Can take multiple values seperated by comma(,)</li>
+            <li><i>Only Android devices</i> - Send notifications to all the registered Android devices</li>
             <li><i>Only iOS devices</i> - Send notifications to all the registered iOS devices</li>
 
-		</ul>
-	</p>
+        </ul>
+    </p>
 
-	<p><b>Notification Identifiers</b> Used when notifications are sent <i>By Tags and By DeviceIds</i>. This can take multiple values seperated by comma(,). Example: GoldCoupons,SilverCoupons</p>
+    <p><b>Notification Identifiers</b> Used when notifications are sent <i>By Tags and By DeviceIds</i>. This can take multiple values seperated by comma(,). Example: GoldCoupons,SilverCoupons</p>
 
-	<p> Visit this <a target="_blank" href="https://new-console.ng.bluemix.net/docs/services/mobilepush/c_overview_push.html">link</a> for more information on IBM Push Notification for Bluemix
+    <p> Visit this <a target="_blank" href="https://new-console.ng.bluemix.net/docs/services/mobilepush/c_overview_push.html">link</a> for more information on IBM Push Notification for Bluemix
 
 </script>
 
@@ -97,18 +107,19 @@
 <script type="text/javascript">
     RED.nodes.registerType('ibmpush',{
         category: 'output',
-        color:"rgb(115, 185, 221)", 	
+        color:"rgb(115, 185, 221)",     
         defaults: {   
             name: {},
             ApplicationID: {value:"", required:false},
             //ApplicationSecret: {value:"", required:true},
             identifiers: {value:""},
-            notification: {value:"broadcast"}
+            notification: {value:"broadcast"},
+            mode: {value:"SANDBOX"}
         },
         inputs:1,               
         outputs:0,
         icon: "ibmpush-icon.png", 
-		align: "right",
+        align: "right",
         label: function() {
             return this.name ||"IBM Push";
         },
@@ -121,13 +132,13 @@
                 console.log("resp");
                 console.log(data);
                 if(data.isBound) {
-                	
-               		$("#propDiv").hide();
+                    
+                    $("#propDiv").hide();
                     //tooltip
                     $("#form-tipsUnbounded").hide();
                     $("#form-tipsLocal").hide();
                 } else if(data.isBluemix){
-    				$("#propDiv").show();
+                    $("#propDiv").show();
                     //tooltip
                     $("#form-tipsBounded").hide();
                     $("#form-tipsLocal").hide();
@@ -143,15 +154,15 @@
             $.getJSON("ibmpush/"+this.id, function(data) {
                     
                     if (data.hasPassword) {
-                    	$('#node-input-ApplicationSecret').data("v",'__PWRD__');
+                        $('#node-input-ApplicationSecret').data("v",'__PWRD__');
                         $("#node-input-ApplicationSecret").val("__PWRD__");
                     } else {
-                   		$('#node-input-ApplicationSecret').data("v",'');
+                        $('#node-input-ApplicationSecret').data("v",'');
                         $("#node-input-ApplicationSecret").val("");
                     }
             });
 
-    		var notificationSelect = $('#node-input-notification');
+            var notificationSelect = $('#node-input-notification');
             notificationSelect.change(function() {
                 var service = notificationSelect.val();
                 if (service === "broadcast" || service === "android" || service === "ios") {
@@ -171,26 +182,26 @@
             var newPass = $("#node-input-ApplicationSecret").val();
             
             if(oldPass != newPass) {
-	            if (newPass == "") {
-	                    $.ajax({
-	                        url: 'ibmpush/'+this.id,
-	                        type: 'DELETE',
-	                        success: function(result) {}
-	                    });
-	            } else {
-	            	var credentials = {};
-		            if (newPass != "__PWRD__") {
-		                credentials.password = newPass;
-		            }
-		            $.ajax({
-		                url: "ibmpush/"+this.id,
-		                type: "POST",
-		                data: credentials,
-		                success: function(result) {}
-		            });
-		        }
-		        return true;
-			}
+                if (newPass == "") {
+                        $.ajax({
+                            url: 'ibmpush/'+this.id,
+                            type: 'DELETE',
+                            success: function(result) {}
+                        });
+                } else {
+                    var credentials = {};
+                    if (newPass != "__PWRD__") {
+                        credentials.password = newPass;
+                    }
+                    $.ajax({
+                        url: "ibmpush/"+this.id,
+                        type: "POST",
+                        data: credentials,
+                        success: function(result) {}
+                    });
+                }
+                return true;
+            }
         }
     });
 
