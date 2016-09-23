@@ -27,47 +27,12 @@ var getBody = require('raw-body');
 var fs = require("fs");
 
 var cfenv = require("cfenv");
-// Load the services VCAP from the CloudFoundry environment
-var appenv = cfenv.getAppEnv();
-var services = appenv.services || {};
 
-var userServices = services['Analytics for Apache Hadoop'];
-var bigcredentials = false;
 
-if (userServices) {
-	for(var i = 0, l = userServices.length; i < l; i++){
-		var service = userServices[i];
-		if(service.credentials){
-			if(service.credentials.WebhdfsUrl){
-				bigcredentials = service.credentials;
-				console.log("BIG CREDENTIALS FOUND.....");
-				break;
-			}
-		}
-	}
-} 
-/*
-else {
-	var vcapData = fs.readFileSync("credentials.cfg"), fileContents;
-	try {
-		fileContents = JSON.parse(vcapData);
-
-		bigcredentials = {};
-		bigcredentials.WebhdfsUrl = fileContents.WebhdfsUrl;
-		bigcredentials.userid = fileContents.userid;
-		bigcredentials.password = fileContents.password;
-
-	}
-	catch (ex){
-		console.log("credentials.cfg doesn't exist or is not well formed");
-		credentials = null;
-	}
-}
-*/
-RED.httpAdmin.get('/iotFoundation/bigdata', function(req,res) {
-	console.log("BIG Credentials asked for .....");	
-	res.send("", bigcredentials ? 200 : 403);
-});
+//RED.httpAdmin.get('/iotFoundation/bigdata', function(req,res) {
+//	console.log("BIG Credentials asked for .....");
+//	res.send("", bigcredentials ? 200 : 403);
+//});
 
 
 function HDFSRequestInNode(n) {
@@ -85,10 +50,10 @@ function HDFSRequestInNode(n) {
 	this.on("input",function(msg) {
 		node.status({fill:"blue",shape:"ring",text:"requesting"});
 		var filename = msg.filename || this.filename;
-		var homeDirectory = "user/" + bigcredentials.userid;
+		var homeDirectory = "/user/" + node.credentials.userid;
 
-		var url = bigcredentials.WebhdfsUrl;
-		url = url + homeDirectory + filename;
+		var url = n.webhdfsUrl;
+		url = url + homeDirectory + "/" + filename;
 
 		node.log("filename = " + filename);
 		if (filename == "") {
@@ -99,7 +64,7 @@ function HDFSRequestInNode(n) {
 			opts.method = "GET";
 			opts.headers = {};
 			var payload = null;
-			opts.auth = bigcredentials.userid+":"+(bigcredentials.password||"");
+			opts.auth = node.credentials.userid+":"+(node.credentials.password||"");
 			var req = ((/^https/.test(url))?httpsForRead:httpForRead).request(opts,function(res) {
 				if(options['encoding'] == 'utf8') {
 					res.setEncoding('utf8');
@@ -111,8 +76,8 @@ function HDFSRequestInNode(n) {
 
 				if(msg.payload === null) {
 					msg.payload = "";
-				} 
-				
+				}
+
 				var begun = false;
 				res.on('data',function(chunk) {
 					node.status({fill:"green",shape:"dot",text:"connected"});
@@ -144,7 +109,12 @@ function HDFSRequestInNode(n) {
 	});
 }
 
-RED.nodes.registerType("ibm hdfs in",HDFSRequestInNode);
+RED.nodes.registerType("ibm hdfs in",HDFSRequestInNode,{
+  credentials: {
+    userid: {type: "text"},
+    password: {type: "password"},
+  }
+});
 
 function HDFSRequest(n) {
 	RED.nodes.createNode(this,n);
@@ -163,13 +133,14 @@ function HDFSRequest(n) {
 		var that = this;
 		node.status({fill:"blue",shape:"ring",text:"requesting"});
 		var filename = msg.filename || this.filename;
-		var homeDirectory = "user/" + bigcredentials.userid;
+		var homeDirectory = "/user/" + node.credentials.userid;
 
-		var url = bigcredentials.WebhdfsUrl;
-		url = url + homeDirectory + filename;
+		var url = n.webhdfsUrl;
+		url = url + homeDirectory + "/" + filename;
 
 		var fileChanged = false;
 		node.log("filename = " + filename);
+		node.log("url= " + url);
 
 		if (filename == "") {
 			node.warn('No filename specified');
@@ -177,14 +148,14 @@ function HDFSRequest(n) {
 			var data = msg.payload;
 			var opts;
 			if (typeof data == "object") {
-				data = JSON.stringify(data); 
+				data = JSON.stringify(data);
 			}
-			if (typeof data == "boolean") { 
-				data = data.toString(); 
+			if (typeof data == "boolean") {
+				data = data.toString();
 			}
 
-			if (typeof data == "number") { 
-				data += ""; 
+			if (typeof data == "number") {
+				data += "";
 			}
 
 			if (appendNewline) {
@@ -195,7 +166,7 @@ function HDFSRequest(n) {
 				opts = urllib.parse(url + "?op=DELETE");
 				opts.method = "DELETE";
 				opts.headers = {};
-				opts.auth = bigcredentials.userid+":"+(bigcredentials.password||"");
+				opts.auth = node.credentials.userid+":"+(node.credentials.password||"");
 				node.status({fill:"grey",shape:"dot",text:"deleted"});
 			}
 			else {
@@ -203,7 +174,7 @@ function HDFSRequest(n) {
 					opts = urllib.parse(url + "?op=CREATE&data=true");
 					opts.method = "PUT";
 					opts.headers = {};
-					opts.auth = bigcredentials.userid+":"+(bigcredentials.password||"");
+					opts.auth = node.credentials.userid+":"+(node.credentials.password||"");
 					opts.headers['transfer-encoding'] = 'chunked';
 					opts.headers['content-type'] = 'application/octet-stream';
 					opts.encoding = options.encoding;
@@ -211,9 +182,9 @@ function HDFSRequest(n) {
 					opts = urllib.parse(url + "?op=APPEND&data=true");
 					opts.method = "POST";
 					opts.headers = {};
-					opts.auth = bigcredentials.userid+":"+(bigcredentials.password||"");
+					opts.auth = node.credentials.userid+":"+(node.credentials.password||"");
 					opts.headers['transfer-encoding'] = 'chunked';
-					opts.headers['content-type'] = 'application/octet-stream';				
+					opts.headers['content-type'] = 'application/octet-stream';
 					opts.encoding = options.encoding;
 				}
 				if (opts.headers['content-length'] == null) {
@@ -226,7 +197,7 @@ function HDFSRequest(n) {
 				} else {
 					res.setEncoding('binary');
 				}
-				
+
 				msg.statusCode = res.statusCode;
 				msg.headers = res.headers;
 
@@ -237,7 +208,7 @@ function HDFSRequest(n) {
 					opts1 = urllib.parse(newLocation);
 					opts1.method = opts.method;
 					opts1.headers = {};
-					opts1.auth = bigcredentials.userid+":"+(bigcredentials.password||"");
+					opts1.auth = node.credentials.userid+":"+(node.credentials.password||"");
 					opts1.headers['transfer-encoding'] = 'chunked';
 					opts1.headers['content-type'] = 'application/octet-stream';
 					opts1.encoding = "UTF-8";
@@ -262,14 +233,14 @@ function HDFSRequest(n) {
 					node.status({fill:"green",shape:"dot",text:"connected"});
 					node.log("Status code = " + msg.statusCode);
 					if(msg.statusCode == 404 ) {
-						node.error("File doesnt exist, so creating one");	
+						node.error("File doesnt exist, so creating one");
 
-						node.log("WebHDFSFile = " + url);					
-						opts = null;				
+						node.log("WebHDFSFile = " + url);
+						opts = null;
 						opts = urllib.parse(url + "?op=CREATE&data=true");
 						opts.method = "PUT";
 						opts.headers = {};
-						opts.auth = bigcredentials.userid+":"+(bigcredentials.password||"");
+						opts.auth = node.credentials.userid+":"+(node.credentials.password||"");
 						opts.headers['transfer-encoding'] = 'chunked';
 						opts.headers['content-type'] = 'application/octet-stream';
 						if (opts.headers['content-length'] == null) {
@@ -278,8 +249,8 @@ function HDFSRequest(n) {
 						var req1 = ((/^https/.test(url))?https:http).request(opts,function(res1) {
 							res1.setEncoding('utf8');
 							msg.statusCode = res1.statusCode;
-							msg.headers = res1.headers;							
-						
+							msg.headers = res1.headers;
+
 							if(msg.statusCode == 307) {
 									node.status({fill:"green",shape:"dot",text:"connected"});
 									newLocation = res1.headers.location;
@@ -288,7 +259,7 @@ function HDFSRequest(n) {
 									opts = urllib.parse(newLocation);
 									opts.method = "PUT";
 									opts.headers = {};
-									opts.auth = bigcredentials.userid+":"+(bigcredentials.password||"");
+									opts.auth = node.credentials.userid+":"+(node.credentials.password||"");
 									opts.headers['transfer-encoding'] = 'chunked';
 									opts.headers['content-type'] = 'application/octet-stream';
 									opts.encoding = "UTF-8";
@@ -305,11 +276,11 @@ function HDFSRequest(n) {
 								reqPut.end();
 								node.status({fill:"grey",shape:"dot",text:"inserted / updated"});
 							}
-	
+
 							res1.on('data',function(chunk) {
 								node.status({fill:"green",shape:"dot",text:"connected"});
 								if(msg.statusCode == 404 ) {
-									node.error("Unable to create the file......");	
+									node.error("Unable to create the file......");
 									fileChanged = false;
 								}  else {
 									data += chunk;
@@ -367,35 +338,40 @@ function HDFSRequest(n) {
 	});
 }
 
-RED.nodes.registerType("ibm hdfs",HDFSRequest);
-
-RED.httpAdmin.get('/http-request/:id',function(req,res) {
-	var credentials = RED.nodes.getCredentials(req.params.id);
-	if (credentials) {
-		res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
-	} else {
-		res.send(JSON.stringify({}));
-	}
+RED.nodes.registerType("ibm hdfs",HDFSRequest,{
+  credentials: {
+    userid: {type: "text"},
+    password: {type: "password"},
+  }
 });
 
-RED.httpAdmin.delete('/http-request/:id',function(req,res) {
-	RED.nodes.deleteCredentials(req.params.id);
-	res.send(200);
-});
-
-RED.httpAdmin.post('/http-request/:id',function(req,res) {
-    var newCreds = body.req;
-    var credentials = RED.nodes.getCredentials(req.params.id)||{};
-    if (newCreds.user == null || newCreds.user == "") {
-        delete credentials.user;
-    } else {
-        credentials.user = newCreds.user;
-    }
-    if (newCreds.password == "") {
-        delete credentials.password;
-    } else {
-        credentials.password = newCreds.password||credentials.password;
-    }
-    RED.nodes.addCredentials(req.params.id,credentials);
-    res.send(200);
-});
+//RED.httpAdmin.get('/http-request/:id',function(req,res) {
+//	var credentials = RED.nodes.getCredentials(req.params.id);
+//	if (credentials) {
+//		res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+//	} else {
+//		res.send(JSON.stringify({}));
+//	}
+//});
+//
+//RED.httpAdmin.delete('/http-request/:id',function(req,res) {
+//	RED.nodes.deleteCredentials(req.params.id);
+//	res.send(200);
+//});
+//
+//RED.httpAdmin.post('/http-request/:id',function(req,res) {
+//    var newCreds = body.req;
+//    var credentials = RED.nodes.getCredentials(req.params.id)||{};
+//    if (newCreds.user == null || newCreds.user == "") {
+//        delete credentials.user;
+//    } else {
+//        credentials.user = newCreds.user;
+//    }
+//    if (newCreds.password == "") {
+//        delete credentials.password;
+//    } else {
+//        credentials.password = newCreds.password||credentials.password;
+//    }
+//    RED.nodes.addCredentials(req.params.id,credentials);
+//    res.send(200);
+//});
