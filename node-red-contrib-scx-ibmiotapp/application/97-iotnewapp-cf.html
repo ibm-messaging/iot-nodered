@@ -28,6 +28,13 @@
         <input type="password" id="node-config-input-password">
     </div>
     <div class="form-row">
+        <label for="node-config-input-shared"><i class="fa fa-tag"></i> Scalable</label>
+        <input type="checkbox" id="node-config-input-shared" style="width: 15px;">
+
+        <label for="node-config-input-appId" style="margin-left: 20px; width: 120px" ><i class="fa fa-tag"></i> Application ID</label>
+        <input type="text" id="node-config-input-appId" style="width: 35%; ">
+    </div>
+    <div class="form-row">
        <label for="node-config-input-keepalive">  <i class="fa fa-clock-o"></i> Keep Alive </label>
        <input type="text" id="node-config-input-keepalive" placeholder="60" style="width: 50px;">
        <label style="width: 80px;"> Seconds </label>
@@ -44,11 +51,13 @@
             name: { value:"" },
             keepalive: {value: 60, validate:RED.validators.number()},
             cleansession: {value: true},
+            appId : { value : "" },
+            shared : { value : false }
             //user -> credentials
             //pass -> credentials
         },
         label: function() {
-            return this.name;
+            return this.name || this.appId;
         },
         oneditprepare: function() {
             if($("#node-config-input-keepalive").val() === '') {
@@ -59,6 +68,15 @@
                 this.cleansession = true;
                 $("#node-config-input-cleansession").prop("checked",true);
             }
+
+            $("#node-config-input-shared").change(function() {
+              if ($('#node-config-input-shared').is(":checked")) {
+                $("#node-config-input-appId").prop('required',true);
+              } else {
+                $("#node-config-input-appId").prop('required',false);
+              }
+              
+            });
         },
 		credentials: {
 			user: {type:"text"},
@@ -67,6 +85,9 @@
     });
 </script>
 
+<script type="text/x-red" data-help-name="ibmiot">
+  <p> To use Shared subscription, check <b>Scalable</b> and provide the <b>Application ID</b>. The <b>Application ID</b> must be same across different clients.  
+</script>
 
 <script type="text/x-red" data-template-name="ibmiot out">
 

@@ -111,10 +111,9 @@ module.exports = function(RED) {
 		this.name = n.name;
 		this.keepalive = n.keepalive;
 		this.cleansession = n.cleansession;
-		if (this.credentials) {
-			this.username = this.credentials.user;
-			this.password = this.credentials.password;
-		}
+		this.appId = n.appId;
+		this.shared = n.shared;
+
 	}
 
 	RED.nodes.registerType("ibmiot",IotAppNode, {
@@ -125,8 +124,7 @@ module.exports = function(RED) {
 	});
 
 	function setUpNode(node, nodeCfg, inOrOut){
-		// Create a random appId
-		var appId = util.guid();
+
 		node.service = nodeCfg.service;
 		node.authentication = nodeCfg.authentication;
 		node.topic = nodeCfg.topic || "";
@@ -148,6 +146,12 @@ module.exports = function(RED) {
 		if(nodeCfg.authentication === "apiKey") {
 			 var iotnode = RED.nodes.getNode(nodeCfg.apiKey);
 			 newCredentials = RED.nodes.getCredentials(iotnode.id);
+			 
+			 // persist data from the node
+			 node.keepalive = parseInt(iotnode.keepalive);
+		     node.cleansession = iotnode.cleansession;
+		     node.appId = iotnode.appId;
+		     node.shared = iotnode.shared;
 		}
 
 		if(node.service !== "quickstart") {
@@ -173,8 +177,6 @@ module.exports = function(RED) {
 		if(newCredentials !== 'undefined' && node.authentication === 'apiKey') {
 			node.apikey = newCredentials.user;
 			node.apitoken = newCredentials.password;
-		        node.keepalive = parseInt(newCredentials.keepalive);
-		        node.cleansession = newCredentials.cleansession;
 
 			node.organization = node.apikey.split(':')[1];
 			if(node.organization === 'undefined' || node.organization === null || typeof node.organization === 'undefined') {
@@ -221,45 +223,24 @@ module.exports = function(RED) {
 		node.eventType = ( node.allEvents ) ? '+' : nodeCfg.eventType;
 		node.commandType = ( node.allCommands ) ? '+' : nodeCfg.commandType;
 
-		if(inOrOut === "in") {
-			node.clientId = "a:" + node.organization + ":" + appId;
-
-			if(node.inputType === "evt" || node.inputType === "cmd") {
-				if(node.service !== "quickstart") {
-					if(node.inputType === "evt") {
-						node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.deviceId + "/" + node.inputType + "/" + node.eventType +"/fmt/" + node.format;
-					} else {
-						node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.deviceId + "/" + node.inputType + "/" + node.commandType +"/fmt/" + node.format;
-					}
-
-				}else {
-					node.topic = "iot-2/type/+/id/" + node.deviceId + "/" + node.inputType + "/" + node.eventType +"/fmt/" + node.format;
-				}
-			} else if(node.inputType === "devsts") {
-				node.topic = "iot-2/type/+/id/" + node.deviceId + "/mon";
-			} else if(node.inputType === "appsts") {
-				node.topic = "iot-2/app/" + node.applicationId + "/mon";
-			} else {
-				node.topic = "iot-2/app/" + node.deviceId + "/mon";
-			}
+		// if appId is not provided generate random.
+		if(!node.appId) {
+			node.appId = util.guid();
 		}
-		else if(inOrOut === "out") {
-			node.clientId = "a:" + node.organization + ":" + appId;
-			node.topic = "iot-2/type/" + node.deviceType +"/id/" + node.deviceId + "/" + node.outputType + "/" + node.eventCommandType +"/fmt/" + node.format;
-		}
-		else {
-			node.error("Control cannot come here as we have either In or Out");
-		}
-
 
 		node.name = nodeCfg.name;
 		try {
 			var appClientConfig = {
 				"org" : node.organization,
-				"id" : appId,
+				"id" : node.appId,
 				"auth-key" : node.apikey,
 				"auth-token" : node.apitoken
 			};
+			
+			if(node.shared) {
+				appClientConfig.type = "shared";
+			}
+			//console.log(appClientConfig);
 			node.client = new WIoTClient.IotfApplication(appClientConfig);
 			node.client.setKeepAliveInterval(node.keepalive);
 			node.client.setCleanSession(node.cleansession);
@@ -378,7 +359,7 @@ module.exports = function(RED) {
 		}
 
 		var that = this;
-		if(this.topic){
+
 			try {
 				if(that.inputType === "evt" ) {
 
@@ -488,7 +469,6 @@ module.exports = function(RED) {
 			} catch(err) {
 				that.warn("MQTT Client is not fully initialized for in node - please wait");
 			}
-		}
 	}
 
 	RED.nodes.registerType("ibmiot in", IotAppInNode);
