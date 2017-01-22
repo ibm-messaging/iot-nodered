@@ -7,10 +7,10 @@
         "description": "IoT Application Node-RED node for the Registered and Quickstart flows in IBM Watson IoT Platform",
         "dependencies": {
                 "cfenv": "^1.0.3",
-                "ibmiotf": "^0.2.25",
+                "ibmiotf": "^0.2.29",
                 "is-utf8": "^0.2.1"
         },
-        "version": "0.0.43",
+        "version": "0.0.44",
         "keywords": [
                 "node-red",
                 "bluemix",
