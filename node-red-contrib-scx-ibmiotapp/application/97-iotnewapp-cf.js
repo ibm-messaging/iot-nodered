@@ -146,7 +146,7 @@ module.exports = function(RED) {
 		if(nodeCfg.authentication === "apiKey") {
 			 var iotnode = RED.nodes.getNode(nodeCfg.apiKey);
 			 newCredentials = RED.nodes.getCredentials(iotnode.id);
-			 
+
 			 // persist data from the node
 			 node.keepalive = parseInt(iotnode.keepalive);
 		     node.cleansession = iotnode.cleansession;
@@ -186,7 +186,7 @@ module.exports = function(RED) {
 			}
 	//		node.brokerHost = node.organization + ".messaging.staging.test.internetofthings.ibmcloud.com";
 			node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
-			node.brokerPort = 1883;
+			node.brokerPort = 8883;
 		} else if(credentials !== null && credentials !== 'undefined' && node.authentication === 'boundService') {
 			node.apikey = credentials.apiKey;
 			node.apitoken = credentials.apiToken;
@@ -203,7 +203,7 @@ module.exports = function(RED) {
 			} else if(credentials !== null && credentials.mqtt_s_port) {
 				node.brokerPort = credentials.mqtt_s_port;
 			} else {
-				node.brokerPort = 1883;
+				node.brokerPort = 8883;
 			}
 
 			if(credentials.mqtt_host !== 'undefined' || credentials.mqtt_host !== null) {
@@ -236,7 +236,7 @@ module.exports = function(RED) {
 				"auth-key" : node.apikey,
 				"auth-token" : node.apitoken
 			};
-			
+
 			if(node.shared) {
 				appClientConfig.type = "shared";
 			}
