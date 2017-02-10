@@ -234,7 +234,8 @@ module.exports = function(RED) {
 				"org" : node.organization,
 				"id" : node.appId,
 				"auth-key" : node.apikey,
-				"auth-token" : node.apitoken
+				"auth-token" : node.apitoken,
+                                "domain" : node.brokerHost.substring(node.brokerHost.indexOf("messaging.") + "messaging.".length)
 			};
 
 			if(node.shared) {
