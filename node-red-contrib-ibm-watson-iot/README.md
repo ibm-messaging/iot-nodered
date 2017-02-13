@@ -12,6 +12,23 @@ usually ``~/.node-red`.
 ```
 npm install node-red-contrib-ibm-watson-iot
 ```
+----
+
+Supported Features
+------------------
+
+| Feature   |      Supported?      |
+|----------|:-------------:|
+| Device connectivity |  &#10004; |
+| Gateway connectivity |    &#10004; |
+| SSL/TLS | &#10004; |
+| Client side Certificate based authentication | &#10008; |
+| Auto reconnect | &#10004; |
+| Websocket | &#10008; |
+| Multi-format support | &#10004; |
+| Device Management | &#10008; |
+
+----
 
 ## Usage
 
