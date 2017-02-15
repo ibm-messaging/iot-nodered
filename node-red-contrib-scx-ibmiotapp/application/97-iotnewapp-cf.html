@@ -28,6 +28,10 @@
         <input type="password" id="node-config-input-password">
     </div>
     <div class="form-row">
+        <label for="node-config-input-domain"><i class="fa fa-user-secret"></i> Domain</label>
+        <input type="text" id="node-config-input-domain" placeholder="internetofthings.ibmcloud.com">
+    </div>
+    <div class="form-row">
         <label for="node-config-input-shared"><i class="fa fa-tag"></i> Scalable</label>
         <input type="checkbox" id="node-config-input-shared" style="width: 15px;">
 
@@ -50,6 +54,7 @@
         defaults: {
             name: { value:"" },
             keepalive: {value: 60, validate:RED.validators.number()},
+			domain: {value : "" },
             cleansession: {value: true},
             appId : { value : "" },
             shared : { value : false }
@@ -194,6 +199,7 @@
       the establishment of the connection. The interval is the longest possible
       period of time, which Watson IoT Platform and client can endure without sending a message.
    </p>
+   <p>The <b>domain</b> property can be optionally used to specify the Watson IoT Platform messaging endpoint domain. By default the value is "internetofthings.ibmcloud.com"(Watson IoT Production server).</p>
    <p>
        A <b>persistent session</b> can be requested by the client on connection establishment with the Watson IoT Platform using the <b>cleanSession</b> Flag.
        If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
@@ -327,6 +333,7 @@
      the establishment of the connection. The interval is the longest possible
      period of time, which Watson IoT Platform and client can endure without sending a message.
   </p>
+  <p>The <b>domain</b> property can be optionally used to specify the Watson IoT Platform messaging endpoint domain. By default the value is "internetofthings.ibmcloud.com"(Watson IoT Production server).</p>
   <p>
        A <b>persistent session</b> can be requested by the client on connection establishment with the Watson IoT Platform using the <b>cleanSession</b> Flag.
        If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.

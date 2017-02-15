@@ -109,6 +109,7 @@ module.exports = function(RED) {
 	function IotAppNode(n) {
 		RED.nodes.createNode(this,n);
 		this.name = n.name;
+		this.domain = n.domain;
 		this.keepalive = n.keepalive;
 		this.cleansession = n.cleansession;
 		this.appId = n.appId;
@@ -149,6 +150,7 @@ module.exports = function(RED) {
 
 			 // persist data from the node
 			 node.keepalive = parseInt(iotnode.keepalive);
+			 node.domain = iotnode.domain;
 		     node.cleansession = iotnode.cleansession;
 		     node.appId = iotnode.appId;
 		     node.shared = iotnode.shared;
@@ -184,8 +186,14 @@ module.exports = function(RED) {
 			} else {
 				node.error("Unable to retrieve the organization from API Key");
 			}
+			console.log(node.domain);
 	//		node.brokerHost = node.organization + ".messaging.staging.test.internetofthings.ibmcloud.com";
-			node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
+			if(nodeCfg.domain === 'undefined' || node.domain === null 
+				|| typeof node.domain === 'undefined' || node.domain === "") {
+				node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
+			} else {
+				node.brokerHost = node.organization + ".messaging." + node.domain;
+			}
 			node.brokerPort = 8883;
 		} else if(credentials !== null && credentials !== 'undefined' && node.authentication === 'boundService') {
 			node.apikey = credentials.apiKey;
@@ -235,7 +243,7 @@ module.exports = function(RED) {
 				"id" : node.appId,
 				"auth-key" : node.apikey,
 				"auth-token" : node.apitoken,
-                                "domain" : node.brokerHost.substring(node.brokerHost.indexOf("messaging.") + "messaging.".length)
+				"domain" : node.brokerHost.substring(node.brokerHost.indexOf("messaging.") + "messaging.".length)
 			};
 
 			if(node.shared) {
