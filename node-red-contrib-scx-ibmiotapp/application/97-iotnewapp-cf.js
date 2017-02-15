@@ -149,8 +149,8 @@ module.exports = function(RED) {
 			 newCredentials = RED.nodes.getCredentials(iotnode.id);
 
 			 // persist data from the node
-			 node.keepalive = parseInt(iotnode.keepalive);
-			 node.domain = iotnode.domain;
+		     node.keepalive = parseInt(iotnode.keepalive);
+		     node.domain = iotnode.domain;
 		     node.cleansession = iotnode.cleansession;
 		     node.appId = iotnode.appId;
 		     node.shared = iotnode.shared;
