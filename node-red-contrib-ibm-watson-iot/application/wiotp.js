@@ -23,6 +23,14 @@ module.exports = function(RED) {
         var connections = {};
         return {
             getClient: function(node,config,isGateway,cleanSession,keepAlive,qos,callback) {
+                var DEFAULT_DOMAIN = "internetofthings.ibmcloud.com";
+                if(config.domain === "") {
+                    config.domain = DEFAULT_DOMAIN;
+                } else if(config.domain.indexOf("messaging.") != -1) {
+                    // If user specified full URI, then extract only the domain from it
+                    var domain = config.domain.substring(config.domain.indexOf("messaging.") + "messaging.".length);
+                    config.domain = domain;
+                }
                 var nodeId = node.id;
                 var key = JSON.stringify(config);
                 if (!connections[key]) {
@@ -119,6 +127,7 @@ module.exports = function(RED) {
         this.name = n.name;
         this.config = {};
         this.config.org = n.org;
+        this.config.domain = n.domain;
         this.config.id = n.devId;
         this.config.type = n.devType;
         this.config['auth-token'] = this.credentials.authToken;
@@ -259,6 +268,7 @@ module.exports = function(RED) {
         } else {
             this.credentials = {
                 org: "quickstart",
+				domain:"quickstart.messaging.internetofthings.ibmcloud.com",
                 type: "node-red-wiotp",
                 id: n.qsDeviceId || n.id
             }
