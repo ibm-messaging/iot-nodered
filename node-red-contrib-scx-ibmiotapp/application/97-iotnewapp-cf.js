@@ -109,7 +109,7 @@ module.exports = function(RED) {
 	function IotAppNode(n) {
 		RED.nodes.createNode(this,n);
 		this.name = n.name;
-		this.domain = n.domain;
+		this.domainURI = n.domainURI;
 		this.keepalive = n.keepalive;
 		this.cleansession = n.cleansession;
 		this.appId = n.appId;
@@ -150,7 +150,7 @@ module.exports = function(RED) {
 
 			 // persist data from the node
 		     node.keepalive = parseInt(iotnode.keepalive);
-		     node.domain = iotnode.domain;
+		     node.domainURI = iotnode.domainURI;
 		     node.cleansession = iotnode.cleansession;
 		     node.appId = iotnode.appId;
 		     node.shared = iotnode.shared;
@@ -186,13 +186,12 @@ module.exports = function(RED) {
 			} else {
 				node.error("Unable to retrieve the organization from API Key");
 			}
-			console.log(node.domain);
 	//		node.brokerHost = node.organization + ".messaging.staging.test.internetofthings.ibmcloud.com";
-			if(nodeCfg.domain === 'undefined' || node.domain === null 
-				|| typeof node.domain === 'undefined' || node.domain === "") {
+			if(node.domainURI === 'undefined' || node.domainURI === null 
+				|| typeof node.domainURI === 'undefined' || node.domainURI === "") {
 				node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
 			} else {
-				node.brokerHost = node.organization + ".messaging." + node.domain;
+				node.brokerHost = node.organization + ".messaging." + node.domainURI;
 			}
 			node.brokerPort = 8883;
 		} else if(credentials !== null && credentials !== 'undefined' && node.authentication === 'boundService') {
@@ -243,7 +242,7 @@ module.exports = function(RED) {
 				"id" : node.appId,
 				"auth-key" : node.apikey,
 				"auth-token" : node.apitoken,
-				"domain" : node.brokerHost.substring(node.brokerHost.indexOf("messaging.") + "messaging.".length)
+				"domainURI" : node.brokerHost.substring(node.brokerHost.indexOf("messaging.") + "messaging.".length)
 			};
 
 			if(node.shared) {
@@ -293,7 +292,6 @@ module.exports = function(RED) {
 	function IotAppOutNode(n) {
 		RED.nodes.createNode(this, n);
 		setUpNode(this, n, "out");
-
 		if (!this.client) {
 			return;
 		}

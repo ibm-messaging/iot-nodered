@@ -28,8 +28,8 @@
         <input type="password" id="node-config-input-password">
     </div>
     <div class="form-row">
-        <label for="node-config-input-domain"><i class="fa fa-user-secret"></i> Domain</label>
-        <input type="text" id="node-config-input-domain" placeholder="internetofthings.ibmcloud.com">
+        <label for="node-config-input-domainURI"><i class="fa fa-tag"></i> Domain</label>
+        <input type="text" id="node-config-input-domainURI" placeholder="internetofthings.ibmcloud.com">
     </div>
     <div class="form-row">
         <label for="node-config-input-shared"><i class="fa fa-tag"></i> Scalable</label>
@@ -54,7 +54,7 @@
         defaults: {
             name: { value:"" },
             keepalive: {value: 60, validate:RED.validators.number()},
-            domain: {value : "" },
+            domainURI: {value : "" },
             cleansession: {value: true},
             appId : { value : "" },
             shared : { value : false }
