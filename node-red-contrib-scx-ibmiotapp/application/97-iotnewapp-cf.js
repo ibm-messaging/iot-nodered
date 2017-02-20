@@ -242,7 +242,7 @@ module.exports = function(RED) {
 				"id" : node.appId,
 				"auth-key" : node.apikey,
 				"auth-token" : node.apitoken,
-				"domainURI" : node.brokerHost.substring(node.brokerHost.indexOf("messaging.") + "messaging.".length)
+				"domain" : node.brokerHost.substring(node.brokerHost.indexOf("messaging.") + "messaging.".length)
 			};
 
 			if(node.shared) {
