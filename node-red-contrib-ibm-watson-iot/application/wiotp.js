@@ -138,6 +138,7 @@ module.exports = function(RED) {
         this.config['auth-token']);
         this.config.keepalive = n.keepalive;
         this.config.cleansession = n.cleansession;
+        this.config['use-client-certs'] = n.usetls;
 
         var node = this;
         this.on('close', function() {
@@ -156,6 +157,15 @@ module.exports = function(RED) {
             this.config.cleansession = true;
         }
 
+        if(n.usetls === true){
+                var tlsNode = RED.nodes.getNode(n.tls);
+                this.config['client-ca'] = tlsNode.config.caPath;
+                this.config['client-cert'] = tlsNode.config.certPath;
+                this.config['client-key'] = tlsNode.config.keyPath;
+                if(tlsNode.config.serverPath !== ''){
+                   this.config['server-ca'] = tlsNode.config.serverPath;
+                }
+        }
     }
 
     RED.nodes.registerType("wiotp-credentials",IotDeviceNode, {
@@ -164,6 +174,19 @@ module.exports = function(RED) {
         }
     });
 
+    function TLSConfig(n) {
+        RED.nodes.createNode(this,n);
+        this.name = n.name;
+        this.config = {};
+        this.config.certPath = n.cert.trim();
+        this.config.keyPath = n.key.trim();
+        this.config.caPath = n.ca.trim();
+        if(n.server !== ''){
+          this.config.serverPath = n.server.trim();
+        }
+    }
+
+    RED.nodes.registerType("tls-config",TLSConfig);
 
     function parsePayload(payload) {
         try {

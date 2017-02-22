@@ -14,6 +14,48 @@
   limitations under the License.
 -->
 
+<script type="text/x-red" data-template-name="tls-config">
+    <div class="form-row">
+        <label for="node-config-input-cert"></i> Certificate</label>
+        <input type="text" id="node-config-input-cert" placeholder="Client Certificate Path" >
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-key"></i> Key</label>
+        <input type="text" id="node-config-input-key" placeholder="Client Key Path" >
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-ca"></i> CA Certificate</label>
+        <input type="text" id="node-config-input-ca" placeholder="CA Certificate Path" >
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-server"></i> Server Certificate</label>
+        <input type="text" id="node-config-input-server" placeholder="Server Certificate Path" >
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-name">Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="tls-config">
+    <p>Configuration options for TLS connections.</p>
+    <p>Here are the details:</p>
+    <ul>
+      <li><b>Certificate</b>: Client Side Certificate signed using the Client Private Key. We need to provide
+      the complete path of the client side certificate.</li>
+      <li><b>Key</b>: Client Private Key used in signing the client certificate. We need to provide
+      the complete path to Client Key.</li>
+      <li><b>CA Certificate</b>: Certificate Authority Certificate. We need to provide
+      the complete path of the CA certificate. The same CA certificate should be uploaded onto Watson IoT Platform.</li>
+      <li><b>Server Certificate</b>: Messaging Server Certificate . If We have our own messaging server certificate,
+      then we need to provide the complete path of the Server Certificate. Otherwise, the default
+      messaging server certificate present on Watson IoT Platform going to be used.</li>
+    </ul>
+    <p>Out of the above 4 parameters - Certificate, Key and CA Certificate required to be provided and
+       Server Certificate is Optional </p>
+</script>
+
 <script type="text/x-red" data-template-name="wiotp-credentials">
     <div class="form-row">
         <label for="node-config-input-org"></i> Organization</label>
@@ -44,6 +86,15 @@
        <label for="node-config-input-cleansession" style="width: auto;">Use Clean Session</label>
     </div>
 
+    <div class="form-row" >
+       <input type="checkbox" id="node-config-input-usetls" style="margin-left: 10px; height: 1em;display: inline-block; width: auto; vertical-align: middle;">
+       <label for="node-config-input-usetls" style="width: auto;">Enable secure (SSL/TLS) connection</label>
+       <div id="node-config-row-tls" class="hide">
+           <label for="node-config-input-tls">TLS Config</label>
+           <input type="text" id="node-config-input-tls" style="width: 250px;">
+       </div>
+    </div>
+
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
@@ -55,6 +106,19 @@
 
     var hasTypedInputs = (typeof jQuery.nodered !== "undefined") && (typeof jQuery.nodered.typedInput !== "undefined");
 
+    RED.nodes.registerType('tls-config',{
+        category: 'config',
+        defaults: {
+            name: {value:""},
+            cert: {value:"", required: true},
+            key: {value:"", required: true},
+            ca: {value:"", required: true},
+            server: {value:"", required: false},
+        },
+        label: function() {
+            return this.name||"TLSConfig";
+        },
+    });
 
     RED.nodes.registerType('wiotp-credentials',{
         category: 'config',
@@ -66,6 +130,8 @@
             devId: { value: "", required: true },
             keepalive: {value: 60, validate:RED.validators.number()},
             cleansession: {value: true},
+            tls: {type:"tls-config",required: false},
+            usetls: {value: false},
         },
         label: function() {
             return this.name||this.devType+"/"+this.devId||"Device";
@@ -78,13 +144,34 @@
                 this.keepalive = 60;
                 $("#node-config-input-keepalive").val(this.keepalive);
             }
-            
+
             if (typeof this.cleansession === 'undefined') {
                 this.cleansession = true;
                 $("#node-config-input-cleansession").prop("checked",true);
             }
 
+            if (typeof this.usetls === 'undefined') {
+                this.usetls = false;
+                $("#node-config-input-usetls").prop("checked",false);
+            }
+
+            function updateTLSOptions() {
+                if ($("#node-config-input-usetls").is(':checked')) {
+                    $("#node-config-row-tls").show();
+                } else {
+                    $("#node-config-row-tls").hide();
+                }
+            }
+            updateTLSOptions();
+            $("#node-config-input-usetls").on("click",function() {
+                updateTLSOptions();
+            });
         },
+        oneditsave: function() {
+            if ($("#node-config-input-usetls").is(':checked')) {
+                usetls = true;
+            }
+        }
     });
 
     RED.nodes.registerType('wiotp in',{
@@ -256,7 +343,7 @@
                     $("#node-form-row-qsDeviceId").hide();
 
                     $("#node-form-qos-div").show();
-                    
+
                 }
             });
             $("#node-form-row-qs input[type='radio'][value='"+this.qs+"']").attr('checked',true).change();
@@ -478,7 +565,7 @@
         the command is for</li>
        <li><code>deviceId</code> - (<i>gateway only</i>) the id of the device
         the command is for</li>
-       <li><code>domain</code> - (Optional) The messaging endpoint domain. By default 
+       <li><code>domain</code> - (Optional) The messaging endpoint domain. By default
         the value is "internetofthings.ibmcloud.com"(Watson IoT Production server)</li>
     </ul>
     <p>Value for QoS (Quality of Service) and connection keep alive interval value
@@ -499,7 +586,7 @@
     <p>
        A <b>persistent session</b> can be requested by the client on connection establishment with the Watson IoT Platform using the <b>cleanSession</b> Flag.
        If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
-       When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again. 
+       When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again.
        If there is already a session available then it is used and queued messages will be delivered to the client if available. For more information, refer to Watson IoT Platform documentation.
     </p>
 </script>
@@ -554,7 +641,7 @@
     <p>
        A <b>persistent session</b> can be requested by the client on connection establishment with the Watson IoT Platform using the <b>cleanSession</b> Flag.
        If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
-       When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again. 
+       When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again.
        If there is already a session available then it is used and queued messages will be delivered to the client if available. For more information, refer to Watson IoT Platform documentation.
     </p>
     <p>In Registered Mode, the <code>domain</code> property can be optionally used to specify the Watson IoT Platform messaging endpoint domain. By default the value is "internetofthings.ibmcloud.com"(Watson IoT Production server).
