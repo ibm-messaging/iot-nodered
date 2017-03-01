@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014, 2016 IBM Corp.
+  Copyright 2014, 2017 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@
         <input type="password" id="node-config-input-password">
     </div>
     <div class="form-row">
-        <label for="node-config-input-domainURI"><i class="fa fa-tag"></i> Domain</label>
-        <input type="text" id="node-config-input-domainURI" placeholder="internetofthings.ibmcloud.com">
+        <label for="node-config-input-serverName"><i class="fa fa-tag"></i> Server-Name</label>
+        <input type="text" id="node-config-input-serverName" placeholder="orgid.messaging.internetofthings.ibmcloud.com">
     </div>
     <div class="form-row">
         <label for="node-config-input-shared"><i class="fa fa-tag"></i> Scalable</label>
@@ -54,7 +54,7 @@
         defaults: {
             name: { value:"" },
             keepalive: {value: 60, validate:RED.validators.number()},
-            domainURI: {value : "" },
+            serverName: {value : "" },
             cleansession: {value: true},
             appId : { value : "" },
             shared : { value : false }
@@ -199,7 +199,7 @@
       the establishment of the connection. The interval is the longest possible
       period of time, which Watson IoT Platform and client can endure without sending a message.
    </p>
-   <p>The <b>domain</b> property can be optionally used to specify the Watson IoT Platform messaging endpoint domain. By default the value is "internetofthings.ibmcloud.com"(Watson IoT Production server).</p>
+   <p>The <b>Server-Name</b> property can be optionally used to specify the Watson IoT Platform messaging endpoint name. By default the value is "[organization id].messaging.internetofthings.ibmcloud.com"(Watson IoT Production server). The mqtt_host property of the Watson IoT service credentials carries the value of the messaging endpoint name.</p>
    <p>
        A <b>persistent session</b> can be requested by the client on connection establishment with the Watson IoT Platform using the <b>cleanSession</b> Flag.
        If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
@@ -333,7 +333,7 @@
      the establishment of the connection. The interval is the longest possible
      period of time, which Watson IoT Platform and client can endure without sending a message.
   </p>
-  <p>The <b>domain</b> property can be optionally used to specify the Watson IoT Platform messaging endpoint domain. By default the value is "internetofthings.ibmcloud.com"(Watson IoT Production server).</p>
+  <p>The <b>Server-Name</b> property can be optionally used to specify the Watson IoT Platform messaging endpoint name. By default the value is "[organization id].messaging.internetofthings.ibmcloud.com"(Watson IoT Production server). The mqtt_host property of the Watson IoT service credentials carries the value of the messaging endpoint name.</p>
   <p>
        A <b>persistent session</b> can be requested by the client on connection establishment with the Watson IoT Platform using the <b>cleanSession</b> Flag.
        If the clean session is set to <b>true</b> then the client does not have a persistent session and all information are lost when the client disconnects for any reason.
