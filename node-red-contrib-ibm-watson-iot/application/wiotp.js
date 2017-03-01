@@ -138,6 +138,7 @@ module.exports = function(RED) {
         this.config['auth-token']);
         this.config.keepalive = n.keepalive;
         this.config.cleansession = n.cleansession;
+        this.config['use-client-certs'] = n.usetls;
 
         var node = this;
         this.on('close', function() {
@@ -156,6 +157,13 @@ module.exports = function(RED) {
             this.config.cleansession = true;
         }
 
+        if(n.usetls === true){
+                var tlsNode = RED.nodes.getNode(n.tls);
+                this.config['read-certs'] = true;
+                this.config['client-ca'] = tlsNode.ca;
+                this.config['client-cert'] = tlsNode.cert;
+                this.config['client-key'] = tlsNode.key;
+        }
     }
 
     RED.nodes.registerType("wiotp-credentials",IotDeviceNode, {
@@ -163,7 +171,6 @@ module.exports = function(RED) {
             authToken: {type:"password"}
         }
     });
-
 
     function parsePayload(payload) {
         try {
