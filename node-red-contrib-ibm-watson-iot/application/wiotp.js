@@ -159,12 +159,10 @@ module.exports = function(RED) {
 
         if(n.usetls === true){
                 var tlsNode = RED.nodes.getNode(n.tls);
-                this.config['client-ca'] = tlsNode.config.caPath;
-                this.config['client-cert'] = tlsNode.config.certPath;
-                this.config['client-key'] = tlsNode.config.keyPath;
-                if(tlsNode.config.serverPath !== ''){
-                   this.config['server-ca'] = tlsNode.config.serverPath;
-                }
+                this.config['read-certs'] = true;
+                this.config['client-ca'] = tlsNode.ca;
+                this.config['client-cert'] = tlsNode.cert;
+                this.config['client-key'] = tlsNode.key;
         }
     }
 
@@ -173,20 +171,6 @@ module.exports = function(RED) {
             authToken: {type:"password"}
         }
     });
-
-    function TLSConfig(n) {
-        RED.nodes.createNode(this,n);
-        this.name = n.name;
-        this.config = {};
-        this.config.certPath = n.cert.trim();
-        this.config.keyPath = n.key.trim();
-        this.config.caPath = n.ca.trim();
-        if(n.server !== ''){
-          this.config.serverPath = n.server.trim();
-        }
-    }
-
-    RED.nodes.registerType("tls-config",TLSConfig);
 
     function parsePayload(payload) {
         try {

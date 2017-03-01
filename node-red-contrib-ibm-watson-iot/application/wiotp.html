@@ -14,48 +14,6 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="tls-config">
-    <div class="form-row">
-        <label for="node-config-input-cert"></i> Certificate</label>
-        <input type="text" id="node-config-input-cert" placeholder="Client Certificate Path" >
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-key"></i> Key</label>
-        <input type="text" id="node-config-input-key" placeholder="Client Key Path" >
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-ca"></i> CA Certificate</label>
-        <input type="text" id="node-config-input-ca" placeholder="CA Certificate Path" >
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-server"></i> Server Certificate</label>
-        <input type="text" id="node-config-input-server" placeholder="Server Certificate Path" >
-    </div>
-
-    <div class="form-row">
-        <label for="node-config-input-name">Name</label>
-        <input type="text" id="node-config-input-name" placeholder="Name">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="tls-config">
-    <p>Configuration options for TLS connections.</p>
-    <p>Here are the details:</p>
-    <ul>
-      <li><b>Certificate</b>: Client Side Certificate signed using the Client Private Key. We need to provide
-      the complete path of the client side certificate.</li>
-      <li><b>Key</b>: Client Private Key used in signing the client certificate. We need to provide
-      the complete path to Client Key.</li>
-      <li><b>CA Certificate</b>: Certificate Authority Certificate. We need to provide
-      the complete path of the CA certificate. The same CA certificate should be uploaded onto Watson IoT Platform.</li>
-      <li><b>Server Certificate</b>: Messaging Server Certificate . If We have our own messaging server certificate,
-      then we need to provide the complete path of the Server Certificate. Otherwise, the default
-      messaging server certificate present on Watson IoT Platform going to be used.</li>
-    </ul>
-    <p>Out of the above 4 parameters - Certificate, Key and CA Certificate required to be provided and
-       Server Certificate is Optional </p>
-</script>
-
 <script type="text/x-red" data-template-name="wiotp-credentials">
     <div class="form-row">
         <label for="node-config-input-org"></i> Organization</label>
@@ -105,20 +63,6 @@
 (function() {
 
     var hasTypedInputs = (typeof jQuery.nodered !== "undefined") && (typeof jQuery.nodered.typedInput !== "undefined");
-
-    RED.nodes.registerType('tls-config',{
-        category: 'config',
-        defaults: {
-            name: {value:""},
-            cert: {value:"", required: true},
-            key: {value:"", required: true},
-            ca: {value:"", required: true},
-            server: {value:"", required: false},
-        },
-        label: function() {
-            return this.name||"TLSConfig";
-        },
-    });
 
     RED.nodes.registerType('wiotp-credentials',{
         category: 'config',
