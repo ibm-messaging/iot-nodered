@@ -20,8 +20,8 @@
         <input type="text" id="node-config-input-org" placeholder="organization" >
     </div>
     <div class="form-row">
-        <label for="node-config-input-domain"></i> Domain</label>
-        <input type="text" id="node-config-input-domain" placeholder="internetofthings.ibmcloud.com" >
+        <label for="node-config-input-serverName"></i> Server-Name</label>
+        <input type="text" id="node-config-input-serverName" placeholder="orgid.messaging.internetofthings.ibmcloud.com" >
     </div>
     <div class="form-row">
         <label for="node-config-input-devType"></i> Device Type</label>
@@ -61,7 +61,7 @@
         defaults: {
             name: { value:"" },
             org: {value: "", required: true },
-            domain: {value: "" },
+            serverName: {value: "" },
             devType: { value: "", required: true },
             devId: { value: "", required: true },
             keepalive: {value: 60, validate:RED.validators.number()},
@@ -478,8 +478,7 @@
         the command is for</li>
        <li><code>deviceId</code> - (<i>gateway only</i>) the id of the device
         the command is for</li>
-       <li><code>domain</code> - (Optional) The messaging endpoint domain. By default 
-        the value is "internetofthings.ibmcloud.com"(Watson IoT Production server)</li>
+       <li><code>server-name</code> - (Optional) The Watson IoT Platform messaging endpoint name. By default the value is "[organization id].messaging.internetofthings.ibmcloud.com"(Watson IoT Production server). The mqtt_host property of the Watson IoT service credential carries the value of the messaging endpoint name.</li>
     </ul>
     <p>Value for QoS (Quality of Service) and connection keep alive interval value
        can be specified.
@@ -557,7 +556,7 @@
        When clean session is set to <b>false</b>, a persistent session is created and it will be preserved until the client requests a clean session again. 
        If there is already a session available then it is used and queued messages will be delivered to the client if available. For more information, refer to Watson IoT Platform documentation.
     </p>
-    <p>In Registered Mode, the <code>domain</code> property can be optionally used to specify the Watson IoT Platform messaging endpoint domain. By default the value is "internetofthings.ibmcloud.com"(Watson IoT Production server).
+    <p>In Registered Mode, the <code>server-name</code> property can be optionally used to specify the Watson IoT Platform messaging endpoint name. By default the value is <code>[organization id].messaging.internetofthings.ibmcloud.com</code> (Watson IoT Production server). The mqtt_host property of the Watson IoT service credential carries the value of the messaging endpoint name.
     </p>
 
 </script>
