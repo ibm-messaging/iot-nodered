@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, 2016 IBM Corp.
+ * Copyright 2014, 2017 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ module.exports = function(RED) {
 	function IotAppNode(n) {
 		RED.nodes.createNode(this,n);
 		this.name = n.name;
-		this.domain = n.domain;
+		this.serverName = n.serverName;
 		this.keepalive = n.keepalive;
 		this.cleansession = n.cleansession;
 		this.appId = n.appId;
@@ -150,7 +150,7 @@ module.exports = function(RED) {
 
 			 // persist data from the node
 		     node.keepalive = parseInt(iotnode.keepalive);
-		     node.domain = iotnode.domain;
+		     node.serverName = iotnode.serverName;
 		     node.cleansession = iotnode.cleansession;
 		     node.appId = iotnode.appId;
 		     node.shared = iotnode.shared;
@@ -186,13 +186,12 @@ module.exports = function(RED) {
 			} else {
 				node.error("Unable to retrieve the organization from API Key");
 			}
-			console.log(node.domain);
 	//		node.brokerHost = node.organization + ".messaging.staging.test.internetofthings.ibmcloud.com";
-			if(nodeCfg.domain === 'undefined' || node.domain === null 
-				|| typeof node.domain === 'undefined' || node.domain === "") {
+			if(node.serverName === 'undefined' || node.serverName === null 
+				|| typeof node.serverName === 'undefined' || node.serverName === "") {
 				node.brokerHost = node.organization + ".messaging.internetofthings.ibmcloud.com";
 			} else {
-				node.brokerHost = node.organization + ".messaging." + node.domain;
+				node.brokerHost = node.serverName;
 			}
 			node.brokerPort = 8883;
 		} else if(credentials !== null && credentials !== 'undefined' && node.authentication === 'boundService') {
@@ -243,7 +242,7 @@ module.exports = function(RED) {
 				"id" : node.appId,
 				"auth-key" : node.apikey,
 				"auth-token" : node.apitoken,
-				"domain" : node.brokerHost.substring(node.brokerHost.indexOf("messaging.") + "messaging.".length)
+				"mqtt-server" : node.brokerHost
 			};
 
 			if(node.shared) {
@@ -293,7 +292,6 @@ module.exports = function(RED) {
 	function IotAppOutNode(n) {
 		RED.nodes.createNode(this, n);
 		setUpNode(this, n, "out");
-
 		if (!this.client) {
 			return;
 		}
