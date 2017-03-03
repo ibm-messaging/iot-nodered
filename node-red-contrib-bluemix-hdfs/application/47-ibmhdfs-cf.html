@@ -17,6 +17,18 @@
 <script type="text/x-red" data-template-name="ibm hdfs in">
 
     <div class="form-row">
+        <label for="node-input-userid"><i class="icon-file"></i> userid</label>
+        <input type="text" id="node-input-userid" placeholder="userid">
+    </div>
+    <div class="form-row">
+        <label for="node-input-password"><i class="icon-file"></i> password</label>
+        <input type="password" id="node-input-password" placeholder="password">
+    </div>
+    <div class="form-row">
+        <label for="node-input-webhdfsUrl"><i class="icon-file"></i> WebhdfsUrl</label>
+        <input type="text" id="node-input-webhdfsUrl" placeholder="WebhdfsUrl">
+    </div>
+    <div class="form-row">
         <label for="node-input-filename"><i class="icon-file"></i> Filename</label>
         <input type="text" id="node-input-filename" placeholder="Filename">
     </div>
@@ -32,15 +44,6 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
-	<div class="form-tips">
-		<div class = "form-tipsBounded">		
-			<b>Bounded Service:</b> Provide a valid filename with filepath starting with slash. The file gets created under the folder /user/biblumix <br/>			
-			Check the info tab, to get more information about each of the fields
-		</div>
-		<div class = "form-tipsUnbounded">
-			<b>Unbounded Service:</b> Big Insights service not bound. This node wont work<br/>
-		</div>
-	</div>
 
 </script>
 
@@ -51,14 +54,19 @@
 </script>
 
 <script type="text/javascript">
-    
+
     RED.nodes.registerType('ibm hdfs in',{
         category: 'storage-input',
         color:"rgb(115, 185, 221)",
         defaults: {
             name: {value:""},
-			filename:{value:"", required:true},
+            filename:{value:"", required:true},
+            webhdfsUrl: {value: "", required: true},
             format: {value:"utf8"}
+        },
+        credentials: {
+          userid: {type: "text", required: true},
+          password: {type: "password", required: true},
         },
         inputs:1,
         outputs:1,
@@ -76,16 +84,6 @@
                 type: 'GET',
                 success:function(result){},
 				statusCode: {
-					403: function() {
-						result = "unbound";
-						$(".form-tipsUnbounded").show();
-						$(".form-tipsBounded").hide();
-					},
-					200: function() {
-						result = "bound";
-						$(".form-tipsUnbounded").hide();
-						$(".form-tipsBounded").show();
-					}
 				}
 			});
 		}
@@ -94,6 +92,18 @@
 
 
 <script type="text/x-red" data-template-name="ibm hdfs">
+    <div class="form-row">
+        <label for="node-input-userid"><i class="icon-file"></i> userid</label>
+        <input type="text" id="node-input-userid" placeholder="userid">
+    </div>
+    <div class="form-row">
+        <label for="node-input-password"><i class="icon-file"></i> password</label>
+        <input type="password" id="node-input-password" placeholder="password">
+    </div>
+    <div class="form-row">
+        <label for="node-input-webhdfsUrl"><i class="icon-file"></i> WebhdfsUrl</label>
+        <input type="text" id="node-input-webhdfsUrl" placeholder="WebhdfsUrl">
+    </div>
     <div class="form-row">
         <label for="node-input-filename"><i class="icon-file"></i> Filename</label>
         <input type="text" id="node-input-filename" placeholder="Filename">
@@ -113,15 +123,6 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
-	<div class="form-tips">
-		<div class = "form-tipsBounded">		
-			<b>Bounded Service:</b> Provide a valid filename with filepath starting with slash. The file gets created under the folder /user/biblumix <br/>		
-			Check the info tab, to get more information about each of the fields
-		</div>
-		<div class = "form-tipsUnbounded">
-			<b>Unbounded Service:</b> Big Insights service not bound. This node wont work<br/>
-		</div>
-	</div>
 
 </script>
 
@@ -134,16 +135,21 @@
 </script>
 
 <script type="text/javascript">
-    
+
     RED.nodes.registerType('ibm hdfs',{
         category: 'storage-input',
         color:"rgb(115, 185, 221)",
         defaults: {
             name: {value:""},
             filename: {value:"", required:true},
+            webhdfsUrl: {value: "", required: true},
             appendNewline: {value:true},
             overwriteFile: {value:false}
-		},
+        },
+        credentials: {
+          userid: {type: "text", required: true},
+          password: {type: "password", required: true}
+        },
         inputs:1,
         outputs:0,
         align: "right",
@@ -161,16 +167,6 @@
                 type: 'GET',
                 success:function(result){},
 				statusCode: {
-					403: function() {
-						result = "unbound";
-						$(".form-tipsUnbounded").show();
-						$(".form-tipsBounded").hide();
-					},
-					200: function() {
-						result = "bound";
-						$(".form-tipsUnbounded").hide();
-						$(".form-tipsBounded").show();
-					}
 				}
 			});
 		}
