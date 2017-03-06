@@ -1,3 +1,11 @@
+Important Note
+===============
+Node-RED nodes are moved from this repository to following individual repositories,
+* **node-red-contrib-ibm-watson-iot** is moved to https://github.com/ibm-watson-iot/node-red-contrib-ibm-watson-iot
+* **node-red-contrib-scx-ibmiotapp** is moved to https://github.com/ibm-watson-iot/node-red-contrib-scx-ibmiotapp
+* **node-red-contrib-bluemix-hdfs** is moved to https://github.com/ibm-watson-iot/node-red-contrib-bluemix-hdfs
+* **node-red-contrib-ibmpush** is moved to https://github.com/ibm-watson-iot/node-red-contrib-ibmpush
+
 Node-RED sample
 ===============
 This node-red code has 2 sample programs
